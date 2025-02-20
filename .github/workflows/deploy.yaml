@@ -32,15 +32,15 @@ jobs:
       - name: NPM build
         run: npm run build
       # deploy to server without vendor & node_modules folder
-      # - name: 📂 Sync files
-      #   uses: SamKirkland/FTP-Deploy-Action@v4.3.4
-      #   with:
-      #     server: ${{ secrets.SFTP_HOST }}
-      #     username: ${{ secrets.SFTP_USER }}
-      #     password: ${{ secrets.SFTP_PASS }}
-      #     server-dir: school.${{secrets.SFTP_HOST}}/
-      #     exclude: |
-      #       **/.git*
-      #       **/.git*/**
-      #       **/node_modules/**
-      #       **/vendor/**
+      - name: 📂 Sync files
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.SFTP_HOST }}
+          username: ${{ secrets.SFTP_USER }}
+          password: ${{ secrets.SFTP_PASS }}
+          server-dir: madrasha.${{secrets.SFTP_HOST}}/
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            **/vendor/**
