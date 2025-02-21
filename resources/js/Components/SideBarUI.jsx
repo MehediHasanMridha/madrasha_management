@@ -35,11 +35,11 @@ const SideBarUI = ({
     );
 };
 
-const SideBarItemIcon = ({ children }) => {
-    return <div>{children}</div>;
+const SideBarItemIcon = ({ children, ...props }) => {
+    return <div {...props}>{children}</div>;
 };
 
-const SideBarItemText = ({ children, className = "", collapsed }) => {
+const SideBarItemText = ({ children, className = "", collapsed, ...props }) => {
     return (
         !collapsed && (
             <motion.div
@@ -47,6 +47,7 @@ const SideBarItemText = ({ children, className = "", collapsed }) => {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
                 className={className}
+                {...props}
             >
                 {children}
             </motion.div>
