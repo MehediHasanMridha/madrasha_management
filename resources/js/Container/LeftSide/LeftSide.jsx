@@ -44,7 +44,7 @@ const LeftSide = () => {
             </SideBarUI.Item>
             <SideBarUI.Item
                 collapsed={collapsed}
-                className="flex h-[80px] items-center space-x-[12px] px-[50px]"
+                className="flex h-[64px] items-center space-x-[12px] px-[50px]"
             >
                 <SideBarUI.Icon
                     onClick={handleCollapsed}
@@ -66,7 +66,7 @@ const LeftSide = () => {
             </div>
             <SideBarUI.Item
                 collapsed={collapsed}
-                className="flex h-[80px] items-center space-x-[12px] px-[50px]"
+                className="flex h-[64px] items-center space-x-[12px] px-[50px]"
             >
                 <SideBarUI.Icon>
                     <img
@@ -79,7 +79,7 @@ const LeftSide = () => {
             </SideBarUI.Item>
             <SideBarUI.Item
                 collapsed={collapsed}
-                className="flex h-[80px] items-center space-x-[12px] px-[50px]"
+                className="flex h-[64px] items-center space-x-[12px] px-[50px]"
             >
                 <SideBarUI.Icon>
                     <img
@@ -100,7 +100,7 @@ const LeftSide = () => {
             </div>
             <SideBarUI.Item
                 collapsed={collapsed}
-                className="flex h-[80px] items-center space-x-[12px] px-[50px]"
+                className="flex h-[64px] items-center space-x-[12px] px-[50px]"
             >
                 <SideBarUI.Icon>
                     <img
@@ -115,7 +115,7 @@ const LeftSide = () => {
             </SideBarUI.Item>
             <SideBarUI.Item
                 collapsed={collapsed}
-                className="flex h-[80px] items-center space-x-[12px] px-[50px]"
+                className="flex h-[64px] items-center space-x-[12px] px-[50px]"
             >
                 <SideBarUI.Icon>
                     <img
@@ -130,7 +130,7 @@ const LeftSide = () => {
             </SideBarUI.Item>
             <SideBarUI.Item
                 collapsed={collapsed}
-                className="flex h-[80px] items-center space-x-[12px] px-[50px]"
+                className="flex h-[64px] items-center space-x-[12px] px-[50px]"
             >
                 <SideBarUI.Icon>
                     <img
@@ -145,7 +145,7 @@ const LeftSide = () => {
             </SideBarUI.Item>
             <SideBarUI.Item
                 collapsed={collapsed}
-                className="flex h-[80px] items-center space-x-[12px] px-[50px]"
+                className="flex h-[64px] items-center space-x-[12px] px-[50px]"
             >
                 <SideBarUI.Icon>
                     <img
@@ -170,7 +170,7 @@ const LeftSide = () => {
             </div>
             <SideBarUI.Item
                 collapsed={collapsed}
-                className="flex h-[80px] items-center space-x-[12px] px-[50px]"
+                className="flex h-[64px] items-center space-x-[12px] px-[50px]"
             >
                 <SideBarUI.Icon>
                     <img
@@ -193,7 +193,7 @@ const LeftSide = () => {
             </div>
             <SideBarUI.Item
                 collapsed={collapsed}
-                className="flex h-[80px] items-center space-x-[12px] px-[50px]"
+                className="flex h-[64px] items-center space-x-[12px] px-[50px]"
             >
                 <SideBarUI.Icon>
                     <img
@@ -206,7 +206,7 @@ const LeftSide = () => {
             </SideBarUI.Item>
             <SideBarUI.Item
                 collapsed={collapsed}
-                className="flex h-[80px] items-center space-x-[12px] px-[50px] mt-[180px]"
+                className="flex h-[64px] items-center space-x-[12px] px-[50px] mt-[180px]"
             >
                 <SideBarUI.Icon>
                     <img
