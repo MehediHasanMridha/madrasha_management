@@ -1,34 +1,71 @@
 import { Layout } from "antd";
+import { motion } from "framer-motion";
 import { useState } from "react";
+
 const SideBarUI = ({
     children,
-    collapsible,
+    collapsible = true,
     collapsed,
     handleCollapsed,
-    className,
-    width,
-    collapsedWidth,
+    className = "h-screen",
+    width = 200,
+    collapsedWidth = 100,
 }) => {
     const { Sider } = Layout;
     const [internalCollapsed, setInternalCollapsed] = useState(false);
+
     const onCollapse = () => {
         if (handleCollapsed) {
             handleCollapsed();
         }
         setInternalCollapsed(!internalCollapsed);
     };
+
     return (
         <Sider
-            collapsible={collapsible !== undefined ? collapsible : true}
+            collapsible={collapsible}
             collapsed={collapsed !== undefined ? collapsed : internalCollapsed}
             onCollapse={onCollapse}
-            width={width !== undefined ? width : 200}
-            className={className !== undefined ? className : "h-screen"}
-            collapsedWidth={collapsedWidth !== undefined ? collapsedWidth : 100}
+            width={width}
+            className={className}
+            collapsedWidth={collapsedWidth}
         >
             {children}
         </Sider>
     );
 };
+
+const SideBarItemIcon = ({ children }) => {
+    return <div>{children}</div>;
+};
+
+const SideBarItemText = ({ children, className = "", collapsed }) => {
+    return (
+        !collapsed && (
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                className={className}
+            >
+                {children}
+            </motion.div>
+        )
+    );
+};
+
+const SideBarItem = ({ children, className = "", collapsed }) => (
+    <div
+        className={`flex items-center ${
+            collapsed ? "justify-center h-[80px]" : className
+        }`}
+    >
+        {children}
+    </div>
+);
+
+SideBarUI.Icon = SideBarItemIcon;
+SideBarUI.Text = SideBarItemText;
+SideBarUI.Item = SideBarItem;
 
 export default SideBarUI;
