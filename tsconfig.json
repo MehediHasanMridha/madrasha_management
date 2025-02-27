@@ -114,5 +114,18 @@
         },
         "jsx": "react-jsx"
     },
-    "include": ["resources/js/**/*.ts", "resources/js/**/*.tsx"]
+    "include": [
+        "resources/js/**/*.ts",
+        "resources/js/**/*.tsx",
+        "resources/js/app.jsx",
+        "resources/js/pages/auth/verify-email.jsx",
+        "resources/js/pages/auth/reset-password.jsx",
+        "resources/js/pages/auth/register.jsx",
+        "resources/js/pages/auth/login.jsx",
+        "resources/js/pages/auth/forgot-password.jsx",
+        "resources/js/pages/auth/confirm-password.jsx",
+        "resources/js/pages/settings/profile.jsx",
+        "resources/js/pages/settings/password.jsx",
+        "resources/js/pages/settings/appearance.jsx"
+    ]
 }
