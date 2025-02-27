@@ -1,6 +1,7 @@
 /* prettier-ignore */
 import {
 createInertiaApp
+
 } from '@inertiajs/react';
 import createServer from '@inertiajs/react/server';
 import ReactDOMServer from 'react-dom/server';
@@ -10,10 +11,10 @@ createServer((page) =>
         page,
         render: ReactDOMServer.renderToString,
         resolve: (name) => {
-            const pages = import.meta.glob('./pages/**/*.tsx', {
+            const pages = import.meta.glob('./pages/**/*.jsx', {
                 eager: true,
             });
-            return pages[`./pages/${name}.tsx`];
+            return pages[`./pages/${name}.jsx`];
         },
         // prettier-ignore
         setup: ({ App, props }) => <App {...props} />,
