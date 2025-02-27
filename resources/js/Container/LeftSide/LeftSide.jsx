@@ -9,12 +9,11 @@ import logout from "@/assets/images/logout.svg";
 import madani from "@/assets/images/madani.svg";
 import setting from "@/assets/images/setting.svg";
 import SideBarUI from "@/Components/SideBarUI";
-import { Layout } from "antd";
+import { Link } from "@inertiajs/react";
 import { useState } from "react";
 
 const LeftSide = () => {
     const [collapsed, setCollapsed] = useState(false);
-    const { Sider } = Layout;
     const handleCollapsed = () => {
         setCollapsed(!collapsed);
     };
@@ -29,7 +28,7 @@ const LeftSide = () => {
         >
             <SideBarUI.Item
                 collapsed={collapsed}
-                className="flex h-[80px] items-center space-x-[12px] px-[50px]"
+                className="flex h-[80px] items-center space-x-[12px] px-[50px] hover:bg-[#F2F2F2]"
             >
                 <SideBarUI.Icon>
                     <img
@@ -44,7 +43,7 @@ const LeftSide = () => {
             </SideBarUI.Item>
             <SideBarUI.Item
                 collapsed={collapsed}
-                className="flex h-[64px] items-center space-x-[12px] px-[50px]"
+                className="flex h-[64px] items-center space-x-[12px] px-[50px] hover:bg-[#F2F2F2]"
             >
                 <SideBarUI.Icon
                     onClick={handleCollapsed}
@@ -64,22 +63,30 @@ const LeftSide = () => {
                 </SideBarUI.Text>
                 <hr className="bg-[#AFAFAF] h-[0.5px] w-full" />
             </div>
+            <Link href="/dashboard">
+                <SideBarUI.Item
+                    collapsed={collapsed}
+                    className={`flex h-[64px] items-center space-x-[12px] px-[50px] hover:bg-[#F2F2F2] ${
+                        route().current("dashboard")
+                            ? "bg-[#F2F2F2] w-full"
+                            : ""
+                    }`}
+                >
+                    <SideBarUI.Icon>
+                        <img
+                            src={Dashboard}
+                            alt="Dashboard"
+                            className="w-[24px] h-[24px]"
+                        />
+                    </SideBarUI.Icon>
+                    <SideBarUI.Text collapsed={collapsed}>
+                        Dashboard
+                    </SideBarUI.Text>
+                </SideBarUI.Item>
+            </Link>
             <SideBarUI.Item
                 collapsed={collapsed}
-                className="flex h-[64px] items-center space-x-[12px] px-[50px]"
-            >
-                <SideBarUI.Icon>
-                    <img
-                        src={Dashboard}
-                        alt="Dashboard"
-                        className="w-[24px] h-[24px]"
-                    />
-                </SideBarUI.Icon>
-                <SideBarUI.Text collapsed={collapsed}>Dashboard</SideBarUI.Text>
-            </SideBarUI.Item>
-            <SideBarUI.Item
-                collapsed={collapsed}
-                className="flex h-[64px] items-center space-x-[12px] px-[50px]"
+                className="flex h-[64px] items-center space-x-[12px] px-[50px] hover:bg-[#F2F2F2]"
             >
                 <SideBarUI.Icon>
                     <img
@@ -100,7 +107,7 @@ const LeftSide = () => {
             </div>
             <SideBarUI.Item
                 collapsed={collapsed}
-                className="flex h-[64px] items-center space-x-[12px] px-[50px]"
+                className="flex h-[64px] items-center space-x-[12px] px-[50px] hover:bg-[#F2F2F2]"
             >
                 <SideBarUI.Icon>
                     <img
@@ -115,7 +122,7 @@ const LeftSide = () => {
             </SideBarUI.Item>
             <SideBarUI.Item
                 collapsed={collapsed}
-                className="flex h-[64px] items-center space-x-[12px] px-[50px]"
+                className="flex h-[64px] items-center space-x-[12px] px-[50px] hover:bg-[#F2F2F2]"
             >
                 <SideBarUI.Icon>
                     <img
@@ -130,7 +137,7 @@ const LeftSide = () => {
             </SideBarUI.Item>
             <SideBarUI.Item
                 collapsed={collapsed}
-                className="flex h-[64px] items-center space-x-[12px] px-[50px]"
+                className="flex h-[64px] items-center space-x-[12px] px-[50px] hover:bg-[#F2F2F2]"
             >
                 <SideBarUI.Icon>
                     <img
@@ -145,7 +152,7 @@ const LeftSide = () => {
             </SideBarUI.Item>
             <SideBarUI.Item
                 collapsed={collapsed}
-                className="flex h-[64px] items-center space-x-[12px] px-[50px]"
+                className="flex h-[64px] items-center space-x-[12px] px-[50px] hover:bg-[#F2F2F2]"
             >
                 <SideBarUI.Icon>
                     <img
@@ -170,7 +177,7 @@ const LeftSide = () => {
             </div>
             <SideBarUI.Item
                 collapsed={collapsed}
-                className="flex h-[64px] items-center space-x-[12px] px-[50px]"
+                className="flex h-[64px] items-center space-x-[12px] px-[50px] hover:bg-[#F2F2F2]"
             >
                 <SideBarUI.Icon>
                     <img
@@ -193,7 +200,7 @@ const LeftSide = () => {
             </div>
             <SideBarUI.Item
                 collapsed={collapsed}
-                className="flex h-[64px] items-center space-x-[12px] px-[50px]"
+                className="flex h-[64px] items-center space-x-[12px] px-[50px] hover:bg-[#F2F2F2]"
             >
                 <SideBarUI.Icon>
                     <img
@@ -206,7 +213,7 @@ const LeftSide = () => {
             </SideBarUI.Item>
             <SideBarUI.Item
                 collapsed={collapsed}
-                className="flex h-[64px] items-center space-x-[12px] px-[50px] mt-[180px]"
+                className="flex h-[64px] items-center space-x-[12px] px-[50px] mt-[180px] hover:bg-[#F2F2F2]"
             >
                 <SideBarUI.Icon>
                     <img
