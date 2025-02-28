@@ -1,15 +1,16 @@
-import { Layout } from "antd";
-import { motion } from "framer-motion";
-import { useState } from "react";
+import { Layout } from 'antd';
+import { motion } from 'framer-motion';
+import { useState } from 'react';
 
 const SideBarUI = ({
     children,
     collapsible = true,
     collapsed,
     handleCollapsed,
-    className = "h-screen",
+    className = 'h-screen',
     width = 200,
     collapsedWidth = 100,
+    ...props
 }) => {
     const { Sider } = Layout;
     const [internalCollapsed, setInternalCollapsed] = useState(false);
@@ -29,6 +30,7 @@ const SideBarUI = ({
             width={width}
             className={className}
             collapsedWidth={collapsedWidth}
+            {...props}
         >
             {children}
         </Sider>
@@ -39,30 +41,18 @@ const SideBarItemIcon = ({ children, ...props }) => {
     return <div {...props}>{children}</div>;
 };
 
-const SideBarItemText = ({ children, className = "", collapsed, ...props }) => {
+const SideBarItemText = ({ children, className = '', collapsed, ...props }) => {
     return (
         !collapsed && (
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-                className={className}
-                {...props}
-            >
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 0.2 }} className={className} {...props}>
                 {children}
             </motion.div>
         )
     );
 };
 
-const SideBarItem = ({ children, className = "", collapsed }) => (
-    <div
-        className={`flex items-center ${
-            collapsed ? "justify-center h-[80px]" : className
-        }`}
-    >
-        {children}
-    </div>
+const SideBarItem = ({ children, className = '', collapsed }) => (
+    <div className={`flex items-center ${collapsed ? 'h-[80px] justify-center' : className}`}>{children}</div>
 );
 
 SideBarUI.Icon = SideBarItemIcon;
