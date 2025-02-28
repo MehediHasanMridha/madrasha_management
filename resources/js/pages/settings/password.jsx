@@ -11,6 +11,8 @@ const breadcrumbs = [
 export default function Password() {
     const passwordInput = useRef(null);
     const currentPasswordInput = useRef(null);
+    const passwordInput = useRef(null);
+    const currentPasswordInput = useRef(null);
 
     const { data, setData, errors, put, reset, processing, recentlySuccessful } = useForm({
         current_password: '',
@@ -18,6 +20,7 @@ export default function Password() {
         password_confirmation: '',
     });
 
+    const updatePassword = (e) => {
     const updatePassword = (e) => {
         e.preventDefault();
 
