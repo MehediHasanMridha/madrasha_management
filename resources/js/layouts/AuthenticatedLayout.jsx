@@ -1,5 +1,5 @@
-import LayoutUI from "@/Components/LayoutUI";
-import LeftSide from "@/Container/LeftSide/LeftSide";
+import LayoutUI from '@/Components/LayoutUI';
+import LeftSide from '@/Container/LeftSide/LeftSide';
 
 export default function AuthenticatedLayout({ children }) {
     return (
@@ -7,13 +7,7 @@ export default function AuthenticatedLayout({ children }) {
             {() => (
                 <>
                     <LeftSide />
-                    <LayoutUI>
-                        {({ Content }) => (
-                            <Content className="overflow-y-auto h-screen">
-                                {children}
-                            </Content>
-                        )}
-                    </LayoutUI>
+                    <LayoutUI>{({ Content }) => <Content className="h-screen overflow-y-auto">{children}</Content>}</LayoutUI>
                 </>
             )}
         </LayoutUI>
