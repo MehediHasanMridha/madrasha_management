@@ -16,7 +16,6 @@ export default function Profile({ mustVerifyEmail, status }) {
     });
 
     const submit = (e) => {
-    const submit = (e) => {
         e.preventDefault();
 
         patch(route('profile.update'), {
