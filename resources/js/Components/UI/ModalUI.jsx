@@ -10,6 +10,7 @@ const ModalUI = ({ isModalOpen = false, handleOk = () => {}, handleCancel = () =
             className={className}
             width={width || 800}
             footer={footer}
+            centered
             {...props}
         >
             {children}

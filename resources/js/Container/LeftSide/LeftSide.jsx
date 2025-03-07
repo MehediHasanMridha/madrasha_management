@@ -117,13 +117,20 @@ const LeftSide = () => {
                 </SideBarUI.Icon>
                 <SideBarUI.Text collapsed={collapsed}>Setting</SideBarUI.Text>
             </SideBarUI.Item>
-            <SideBarUI.Item collapsed={collapsed} className="mt-[180px] flex h-[64px] items-center space-x-[12px] px-[50px] hover:bg-[#F2F2F2]">
-                <SideBarUI.Icon>
-                    <img src={logout} alt="Log out" className="h-[24px] w-[24px]" />
-                </SideBarUI.Icon>
-                <SideBarUI.Text collapsed={collapsed} className="text-red-500">
-                    Log out
-                </SideBarUI.Text>
+            <SideBarUI.Item collapsed={collapsed} className="mt-[180px]">
+                <Link
+                    href={route('logout')}
+                    method="post"
+                    as="button"
+                    className="flex h-[64px] w-full cursor-pointer items-center space-x-[12px] px-[50px] hover:bg-[#F2F2F2]"
+                >
+                    <SideBarUI.Icon>
+                        <img src={logout} alt="Log out" className="h-[24px] w-[24px]" />
+                    </SideBarUI.Icon>
+                    <SideBarUI.Text collapsed={collapsed} className="text-red-500">
+                        Log out
+                    </SideBarUI.Text>
+                </Link>
             </SideBarUI.Item>
         </SideBarUI>
     );

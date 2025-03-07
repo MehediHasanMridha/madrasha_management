@@ -1,9 +1,10 @@
-import React from "react";
+import React from 'react';
+import { cn } from '../../lib/utils';
 
-const Field = ({ label, children, htmlFor, error, className = "my-2" }) => {
+const Field = ({ label, children, htmlFor, error, className = '' }) => {
     const id = htmlFor || getChildId(children);
     return (
-        <div className={className}>
+        <div className={cn('my-2 flex flex-col', className)}>
             {label && (
                 <label htmlFor={id} className="mb-1">
                     {label}
@@ -18,7 +19,7 @@ const Field = ({ label, children, htmlFor, error, className = "my-2" }) => {
 const getChildId = (children) => {
     const child = React.Children.only(children);
 
-    if ("id" in child?.props) {
+    if ('id' in child?.props) {
         return child.props.id;
     }
 };

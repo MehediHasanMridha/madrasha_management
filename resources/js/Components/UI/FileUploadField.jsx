@@ -47,8 +47,6 @@ const FileUploadField = ({ control, fieldName, type = 'picture-card', className 
                 }}
             >
                 <Upload
-                    ref={ref}
-                    onChange={onChange}
                     name={fieldName}
                     listType={type} // "picture" | "picture-card"
                     maxCount={1}
