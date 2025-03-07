@@ -8,7 +8,7 @@ import Logo from '@/assets/images/logo.png';
 import logout from '@/assets/images/logout.svg';
 import madani from '@/assets/images/madani.svg';
 import setting from '@/assets/images/setting.svg';
-import SideBarUI from '@/Components/SideBarUI';
+import SideBarUI from '@/Components/UI/SideBarUI';
 import { Link } from '@inertiajs/react';
 import { useState } from 'react';
 
@@ -66,12 +66,17 @@ const LeftSide = () => {
                 <SideBarUI.Text collapsed={collapsed}>Campus</SideBarUI.Text>
                 <hr className="h-[0.5px] w-full bg-[#AFAFAF]" />
             </div>
-            <SideBarUI.Item collapsed={collapsed} className="flex h-[64px] items-center space-x-[12px] px-[50px] hover:bg-[#F2F2F2]">
-                <SideBarUI.Icon>
-                    <img src={Islamic_School} alt="Islamic_School}" className="h-[24px] w-[24px]" />
-                </SideBarUI.Icon>
-                <SideBarUI.Text collapsed={collapsed}>Islamic School</SideBarUI.Text>
-            </SideBarUI.Item>
+            <Link href={route('department.view', 'Islamic_School')} className="w-full cursor-pointer" as="button">
+                <SideBarUI.Item
+                    collapsed={collapsed}
+                    className={`flex h-[64px] items-center space-x-[12px] px-[50px] ${route().current('department.view', 'Islamic_School') && 'bg-[#F2F2F2]'} hover:bg-[#F2F2F2]`}
+                >
+                    <SideBarUI.Icon>
+                        <img src={Islamic_School} alt="Islamic_School}" className="h-[24px] w-[24px]" />
+                    </SideBarUI.Icon>
+                    <SideBarUI.Text collapsed={collapsed}>Islamic School</SideBarUI.Text>
+                </SideBarUI.Item>
+            </Link>
             <SideBarUI.Item collapsed={collapsed} className="flex h-[64px] items-center space-x-[12px] px-[50px] hover:bg-[#F2F2F2]">
                 <SideBarUI.Icon>
                     <img src={hifjo_bivag} alt="Hifjo Bivag" className="h-[24px] w-[24px]" />

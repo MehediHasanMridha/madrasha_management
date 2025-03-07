@@ -1,4 +1,4 @@
-import LayoutUI from '@/Components/LayoutUI';
+import LayoutUI from '@/Components/UI/LayoutUI';
 import LeftSide from '@/Container/LeftSide/LeftSide';
 
 export default function AuthenticatedLayout({ children }) {
@@ -7,7 +7,7 @@ export default function AuthenticatedLayout({ children }) {
             {() => (
                 <>
                     <LeftSide />
-                    <LayoutUI>{({ Content }) => <Content className="h-screen overflow-y-auto">{children}</Content>}</LayoutUI>
+                    <LayoutUI>{({ Content }) => <Content className="h-screen overflow-y-auto px-[50px] pt-[24px]">{children}</Content>}</LayoutUI>
                 </>
             )}
         </LayoutUI>
