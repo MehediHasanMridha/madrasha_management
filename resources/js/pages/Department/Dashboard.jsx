@@ -1,8 +1,8 @@
 import LeftArrow from '@/assets/images/arrow-left.svg';
 import AuthenticatedLayout from '@/layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
-import DepartmentTabsSection from '../../Container/Department/DepartmentTabsSection';
-const Dashboard = () => {
+import StudentSectionContainer from '../../Container/Department/StudentSectionContainer';
+const Dashboard = ({ department, students, filters, sortOrder }) => {
     return (
         <AuthenticatedLayout>
             <Head title="Islamic School" />
@@ -14,7 +14,7 @@ const Dashboard = () => {
                     <span>Student</span>
                 </div>
             </div>
-            <DepartmentTabsSection />
+            <StudentSectionContainer department={department} students={students} filters={filters} sortOrder={sortOrder} />
         </AuthenticatedLayout>
     );
 };

@@ -9,7 +9,15 @@ const getBase64 = (file) =>
         reader.onerror = (error) => reject(error);
     });
 
-const FileUploadField = ({ control, fieldName, type = 'picture-card', className = 'rounded-lg bg-gray-300 w-fit', text, required = false }) => {
+const FileUploadField = ({
+    control,
+    fieldName,
+    type = 'picture-card',
+    className = 'rounded-lg bg-gray-300 w-fit',
+    text,
+    required = false,
+    ...props
+}) => {
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
     const [api, contextHolder] = notification.useNotification();
@@ -53,6 +61,7 @@ const FileUploadField = ({ control, fieldName, type = 'picture-card', className 
                     onPreview={handlePreview}
                     beforeUpload={handleBeforeUpload}
                     className={className}
+                    {...props}
                 >
                     <div className="group relative">
                         <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform text-black">{text}</span>
