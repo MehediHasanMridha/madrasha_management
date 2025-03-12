@@ -2,8 +2,13 @@
 
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\StudentController;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+
+Route::get('/migrate_database', function () {
+    Artisan::call('migrate:fresh');
+});
 
 Route::get('/', function () {
     return Inertia::render('Welcome');
