@@ -154,6 +154,7 @@ const TableUI = ({ dataSource, columns, deleteLoading = false, routeName, rowSel
                 showSizeChanger: true,
                 total: dataSource?.meta?.total,
             }}
+            bordered
             onChange={handleTableChange}
             scroll={{ x: 'max-content' }}
             locale={{

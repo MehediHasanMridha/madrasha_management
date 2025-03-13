@@ -2,6 +2,7 @@ import FieldSet from '@/Components/UI/FieldSet';
 import ModalUI from '@/Components/UI/ModalUI';
 import StaticBtn from '@/Components/UI/StaticBtn';
 import SubmitBtn from '@/Components/UI/SubmitBtn';
+import { router } from '@inertiajs/react';
 import { Controller } from 'react-hook-form';
 import { FaFilter, FaUserGroup } from 'react-icons/fa6';
 import { RiUserAddLine } from 'react-icons/ri';
@@ -25,6 +26,7 @@ const StudentSectionComponent = ({
     register,
     errors,
     control,
+    setIsLoading,
 }) => {
     const columns = [
         {
@@ -166,7 +168,7 @@ const StudentSectionComponent = ({
                                 defaultValue=""
                                 rules={{ required: 'Student Image is required' }}
                                 render={({ field: { ref, onChange } }) => (
-                                    <FileUploadField text={'Upload Student Image'} ref={ref} onChange={(e) => onChange(e.target.files)} />
+                                    <FileUploadField text={'Upload Student Image'} ref={ref} onChange={onChange} />
                                 )}
                             />
                         </Field>

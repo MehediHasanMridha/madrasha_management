@@ -5,6 +5,8 @@ use App\Http\Resources\showStudentData;
 use App\Models\Academic;
 use App\Models\Department;
 use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class DepartmentController extends Controller
@@ -54,5 +56,64 @@ class DepartmentController extends Controller
             'sortOrder'  => $order ?? null,
         ]);
 
+    }
+
+    public function departmentCreateView()
+    {
+        return Inertia::render('Department/AddDepartment');
+    }
+
+    public function departmentStore(Request $request)
+    {
+        $request->validate([
+            'name'        => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'image'       => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+        $department       = new Department();
+        $department->name = $request->name;
+        $department->slug = Str::slug($request->name) . '-' . uniqid();
+        $department->des  = $request->input('description');
+        $department->img  = $request->icon;
+
+        $department->save();
+
+        return redirect()->route('department')->with('success', 'Department created successfully.');
+    }
+
+    public function departmentEditView($slug)
+    {
+        $department = Department::where('slug', $slug)->firstOrFail();
+        return Inertia::render('Department/EditDepartment', [
+            'department' => $department,
+        ]);
+    }
+
+    public function departmentUpdate(Request $request, $slug)
+    {
+        $request->validate([
+            'name'        => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'image'       => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+        $department       = Department::where('slug', $slug)->firstOrFail();
+        $department->name = $request->name;
+        $department->slug = Str::slug($request->name) . '-' . uniqid();
+        $department->des  = $request->input('description');
+        $department->img  = $request->icon;
+
+        $department->save();
+
+        return redirect()->route('department')->with('success', 'Department updated successfully.');
+    }
+
+    public function departmentDelete($slug)
+    {
+        $department = Department::where('slug', $slug)->firstOrFail();
+        $department->delete();
+
+        return redirect()->route('department')->with('success', 'Department deleted successfully.');
     }
 }
