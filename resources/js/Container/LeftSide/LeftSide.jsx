@@ -1,18 +1,16 @@
 import CollapseIcon from '@/assets/images/collapse.svg';
 import Dashboard from '@/assets/images/dashboard.svg';
 import Finance from '@/assets/images/finance.svg';
-import hifjo_bivag from '@/assets/images/hifjo_bivag.svg';
 import Islamic_School from '@/assets/images/islamic_school.svg';
-import kitab_bivag from '@/assets/images/kitab_bivag.svg';
 import Logo from '@/assets/images/logo.png';
 import logout from '@/assets/images/logout.svg';
-import madani from '@/assets/images/madani.svg';
 import setting from '@/assets/images/setting.svg';
 import SideBarUI from '@/Components/UI/SideBarUI';
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 
 const LeftSide = () => {
+    const { departments } = usePage().props;
     const [collapsed, setCollapsed] = useState(false);
     const handleCollapsed = () => {
         setCollapsed(!collapsed);
@@ -66,18 +64,20 @@ const LeftSide = () => {
                 <SideBarUI.Text collapsed={collapsed}>Campus</SideBarUI.Text>
                 <hr className="h-[0.5px] w-full bg-[#AFAFAF]" />
             </div>
-            <Link href={route('department.view', 'Islamic_School')} className="w-full cursor-pointer" as="button">
-                <SideBarUI.Item
-                    collapsed={collapsed}
-                    className={`flex h-[64px] items-center space-x-[12px] px-[50px] ${route().current('department.view', 'Islamic_School') && 'bg-[#F2F2F2]'} hover:bg-[#F2F2F2]`}
-                >
-                    <SideBarUI.Icon>
-                        <img src={Islamic_School} alt="Islamic_School}" className="h-[24px] w-[24px]" />
-                    </SideBarUI.Icon>
-                    <SideBarUI.Text collapsed={collapsed}>Islamic School</SideBarUI.Text>
-                </SideBarUI.Item>
-            </Link>
-            <SideBarUI.Item collapsed={collapsed} className="flex h-[64px] items-center space-x-[12px] px-[50px] hover:bg-[#F2F2F2]">
+            {departments?.map((department) => (
+                <Link key={department.id} href={route('department.view', department.slug)} className="w-full cursor-pointer" as="button">
+                    <SideBarUI.Item
+                        collapsed={collapsed}
+                        className={`flex h-[64px] items-center space-x-[12px] px-[50px] ${route().current('department.view', department.slug) && 'bg-[#F2F2F2]'} hover:bg-[#F2F2F2]`}
+                    >
+                        <SideBarUI.Icon>
+                            <img src={Islamic_School} alt="Islamic_School}" className="h-[24px] w-[24px]" />
+                        </SideBarUI.Icon>
+                        <SideBarUI.Text collapsed={collapsed}>{department.name}</SideBarUI.Text>
+                    </SideBarUI.Item>
+                </Link>
+            ))}
+            {/* <SideBarUI.Item collapsed={collapsed} className="flex h-[64px] items-center space-x-[12px] px-[50px] hover:bg-[#F2F2F2]">
                 <SideBarUI.Icon>
                     <img src={hifjo_bivag} alt="Hifjo Bivag" className="h-[24px] w-[24px]" />
                 </SideBarUI.Icon>
@@ -94,7 +94,7 @@ const LeftSide = () => {
                     <img src={madani} alt="madani" className="h-[24px] w-[24px]" />
                 </SideBarUI.Icon>
                 <SideBarUI.Text collapsed={collapsed}>Madani nesab</SideBarUI.Text>
-            </SideBarUI.Item>
+            </SideBarUI.Item> */}
             <div className={`my-2 flex items-center space-x-[12px] ${collapsed ? 'pl-0' : 'pl-[24px]'}`}>
                 <SideBarUI.Text collapsed={collapsed} className="w-[120px]">
                     Mobile app

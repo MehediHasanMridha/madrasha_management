@@ -85,6 +85,7 @@ const StudentSectionContainer = ({ department, students, filters, sortOrder }) =
             register={register}
             errors={errors}
             control={control}
+            setIsLoading={setIsLoading}
         />
     );
 };
