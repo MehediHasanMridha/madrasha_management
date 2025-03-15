@@ -2,7 +2,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\showStudentData;
-use App\Models\Academic;
 use App\Models\Department;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -21,14 +20,23 @@ class DepartmentController extends Controller
         $search    = request()->input('search', '');
 
         $department = Department::with('classes')->where('slug', $department_slug)->firstOrFail();
-        $students   = Academic::query();
-        $students->with('student', 'class')->where('department_id', $department->id);
+        $students   = User::whereHas('academics', function ($q) use ($department) {
+            $q->where('department_id', $department->id);
+        })
+            ->whereHas('roles', function ($q) {
+                $q->where('name', 'student');
+            })
+            ->with(['academics.class', 'academics.department']);
 
         foreach ($filters as $field => $value) {
             if (is_array($value)) {
-                $students->whereIn($field, $value);
+                $students->whereHas('academics', function ($q) use ($field, $value) {
+                    $q->whereIn($field, $value);
+                });
             } else {
-                $students->where($field, $value);
+                $students->whereHas('academics', function ($q) use ($field, $value) {
+                    $q->where($field, $value);
+                });
             }
         }
 
@@ -41,13 +49,10 @@ class DepartmentController extends Controller
 
         if (request()->has('order')) {
             $order = request()->input('order');
-            $students->orderBy(User::select('name')->whereColumn('users.id', 'academics.user_id'), $order);
+            $students->orderBy($sortField, $order);
         } else {
-            $students->orderBy('created_at', 'desc');
+            $students->orderBy($sortField, 'desc');
         }
-
-        // $studentData = $students->paginate($per_page, ['*'], 'page', $page);
-        // return $studentData;
 
         return Inertia::render('Department/Dashboard', [
             'department' => $department,

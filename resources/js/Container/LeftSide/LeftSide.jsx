@@ -8,7 +8,7 @@ import setting from '@/assets/images/setting.svg';
 import SideBarUI from '@/Components/UI/SideBarUI';
 import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
-
+import { FaChalkboardTeacher } from 'react-icons/fa';
 const LeftSide = () => {
     const { departments } = usePage().props;
     const [collapsed, setCollapsed] = useState(false);
@@ -111,6 +111,14 @@ const LeftSide = () => {
                 <SideBarUI.Text collapsed={collapsed}>System</SideBarUI.Text>
                 <hr className="h-[0.5px] w-full bg-[#AFAFAF]" />
             </div>
+            <Link as="button" className="w-full cursor-pointer" href={route('staff.index')}>
+                <SideBarUI.Item collapsed={collapsed} className="flex h-[64px] items-center space-x-[12px] px-[50px] hover:bg-[#F2F2F2]">
+                    <SideBarUI.Icon>
+                        <FaChalkboardTeacher className="h-[24px] w-[24px] text-blue-500" />
+                    </SideBarUI.Icon>
+                    <SideBarUI.Text collapsed={collapsed}>Staff</SideBarUI.Text>
+                </SideBarUI.Item>
+            </Link>
             <SideBarUI.Item collapsed={collapsed} className="flex h-[64px] items-center space-x-[12px] px-[50px] hover:bg-[#F2F2F2]">
                 <SideBarUI.Icon>
                     <img src={setting} alt="Setting" className="h-[24px] w-[24px]" />

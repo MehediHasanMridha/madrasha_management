@@ -1,32 +1,29 @@
+import Field from '@/Components/UI/Field';
 import FieldSet from '@/Components/UI/FieldSet';
+import FileUploadField from '@/Components/UI/FileUploadField';
 import ModalUI from '@/Components/UI/ModalUI';
 import StaticBtn from '@/Components/UI/StaticBtn';
 import SubmitBtn from '@/Components/UI/SubmitBtn';
+import TableUI from '@/Components/UI/TableUI';
 import { router } from '@inertiajs/react';
 import { Controller } from 'react-hook-form';
-import { FaFilter } from 'react-icons/fa6';
 import { RiUserAddLine } from 'react-icons/ri';
-import Field from '../../Components/UI/Field';
-import FileUploadField from '../../Components/UI/FileUploadField';
-import TableUI from '../../Components/UI/TableUI';
 
-const StudentSectionComponent = ({
-    contextHolder,
-    department,
-    students,
-    filters,
-    sortOrder,
+const StaffListComponent = ({
+    setIsModalOpen,
     isModalOpen,
     isLoading,
     handleOk,
     handleCancel,
-    setIsModalOpen,
     handleSubmit,
     onSubmit,
     register,
     errors,
     control,
     setIsLoading,
+    sortOrder,
+    staff,
+    filters,
 }) => {
     const columns = [
         {
@@ -42,16 +39,29 @@ const StudentSectionComponent = ({
             sorter: true,
             defaultSortOrder: sortOrder === 'asc' ? 'ascend' : sortOrder === 'desc' ? 'descend' : undefined,
         },
+        // {
+        //     title: 'Age',
+        //     dataIndex: 'age',
+        //     key: 'age',
+        //     filters: [
+        //         { text: 'Joe', value: 'Joe' },
+        //         { text: 'Jim', value: 'Jim' },
+        //         {
+        //             text: 'Submenu',
+        //             value: 'Submenu',
+        //             children: [{ text: 'Green', value: 'Green' }],
+        //         },
+        //     ],
+        //     filteredValue: ['Jim'],
+        //     filterIcon: (filtered) => {
+        //         console.log('🚀 ~ filtered:', filtered);
+        //         return <FaFilter className={`text-xl ${filtered ? 'text-red-500' : ''}`} />;
+        //     },
+        // },
         {
-            title: 'Class',
-            dataIndex: 'class',
-            key: 'class_id',
-            filters: department.classes.map((item) => ({
-                text: item.name,
-                value: item.id,
-            })),
-            filteredValue: filters.class_id,
-            filterIcon: (filtered) => <FaFilter className={`text-xl ${filtered ? 'text-red-500' : ''}`} />,
+            title: 'Address',
+            dataIndex: 'address',
+            key: 'address',
         },
         {
             title: 'Action',
@@ -65,21 +75,20 @@ const StudentSectionComponent = ({
             ),
         },
     ];
+
     return (
         <>
-            {contextHolder}
             <div className="mt-[8px] flex w-full flex-col items-end space-y-5 rounded-[8px] bg-white p-[24px] text-center">
                 <StaticBtn onClick={() => setIsModalOpen(true)}>
-                    <RiUserAddLine className="inline-flex" /> <span>Add Student</span>
+                    <RiUserAddLine className="inline-flex" /> <span>Add Staff</span>
                 </StaticBtn>
                 <TableUI
-                    dataSource={students}
                     columns={columns}
+                    dataSource={staff}
                     className="w-full"
                     onChange={(pagination, filters, sorter) => {
                         router.get(
-                            route('department.view', {
-                                department_slug: department.slug,
+                            route('staff.index', {
                                 page: pagination.current,
                                 per_page: pagination.pageSize,
                                 order: sorter?.order === 'ascend' ? 'asc' : sorter?.order === 'descend' ? 'desc' : undefined,
@@ -241,11 +250,11 @@ const StudentSectionComponent = ({
                                 {...register('joining_class', { required: 'Joining Class is required' })}
                             >
                                 <option value="">Select Joining Class</option>
-                                {department.classes.map((classItem) => (
+                                {/* {department.classes.map((classItem) => (
                                     <option value={classItem.id} key={classItem.id}>
                                         {classItem.name}
                                     </option>
-                                ))}
+                                ))} */}
                             </select>
                         </Field>
                         <Field label={'Boarding fee (Optional)'}>
@@ -287,4 +296,4 @@ const StudentSectionComponent = ({
     );
 };
 
-export default StudentSectionComponent;
+export default StaffListComponent;

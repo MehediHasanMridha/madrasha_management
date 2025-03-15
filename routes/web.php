@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ClassController;
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\StaffController;
 use App\Http\Controllers\StudentController;
 use App\Models\Classes;
 use App\Models\Department;
@@ -60,6 +61,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
     Route::get("/department/{department_slug}", [DepartmentController::class, "view"])->name("department.view");
     Route::post("/department/{department_slug}/add_student", [StudentController::class, "add_student"])->name("student.add_student");
+
+    //staff
+    Route::get("/staff", [StaffController::class, "index"])->name("staff.index");
 });
 
 require __DIR__ . '/settings.php';
