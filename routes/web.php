@@ -64,6 +64,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     //staff
     Route::get("/staff", [StaffController::class, "index"])->name("staff.index");
+    Route::post("/staff/add", [StaffController::class, "store"])->name("staff.store");
 });
 
 require __DIR__ . '/settings.php';

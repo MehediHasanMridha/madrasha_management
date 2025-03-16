@@ -6,6 +6,7 @@ import Logo from '@/assets/images/logo.png';
 import logout from '@/assets/images/logout.svg';
 import setting from '@/assets/images/setting.svg';
 import SideBarUI from '@/Components/UI/SideBarUI';
+import { cn } from '@/lib/utils';
 import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import { FaChalkboardTeacher } from 'react-icons/fa';
@@ -112,7 +113,13 @@ const LeftSide = () => {
                 <hr className="h-[0.5px] w-full bg-[#AFAFAF]" />
             </div>
             <Link as="button" className="w-full cursor-pointer" href={route('staff.index')}>
-                <SideBarUI.Item collapsed={collapsed} className="flex h-[64px] items-center space-x-[12px] px-[50px] hover:bg-[#F2F2F2]">
+                <SideBarUI.Item
+                    collapsed={collapsed}
+                    className={cn(
+                        'flex h-[64px] items-center space-x-[12px] px-[50px] hover:bg-[#F2F2F2]',
+                        route().current('staff.index') && 'bg-[#F2F2F2]',
+                    )}
+                >
                     <SideBarUI.Icon>
                         <FaChalkboardTeacher className="h-[24px] w-[24px] text-blue-500" />
                     </SideBarUI.Icon>

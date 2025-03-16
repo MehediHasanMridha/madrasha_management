@@ -111,11 +111,11 @@ const StaffListComponent = ({
                 handleOk={handleOk}
                 handleCancel={handleCancel}
                 width={'80%'}
-                title="Add Student"
+                title="Add Staff"
                 footer={() => (
                     <SubmitBtn
                         loadingIndicator={isLoading}
-                        btnText={'Add Student'}
+                        btnText={'Add Staff'}
                         className="cursor-pointer bg-blue-400"
                         onClick={handleSubmit(onSubmit)}
                     />
@@ -123,20 +123,29 @@ const StaffListComponent = ({
             >
                 <form className="max-h-[70vh] overflow-y-scroll">
                     <FieldSet label={'Personal Information'} labelClassName="text-[16px] font-bold" hr={true}>
-                        <Field error={errors.name} label={'Student Name'}>
+                        <Field error={errors.staff_image}>
+                            <Controller
+                                name="staff_image"
+                                control={control}
+                                defaultValue=""
+                                rules={{ required: 'Image is required' }}
+                                render={({ field: { ref, onChange } }) => (
+                                    <FileUploadField
+                                        type="picture-circle"
+                                        className="rounded-full"
+                                        text={'Upload Image'}
+                                        ref={ref}
+                                        onChange={onChange}
+                                    />
+                                )}
+                            />
+                        </Field>
+                        <Field error={errors.name} label={'Staff Name'}>
                             <input
                                 type="text"
                                 className="rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
                                 placeholder="Enter Student Name"
                                 {...register('name', { required: 'Name is required' })}
-                            />
-                        </Field>
-                        <Field label={'Student ID'} error={errors.student_id}>
-                            <input
-                                type="text"
-                                className="rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
-                                placeholder="Enter Student ID"
-                                {...register('student_id', { required: 'Student ID is required' })}
                             />
                         </Field>
                         <Field label={'Blood Group'} error={errors.blood_group}>
@@ -162,23 +171,6 @@ const StaffListComponent = ({
                                 className="rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
                                 placeholder="Enter Contact Number"
                                 {...register('contact_number', { required: 'Contact Number is required' })}
-                            />
-                        </Field>
-                        <Field error={errors.student_image}>
-                            <Controller
-                                name="student_image"
-                                control={control}
-                                defaultValue=""
-                                rules={{ required: 'Student Image is required' }}
-                                render={({ field: { ref, onChange } }) => (
-                                    <FileUploadField
-                                        type="picture-circle"
-                                        className="rounded-full"
-                                        text={'Upload Image'}
-                                        ref={ref}
-                                        onChange={onChange}
-                                    />
-                                )}
                             />
                         </Field>
                     </FieldSet>
@@ -243,13 +235,18 @@ const StaffListComponent = ({
                         </Field>
                     </FieldSet>
                     <FieldSet label={'Academic information'} labelClassName="text-[16px] font-bold" hr={true}>
-                        <Field label={'Joining Class'} error={errors.joining_class}>
+                        <Field label={'Joining Role'} error={errors.designation}>
                             <select
-                                name="joining_class"
+                                name="designation"
                                 className="w-full rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
-                                {...register('joining_class', { required: 'Joining Class is required' })}
+                                {...register('designation', { required: 'Joining Role is required' })}
                             >
-                                <option value="">Select Joining Class</option>
+                                <option value="">Select Joining role</option>
+                                <option value="math_teacher">Math Teacher</option>
+                                <option value="arabic_teacher">Arabic Teacher</option>
+                                <option value="english_teacher">English Teacher</option>
+                                <option value="bangla_teacher">Bangla Teacher</option>
+                                <option value="tajweed_teacher">Tajweed Teacher</option>
                                 {/* {department.classes.map((classItem) => (
                                     <option value={classItem.id} key={classItem.id}>
                                         {classItem.name}
@@ -257,20 +254,12 @@ const StaffListComponent = ({
                                 ))} */}
                             </select>
                         </Field>
-                        <Field label={'Boarding fee (Optional)'}>
+                        <Field label={'Fixed Salary'}>
                             <input
                                 type="text"
                                 className="rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
-                                placeholder="Enter Boarding fee"
-                                {...register('boarding_fee')}
-                            />
-                        </Field>
-                        <Field label={'Academic fee (Optional)'}>
-                            <input
-                                type="text"
-                                className="rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
-                                placeholder="Enter Academic fee"
-                                {...register('academic_fee')}
+                                placeholder="Enter Fixed Salary"
+                                {...register('salary', { required: 'Fixed Salary is required' })}
                             />
                         </Field>
                         <Field label={'Reference (Optional)'}>
