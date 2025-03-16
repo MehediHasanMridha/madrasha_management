@@ -1,3 +1,4 @@
+import { cn } from '@/lib/utils';
 import { ConfigProvider, Image, notification, Upload } from 'antd';
 import { useState } from 'react';
 
@@ -9,15 +10,7 @@ const getBase64 = (file) =>
         reader.onerror = (error) => reject(error);
     });
 
-const FileUploadField = ({
-    control,
-    fieldName,
-    type = 'picture-card',
-    className = 'rounded-lg bg-gray-300 w-fit',
-    text,
-    required = false,
-    ...props
-}) => {
+const FileUploadField = ({ control, fieldName, type = 'picture-card', className, text, required = false, ...props }) => {
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
     const [api, contextHolder] = notification.useNotification();
@@ -56,11 +49,11 @@ const FileUploadField = ({
             >
                 <Upload
                     name={fieldName}
-                    listType={type} // "picture" | "picture-card"
+                    listType={type} // "picture-circle" | "picture-card"
                     maxCount={1}
                     onPreview={handlePreview}
                     beforeUpload={handleBeforeUpload}
-                    className={className}
+                    className={cn('w-fit rounded-lg bg-gray-300', className)}
                     {...props}
                 >
                     <div className="group relative">

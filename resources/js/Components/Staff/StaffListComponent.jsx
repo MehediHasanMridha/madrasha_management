@@ -1,32 +1,29 @@
+import Field from '@/Components/UI/Field';
 import FieldSet from '@/Components/UI/FieldSet';
+import FileUploadField from '@/Components/UI/FileUploadField';
 import ModalUI from '@/Components/UI/ModalUI';
 import StaticBtn from '@/Components/UI/StaticBtn';
 import SubmitBtn from '@/Components/UI/SubmitBtn';
+import TableUI from '@/Components/UI/TableUI';
 import { router } from '@inertiajs/react';
 import { Controller } from 'react-hook-form';
-import { FaFilter } from 'react-icons/fa6';
 import { RiUserAddLine } from 'react-icons/ri';
-import Field from '../../Components/UI/Field';
-import FileUploadField from '../../Components/UI/FileUploadField';
-import TableUI from '../../Components/UI/TableUI';
 
-const StudentSectionComponent = ({
-    contextHolder,
-    department,
-    students,
-    filters,
-    sortOrder,
+const StaffListComponent = ({
+    setIsModalOpen,
     isModalOpen,
     isLoading,
     handleOk,
     handleCancel,
-    setIsModalOpen,
     handleSubmit,
     onSubmit,
     register,
     errors,
     control,
     setIsLoading,
+    sortOrder,
+    staff,
+    filters,
 }) => {
     const columns = [
         {
@@ -42,16 +39,29 @@ const StudentSectionComponent = ({
             sorter: true,
             defaultSortOrder: sortOrder === 'asc' ? 'ascend' : sortOrder === 'desc' ? 'descend' : undefined,
         },
+        // {
+        //     title: 'Age',
+        //     dataIndex: 'age',
+        //     key: 'age',
+        //     filters: [
+        //         { text: 'Joe', value: 'Joe' },
+        //         { text: 'Jim', value: 'Jim' },
+        //         {
+        //             text: 'Submenu',
+        //             value: 'Submenu',
+        //             children: [{ text: 'Green', value: 'Green' }],
+        //         },
+        //     ],
+        //     filteredValue: ['Jim'],
+        //     filterIcon: (filtered) => {
+        //         console.log('🚀 ~ filtered:', filtered);
+        //         return <FaFilter className={`text-xl ${filtered ? 'text-red-500' : ''}`} />;
+        //     },
+        // },
         {
-            title: 'Class',
-            dataIndex: 'class',
-            key: 'class_id',
-            filters: department.classes.map((item) => ({
-                text: item.name,
-                value: item.id,
-            })),
-            filteredValue: filters.class_id,
-            filterIcon: (filtered) => <FaFilter className={`text-xl ${filtered ? 'text-red-500' : ''}`} />,
+            title: 'Address',
+            dataIndex: 'address',
+            key: 'address',
         },
         {
             title: 'Action',
@@ -65,21 +75,20 @@ const StudentSectionComponent = ({
             ),
         },
     ];
+
     return (
         <>
-            {contextHolder}
             <div className="mt-[8px] flex w-full flex-col items-end space-y-5 rounded-[8px] bg-white p-[24px] text-center">
                 <StaticBtn onClick={() => setIsModalOpen(true)}>
-                    <RiUserAddLine className="inline-flex" /> <span>Add Student</span>
+                    <RiUserAddLine className="inline-flex" /> <span>Add Staff</span>
                 </StaticBtn>
                 <TableUI
-                    dataSource={students}
                     columns={columns}
+                    dataSource={staff}
                     className="w-full"
                     onChange={(pagination, filters, sorter) => {
                         router.get(
-                            route('department.view', {
-                                department_slug: department.slug,
+                            route('staff.index', {
                                 page: pagination.current,
                                 per_page: pagination.pageSize,
                                 order: sorter?.order === 'ascend' ? 'asc' : sorter?.order === 'descend' ? 'desc' : undefined,
@@ -102,11 +111,11 @@ const StudentSectionComponent = ({
                 handleOk={handleOk}
                 handleCancel={handleCancel}
                 width={'80%'}
-                title="Add Student"
+                title="Add Staff"
                 footer={() => (
                     <SubmitBtn
                         loadingIndicator={isLoading}
-                        btnText={'Add Student'}
+                        btnText={'Add Staff'}
                         className="cursor-pointer bg-blue-400"
                         onClick={handleSubmit(onSubmit)}
                     />
@@ -114,20 +123,29 @@ const StudentSectionComponent = ({
             >
                 <form className="max-h-[70vh] overflow-y-scroll">
                     <FieldSet label={'Personal Information'} labelClassName="text-[16px] font-bold" hr={true}>
-                        <Field error={errors.name} label={'Student Name'}>
+                        <Field error={errors.staff_image}>
+                            <Controller
+                                name="staff_image"
+                                control={control}
+                                defaultValue=""
+                                rules={{ required: 'Image is required' }}
+                                render={({ field: { ref, onChange } }) => (
+                                    <FileUploadField
+                                        type="picture-circle"
+                                        className="rounded-full"
+                                        text={'Upload Image'}
+                                        ref={ref}
+                                        onChange={onChange}
+                                    />
+                                )}
+                            />
+                        </Field>
+                        <Field error={errors.name} label={'Staff Name'}>
                             <input
                                 type="text"
                                 className="rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
                                 placeholder="Enter Student Name"
                                 {...register('name', { required: 'Name is required' })}
-                            />
-                        </Field>
-                        <Field label={'Student ID'} error={errors.student_id}>
-                            <input
-                                type="text"
-                                className="rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
-                                placeholder="Enter Student ID"
-                                {...register('student_id', { required: 'Student ID is required' })}
                             />
                         </Field>
                         <Field label={'Blood Group'} error={errors.blood_group}>
@@ -153,23 +171,6 @@ const StudentSectionComponent = ({
                                 className="rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
                                 placeholder="Enter Contact Number"
                                 {...register('contact_number', { required: 'Contact Number is required' })}
-                            />
-                        </Field>
-                        <Field error={errors.student_image}>
-                            <Controller
-                                name="student_image"
-                                control={control}
-                                defaultValue=""
-                                rules={{ required: 'Student Image is required' }}
-                                render={({ field: { ref, onChange } }) => (
-                                    <FileUploadField
-                                        type="picture-circle"
-                                        className="rounded-full"
-                                        text={'Upload Image'}
-                                        ref={ref}
-                                        onChange={onChange}
-                                    />
-                                )}
                             />
                         </Field>
                     </FieldSet>
@@ -234,34 +235,31 @@ const StudentSectionComponent = ({
                         </Field>
                     </FieldSet>
                     <FieldSet label={'Academic information'} labelClassName="text-[16px] font-bold" hr={true}>
-                        <Field label={'Joining Class'} error={errors.joining_class}>
+                        <Field label={'Joining Role'} error={errors.designation}>
                             <select
-                                name="joining_class"
+                                name="designation"
                                 className="w-full rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
-                                {...register('joining_class', { required: 'Joining Class is required' })}
+                                {...register('designation', { required: 'Joining Role is required' })}
                             >
-                                <option value="">Select Joining Class</option>
-                                {department.classes.map((classItem) => (
+                                <option value="">Select Joining role</option>
+                                <option value="math_teacher">Math Teacher</option>
+                                <option value="arabic_teacher">Arabic Teacher</option>
+                                <option value="english_teacher">English Teacher</option>
+                                <option value="bangla_teacher">Bangla Teacher</option>
+                                <option value="tajweed_teacher">Tajweed Teacher</option>
+                                {/* {department.classes.map((classItem) => (
                                     <option value={classItem.id} key={classItem.id}>
                                         {classItem.name}
                                     </option>
-                                ))}
+                                ))} */}
                             </select>
                         </Field>
-                        <Field label={'Boarding fee (Optional)'}>
+                        <Field label={'Fixed Salary'}>
                             <input
                                 type="text"
                                 className="rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
-                                placeholder="Enter Boarding fee"
-                                {...register('boarding_fee')}
-                            />
-                        </Field>
-                        <Field label={'Academic fee (Optional)'}>
-                            <input
-                                type="text"
-                                className="rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
-                                placeholder="Enter Academic fee"
-                                {...register('academic_fee')}
+                                placeholder="Enter Fixed Salary"
+                                {...register('salary', { required: 'Fixed Salary is required' })}
                             />
                         </Field>
                         <Field label={'Reference (Optional)'}>
@@ -287,4 +285,4 @@ const StudentSectionComponent = ({
     );
 };
 
-export default StudentSectionComponent;
+export default StaffListComponent;

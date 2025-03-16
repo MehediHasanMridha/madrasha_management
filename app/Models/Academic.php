@@ -8,7 +8,9 @@ class Academic extends Model
     //
     public function student()
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class, 'user_id')->whereHas('roles', function ($q) {
+            $q->where('name', 'student');
+        });
     }
 
     public function department()

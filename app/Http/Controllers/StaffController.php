@@ -1,0 +1,119 @@
+<?php
+namespace App\Http\Controllers;
+
+use App\Models\Academic;
+use App\Models\Address;
+use App\Models\Guardian;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Inertia\Inertia;
+use Spatie\Permission\Models\Role;
+
+class StaffController extends Controller
+{
+    public function index()
+    {
+        $page      = request()->input('page', 1);
+        $per_page  = request()->input('per_page', 10);
+        $sortField = request()->input('sort_field', 'created_at');
+        $filters   = request()->input('filters', []);
+        $search    = request()->input('search', '');
+
+        $staff = User::with('academics')->whereHas('roles', function ($q) {
+            $q->where('name', 'staff');
+        });
+
+        foreach ($filters as $field => $value) {
+            if (is_array($value)) {
+                $staff->whereHas('roles', function ($q) use ($field, $value) {
+                    $q->whereIn($field, $value);
+                });
+            } else {
+                $staff->whereHas('roles', function ($q) use ($field, $value) {
+                    $q->where($field, $value);
+                });
+            }
+        }
+
+        if ($search) {
+            $staff->where(function ($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('email', 'like', '%' . $search . '%');
+            });
+        }
+
+        if (request()->has('order')) {
+            $order = request()->input('order');
+            $staff->orderBy($sortField, $order);
+        } else {
+            $staff->orderBy($sortField, 'desc');
+        }
+
+        // return $staff->get();
+
+        return Inertia::render('Staff/StaffList', [
+            'staff'     => Inertia::defer(fn() => $staff->paginate($per_page, ['*'], 'page', $page)),
+            'filters'   => $filters,
+            'sortOrder' => $order ?? null,
+        ]);
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name'                    => 'required|string|max:120',
+            'blood_group'             => 'required|in:O+,O-,A+,A-,B+,B-,AB+,AB-',
+            'contact_number'          => 'required|string|max:14|unique:users,phone',
+            'father_name'             => 'required|string|max:120',
+            'guardian_contact_number' => 'required|string|max:14',
+            'district'                => 'required|string|max:120',
+            'upazilla'                => 'required|string|max:120',
+            'designation'             => 'required',
+        ], [
+            'contact_number.unique' => 'This contact number already exists',
+        ]);
+
+        $staff           = new User();
+        $staff->name     = $request->name;
+        $staff->phone    = $request->contact_number;
+        $staff->password = Hash::make('12345678');
+        $staff->save();
+
+        $role = Role::where('name', 'staff')->first();
+        if ($role) {
+            $staff->assignRole($role);
+        } else {
+            $role = Role::create(['name' => 'staff']);
+            $staff->assignRole($role);
+        }
+
+        $address           = new Address();
+        $address->user_id  = $staff->id;
+        $address->district = $request->district;
+        $address->upazilla = $request->upazilla;
+        $address->location = $request->location ?? null;
+        $address->save();
+
+        $guardian              = new Guardian();
+        $guardian->user_id     = $staff->id;
+        $guardian->father_name = $request->father_name ?? null;
+        $guardian->mother_name = $request->mother_name ?? null;
+        $guardian->numbers     = json_encode([
+            $request->guardian_contact_number,
+        ]);
+        $guardian->save();
+
+        $academic                   = new Academic();
+        $academic->user_id          = $staff->id;
+        $academic->blood            = $request->blood_group ?? null;
+        $academic->reference        = $request->reference ?? null;
+        $academic->reference_number = $request->reference_number ?? null;
+        $academic->designation      = $request->designation;
+        $academic->department_id    = $request->department_id;
+        $academic->save();
+
+        return back()->with('success', 'Staff added successfully');
+
+    }
+}
