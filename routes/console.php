@@ -10,4 +10,4 @@ Artisan::command('inspire', function () {
 
 Schedule::call(function () {
     Artisan::call("backup:run");
-})->everyFiveSeconds();
+})->everyFiveMinutes();
