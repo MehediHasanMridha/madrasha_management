@@ -1,12 +1,12 @@
 import React from 'react';
 import { cn } from '../../lib/utils';
 
-const Field = ({ label, children, htmlFor, error, className = '' }) => {
+const Field = ({ label, children, htmlFor, error, className = '', labelClassName }) => {
     const id = htmlFor || getChildId(children);
     return (
         <div className={cn('my-2 flex flex-col', className)}>
             {label && (
-                <label htmlFor={id} className="mb-1">
+                <label htmlFor={id} className={cn('mb-1', labelClassName)}>
                     {label}
                 </label>
             )}
