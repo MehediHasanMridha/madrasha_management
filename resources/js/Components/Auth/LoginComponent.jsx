@@ -1,5 +1,5 @@
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { Button } from '@/Components/UI/button';
+import { Card } from '@/Components/UI/card';
 import Field from '../UI/Field';
 const LoginComponent = ({ handleSubmit, setData, loginImg1, loginImg2 }) => {
     return (
