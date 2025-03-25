@@ -20,22 +20,7 @@ jobs:
             # # composer install
             - name: Composer install
               run: composer install
-
-            # upload vendor folder to artifact
-            - name: Upload vendor folder
-              uses: actions/upload-artifact@v4
-              with:
-                  name: vendor
-                  path: vendor/
-
-    deploy:
-        runs-on: ubuntu-latest
-        needs: build
-        steps:
-            - name: Checkout code
-              uses:
-                  actions/checkout@v4
-                  # # add nodejs & npm
+            # # add nodejs & npm
             - name: Setup Node.js
               uses: actions/setup-node@v4
               with:
@@ -46,12 +31,6 @@ jobs:
             # # npm build
             - name: NPM build
               run: npm run build
-            # download vendor folder from artifact
-            - name: Download vendor folder
-              uses: actions/download-artifact@v4
-              with:
-                  name: vendor
-                  path: vendor/
             # deploy to server without vendor & node_modules folder
             - name: 📂 Sync files
               uses: SamKirkland/FTP-Deploy-Action@v4.3.4
@@ -64,4 +43,4 @@ jobs:
                       **/.git*
                       **/.git*/**
                       **/node_modules/**
-            # **/vendor/**
+                  # **/vendor/**
