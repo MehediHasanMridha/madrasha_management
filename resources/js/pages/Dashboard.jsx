@@ -6,16 +6,6 @@ export default function Dashboard({ data, auth }) {
         <AuthenticatedLayout>
             <Head title="Dashboard" />
             <div className="bg-[#F6F6F6 ] rounded-3xl px-[50px]">
-                {/* <div className="py-[24px]">
-                    <div className="inline-flex h-6 items-center justify-start gap-0.5">
-                        <img src={LeftArrow} alt="arrow" className="h-[24px] w-[24px]" />
-                        <div className="inline-flex space-x-0.5 text-base font-normal text-[#afafaf]">
-                            <span>Islamic school</span>
-                            <span>/</span>
-                            <span>Statistics</span>
-                        </div>
-                    </div>
-                </div> */}
                 <div className="space-y-[20px]">
                     <div className="rounded-[8px] bg-white p-[24px]">
                         <div className="text-[24px] font-[500]">Assalamu Alaikum {auth.user.name} !</div>
