@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Http\Resources\showStaffData;
 use App\Models\Academic;
 use App\Models\Address;
 use App\Models\Guardian;
@@ -20,7 +21,7 @@ class StaffController extends Controller
         $filters   = request()->input('filters', []);
         $search    = request()->input('search', '');
 
-        $staff = User::with('academics')->whereHas('roles', function ($q) {
+        $staff = User::with(['academics', 'guardians'])->whereHas('roles', function ($q) {
             $q->where('name', 'staff');
         });
 
@@ -53,7 +54,7 @@ class StaffController extends Controller
         // return $staff->get();
 
         return Inertia::render('Staff/StaffList', [
-            'staff'     => Inertia::defer(fn() => $staff->paginate($per_page, ['*'], 'page', $page)),
+            'staff'     => Inertia::defer(fn() => showStaffData::collection($staff->paginate($per_page, ['*'], 'page', $page))),
             'filters'   => $filters,
             'sortOrder' => $order ?? null,
         ]);
@@ -70,13 +71,19 @@ class StaffController extends Controller
             'district'                => 'required|string|max:120',
             'upazilla'                => 'required|string|max:120',
             'designation'             => 'required',
+            'staff_image'             => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ], [
             'contact_number.unique' => 'This contact number already exists',
         ]);
 
-        $staff           = new User();
-        $staff->name     = $request->name;
-        $staff->phone    = $request->contact_number;
+        $staff        = new User();
+        $staff->name  = $request->name;
+        $staff->phone = $request->contact_number;
+        if ($request->hasFile('staff_image')) {
+            $img        = uploadImage($staff->img, $request->file('staff_image'), 'uploads/staff_images/');
+            $staff->img = $img;
+        }
+
         $staff->password = Hash::make('12345678');
         $staff->save();
 
