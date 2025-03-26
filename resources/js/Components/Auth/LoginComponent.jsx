@@ -1,10 +1,14 @@
 import { Button } from '@/Components/UI/button';
 import { Card } from '@/Components/UI/card';
+import { IoMdArrowBack } from 'react-icons/io';
 import Field from '../UI/Field';
 const LoginComponent = ({ handleSubmit, setData, loginImg1, loginImg2 }) => {
     return (
         <div className="flex h-screen w-full bg-[#f6f6f6]">
             <div className="relative hidden h-full w-[30%] md:block">
+                <span className="absolute top-5 left-5 flex h-15 w-15 items-center justify-center rounded-full bg-[#FFFFFF1F]">
+                    <IoMdArrowBack className="cursor-pointer text-2xl text-white" onClick={() => window.history.back()} />
+                </span>
                 <img className="h-screen w-full object-cover" alt="Element quran islam" src={loginImg1} />
             </div>
             <div className="flex h-full w-full items-center justify-center p-4 md:w-[70%]">
