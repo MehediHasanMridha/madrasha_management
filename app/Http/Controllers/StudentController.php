@@ -26,6 +26,9 @@ class StudentController extends Controller
             'upazilla'                => 'required|string|max:120',
             'joining_class'           => 'required',
             'department_id'           => 'required',
+            'student_image'           => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'boarding_fee'            => 'numeric',
+            'academic_fee'            => 'numeric',
         ], [
             'student_id.unique'     => 'This student id already exists',
             'contact_number.unique' => 'This contact number already exists',
@@ -35,7 +38,11 @@ class StudentController extends Controller
         $student->name      = $request->name;
         $student->unique_id = $request->student_id;
         $student->phone     = $request->contact_number;
-        $student->password  = Hash::make('12345678');
+        if ($request->hasFile('student_image')) {
+            $img          = uploadImage($student->img, $request->file('student_image'), 'uploads/student_images/');
+            $student->img = $img;
+        }
+        $student->password = Hash::make('12345678');
         $student->save();
 
         $role = Role::where('name', 'student')->first();

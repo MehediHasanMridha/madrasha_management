@@ -2,7 +2,8 @@ import FieldSet from '@/Components/UI/FieldSet';
 import ModalUI from '@/Components/UI/ModalUI';
 import StaticBtn from '@/Components/UI/StaticBtn';
 import SubmitBtn from '@/Components/UI/SubmitBtn';
-import { router } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
+import { Avatar } from 'antd';
 import { Controller } from 'react-hook-form';
 import { FaFilter } from 'react-icons/fa6';
 import { RiUserAddLine } from 'react-icons/ri';
@@ -28,6 +29,7 @@ const StudentSectionComponent = ({
     control,
     setIsLoading,
 }) => {
+    const { ziggy } = usePage().props;
     const columns = [
         {
             title: 'ID',
@@ -41,6 +43,22 @@ const StudentSectionComponent = ({
             key: 'name',
             sorter: true,
             defaultSortOrder: sortOrder === 'asc' ? 'ascend' : sortOrder === 'desc' ? 'descend' : undefined,
+            render: (text, record) => {
+                const imageUrl = ziggy.url + '/uploads/student_images/' + record.image || '';
+                return (
+                    <span className="flex items-center gap-x-5">
+                        <Avatar src={imageUrl} size={60} />
+                        {/* add space */}
+                        {/* <img src={ziggy.url + '/uploads/student_images/' + record.image}  alt="Student Image" /> */}
+                        {text}
+                    </span>
+                );
+            },
+        },
+        {
+            title: "Father's Name",
+            dataIndex: 'father_name',
+            key: 'father_name',
         },
         {
             title: 'Class',
@@ -52,6 +70,11 @@ const StudentSectionComponent = ({
             })),
             filteredValue: filters.class_id,
             filterIcon: (filtered) => <FaFilter className={`text-xl ${filtered ? 'text-red-500' : ''}`} />,
+        },
+        {
+            title: 'ID',
+            dataIndex: 'unique_id',
+            key: 'unique_id',
         },
         {
             title: 'Action',

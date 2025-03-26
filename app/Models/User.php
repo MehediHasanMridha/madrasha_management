@@ -55,6 +55,10 @@ class User extends Authenticatable
     {
         return $this->hasOne(Address::class);
     }
+    public function guardians()
+    {
+        return $this->hasOne(Guardian::class);
+    }
 
     public function classAssign()
     {

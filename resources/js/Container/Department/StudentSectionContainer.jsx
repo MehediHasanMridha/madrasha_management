@@ -27,45 +27,43 @@ const StudentSectionContainer = ({ department, students, filters, sortOrder }) =
     };
 
     const onSubmit = (data) => {
-        const formData = new FormData();
-        Object.keys(data).forEach((key) => {
-            formData.append(key, data[key]);
-        });
-        formData.append('student_image', data.student_image[0]);
-        formData.append('department_id', department.id);
-
-        router.post(route('student.add_student', { department_slug: 'islamic_school' }), formData, {
-            onStart: () => {
-                setIsLoading(true);
-            },
-            onSuccess: () => {
-                reset();
-                setIsModalOpen(false);
-                api.success({
-                    message: 'Student Added Successfully',
-                    placement: 'bottomRight',
-                });
-                setIsLoading(false);
-            },
-            onError: (errors) => {
-                if (errors.student_id) {
-                    setFocus('student_id');
-                    setError('student_id', {
-                        message: errors.student_id,
+        router.post(
+            route('student.add_student', { department_slug: department.slug }),
+            { ...data, student_image: data.student_image.file.originFileObj, department_id: department.id },
+            {
+                onStart: () => {
+                    setIsLoading(true);
+                },
+                onSuccess: () => {
+                    reset();
+                    setIsModalOpen(false);
+                    api.success({
+                        message: 'Student Added Successfully',
+                        placement: 'bottomRight',
                     });
-                } else {
-                    setFocus('contact_number');
-                    setError('contact_number', {
-                        message: errors.contact_number,
+                    setIsLoading(false);
+                },
+                onError: (errors) => {
+                    console.log('🚀 ~ onSubmit ~ errors:', errors);
+                    if (errors.student_id) {
+                        setFocus('student_id');
+                        setError('student_id', {
+                            message: errors.student_id,
+                        });
+                    } else {
+                        setFocus('contact_number');
+                        setError('contact_number', {
+                            message: errors.contact_number,
+                        });
+                    }
+                    api.error({
+                        message: errors.student_id || errors.contact_number || errors.academic_fee,
+                        placement: 'bottomRight',
                     });
-                }
-                api.error({
-                    message: errors.student_id || errors.contact_number,
-                    placement: 'bottomRight',
-                });
-                setIsLoading(false);
+                    setIsLoading(false);
+                },
             },
-        });
+        );
     };
 
     return (

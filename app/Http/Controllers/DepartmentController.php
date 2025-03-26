@@ -26,7 +26,7 @@ class DepartmentController extends Controller
             $q->where('department_id', $department->id);
         })->whereHas('roles', function ($q) {
             $q->where('name', 'student');
-        })->with(['academics.class', 'academics.department']);
+        })->with(['academics.class', 'academics.department', 'guardians']);
 
         foreach ($filters as $field => $value) {
             if (is_array($value)) {
