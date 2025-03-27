@@ -1,5 +1,7 @@
+import SettingDashboardContainer from '@/Container/Setting/SettingDashboardContainer';
+
 const settingDashboard = () => {
-    return <div>settingDashboard</div>;
+    return <SettingDashboardContainer />;
 };
 
 export default settingDashboard;
