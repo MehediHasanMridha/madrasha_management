@@ -10,12 +10,6 @@ const Welcome = () => {
                 <Link href={route('register')} className="bg-amber-800 p-10 text-3xl text-[#4891FF]">
                     Go to sign up page
                 </Link>
-                <Link href={route('department')} className="bg-amber-800 p-10 text-3xl text-[#4891FF]">
-                    Add Department
-                </Link>
-                <Link href={route('class')} className="bg-amber-800 p-10 text-3xl text-[#4891FF]">
-                    Add Class
-                </Link>
             </div>
         </div>
     );

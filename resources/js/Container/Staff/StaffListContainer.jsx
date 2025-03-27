@@ -28,33 +28,37 @@ const StaffListContainer = ({ staff, filters, sortOrder }) => {
     };
 
     const onSubmit = (data) => {
-        router.post(route('staff.store'), data, {
-            onStart: () => {
-                setIsLoading(true);
-            },
-            onSuccess: () => {
-                reset();
-                setIsModalOpen(false);
-                api.success({
-                    message: 'Staff Added Successfully',
-                    placement: 'bottomRight',
-                });
-                setIsLoading(false);
-            },
-            onError: (errors) => {
-                if (errors.contact_number) {
-                    setFocus('contact_number');
-                    setError('contact_number', {
-                        message: errors.contact_number,
+        router.post(
+            route('staff.store'),
+            { ...data, staff_image: data.staff_image.file.originFileObj },
+            {
+                onStart: () => {
+                    setIsLoading(true);
+                },
+                onSuccess: () => {
+                    reset();
+                    setIsModalOpen(false);
+                    api.success({
+                        message: 'Staff Added Successfully',
+                        placement: 'bottomRight',
                     });
-                }
-                api.error({
-                    message: errors.contact_number,
-                    placement: 'bottomRight',
-                });
-                setIsLoading(false);
+                    setIsLoading(false);
+                },
+                onError: (errors) => {
+                    if (errors.contact_number) {
+                        setFocus('contact_number');
+                        setError('contact_number', {
+                            message: errors.contact_number,
+                        });
+                    }
+                    api.error({
+                        message: errors.contact_number,
+                        placement: 'bottomRight',
+                    });
+                    setIsLoading(false);
+                },
             },
-        });
+        );
     };
 
     return (

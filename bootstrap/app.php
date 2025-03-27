@@ -21,15 +21,17 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        $exceptions->respond(function (Response $response) {
-            if ($response->getStatusCode() === 404) {
-                return Inertia::render("Errors/404");
-            } elseif ($response->getStatusCode() === 500) {
-                $exception = $response->exception;
-                return Inertia::render("Errors/500", [
-                    'message' => $exception ? $exception->getMessage() : 'An error occurred',
-                ]);
-            }
-            return $response;
-        });
+        // app()->environment('production')
+        if (! config('app.debug')) {
+            $exceptions->respond(using: function (Response $response) {
+                if ($response->getStatusCode() === 404) {
+                    return Inertia::render("Errors/404");
+                } elseif ($response->getStatusCode() === 500) {
+                    $exception = $response->exception;
+                    return Inertia::render("Errors/500", [
+                        'message' => $exception ? $exception->getMessage() : 'An error occurred',
+                    ]);
+                }
+            });
+        }
     })->create();

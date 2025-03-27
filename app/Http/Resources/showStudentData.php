@@ -15,9 +15,12 @@ class showStudentData extends JsonResource
     {
         // return parent::toArray($request);
         return [
-            'id'    => $this->id,
-            'name'  => $this->name,
-            'class' => $this->academics->class->name,
+            'id'          => $this->id,
+            'name'        => $this->name,
+            'unique_id'   => $this->unique_id,
+            'image'       => $this->img,
+            'class'       => $this->academics->class->name,
+            'father_name' => $this->guardians->father_name,
         ];
     }
 }

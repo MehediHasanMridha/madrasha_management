@@ -18,15 +18,15 @@ class DepartmentController extends Controller
         $sortField = request()->input('sort_field', 'created_at');
         $filters   = request()->input('filters', []);
         $search    = request()->input('search', '');
+        $type      = request()->input('type', '');
+        $staff     = null;
 
         $department = Department::with('classes')->where('slug', $department_slug)->firstOrFail();
         $students   = User::whereHas('academics', function ($q) use ($department) {
             $q->where('department_id', $department->id);
-        })
-            ->whereHas('roles', function ($q) {
-                $q->where('name', 'student');
-            })
-            ->with(['academics.class', 'academics.department']);
+        })->whereHas('roles', function ($q) {
+            $q->where('name', 'student');
+        })->with(['academics.class', 'academics.department', 'guardians']);
 
         foreach ($filters as $field => $value) {
             if (is_array($value)) {
@@ -54,13 +54,33 @@ class DepartmentController extends Controller
             $students->orderBy($sortField, 'desc');
         }
 
+        if ($type == 'staff') {
+            $staff = $this->staffDataShow($department_slug);
+        }
+
         return Inertia::render('Department/Dashboard', [
             'department' => $department,
             'students'   => Inertia::defer(fn() => showStudentData::collection($students->paginate($per_page, ['*'], 'page', $page))),
             'filters'    => $filters,
             'sortOrder'  => $order ?? null,
+            'staff'      => Inertia::defer(fn() => ($staff ? $staff->paginate($per_page, ['*'], 'page', $page) : null)),
         ]);
 
+    }
+
+    private function staffDataShow($department_slug)
+    {
+        $page       = request()->input('page', 1);
+        $per_page   = request()->input('per_page', 10);
+        $sortField  = request()->input('sort_field', 'created_at');
+        $filters    = request()->input('filters', []);
+        $search     = request()->input('search', '');
+        $department = Department::with('classes')->where('slug', $department_slug)->firstOrFail();
+
+        $data = User::whereHas('roles', function ($q) {
+            $q->where('name', 'staff');
+        });
+        return $data;
     }
 
     public function departmentCreateView()

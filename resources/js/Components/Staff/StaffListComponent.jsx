@@ -5,7 +5,8 @@ import ModalUI from '@/Components/UI/ModalUI';
 import StaticBtn from '@/Components/UI/StaticBtn';
 import SubmitBtn from '@/Components/UI/SubmitBtn';
 import TableUI from '@/Components/UI/TableUI';
-import { router } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
+import { Avatar } from 'antd';
 import { Controller } from 'react-hook-form';
 import { RiUserAddLine } from 'react-icons/ri';
 
@@ -25,6 +26,7 @@ const StaffListComponent = ({
     staff,
     filters,
 }) => {
+    const { ziggy } = usePage().props;
     const columns = [
         {
             title: 'ID',
@@ -38,30 +40,20 @@ const StaffListComponent = ({
             key: 'name',
             sorter: true,
             defaultSortOrder: sortOrder === 'asc' ? 'ascend' : sortOrder === 'desc' ? 'descend' : undefined,
+            render: (text, record) => {
+                const imageUrl = ziggy.url + '/uploads/staff_images/' + record.image;
+                return (
+                    <span className="flex items-center gap-x-5">
+                        <Avatar src={(record.image && imageUrl) || 'https://randomuser.me/api/portraits/men/1.jpg'} size={60} />
+                        {text}
+                    </span>
+                );
+            },
         },
-        // {
-        //     title: 'Age',
-        //     dataIndex: 'age',
-        //     key: 'age',
-        //     filters: [
-        //         { text: 'Joe', value: 'Joe' },
-        //         { text: 'Jim', value: 'Jim' },
-        //         {
-        //             text: 'Submenu',
-        //             value: 'Submenu',
-        //             children: [{ text: 'Green', value: 'Green' }],
-        //         },
-        //     ],
-        //     filteredValue: ['Jim'],
-        //     filterIcon: (filtered) => {
-        //         console.log('🚀 ~ filtered:', filtered);
-        //         return <FaFilter className={`text-xl ${filtered ? 'text-red-500' : ''}`} />;
-        //     },
-        // },
         {
-            title: 'Address',
-            dataIndex: 'address',
-            key: 'address',
+            title: "Father's Name",
+            dataIndex: 'father_name',
+            key: 'father_name',
         },
         {
             title: 'Action',
