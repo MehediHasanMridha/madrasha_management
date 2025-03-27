@@ -65,6 +65,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     //staff
     Route::get("/staff", [StaffController::class, "index"])->name("staff.index");
     Route::post("/staff/add", [StaffController::class, "store"])->name("staff.store");
+
+    //settings
+    Route::get("/settings", function () {
+        return Inertia::render('settings/settingDashboard');
+    })->name("settings");
 });
 
 require __DIR__ . '/settings.php';
