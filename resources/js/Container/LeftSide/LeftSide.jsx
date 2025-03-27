@@ -103,10 +103,6 @@ const LeftSide = () => {
                 </SideBarUI.Icon>
                 <SideBarUI.Text collapsed={collapsed}>Mobile app</SideBarUI.Text>
             </SideBarUI.Item>
-            <div className={`my-2 flex items-center space-x-[12px] ${collapsed ? 'pl-0' : 'pl-[24px]'}`}>
-                <SideBarUI.Text collapsed={collapsed}>System</SideBarUI.Text>
-                <hr className="h-[0.5px] w-full bg-[#AFAFAF]" />
-            </div>
             <SideBarUI.Item collapsed={collapsed} className="mt-[180px]">
                 <Link
                     href={route('logout')}
