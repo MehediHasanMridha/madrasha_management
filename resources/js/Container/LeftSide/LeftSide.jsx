@@ -4,7 +4,6 @@ import Finance from '@/assets/images/finance.svg';
 import Islamic_School from '@/assets/images/islamic_school.svg';
 import Logo from '@/assets/images/logo.png';
 import logout from '@/assets/images/logout.svg';
-import setting from '@/assets/images/setting.svg';
 import Staff_Icon from '@/assets/images/staff_Icon.svg';
 import SideBarUI from '@/Components/UI/SideBarUI';
 import { cn } from '@/lib/utils';
@@ -92,24 +91,6 @@ const LeftSide = () => {
                     </SideBarUI.Item>
                 </Link>
             ))}
-            {/* <SideBarUI.Item collapsed={collapsed} className="flex h-[64px] items-center space-x-[12px] px-[50px] hover:bg-[#F2F2F2]">
-                <SideBarUI.Icon>
-                    <img src={hifjo_bivag} alt="Hifjo Bivag" className="h-[24px] w-[24px]" />
-                </SideBarUI.Icon>
-                <SideBarUI.Text collapsed={collapsed}>Hifjo Bivag</SideBarUI.Text>
-            </SideBarUI.Item>
-            <SideBarUI.Item collapsed={collapsed} className="flex h-[64px] items-center space-x-[12px] px-[50px] hover:bg-[#F2F2F2]">
-                <SideBarUI.Icon>
-                    <img src={kitab_bivag} alt="kitab_bivag" className="h-[24px] w-[24px]" />
-                </SideBarUI.Icon>
-                <SideBarUI.Text collapsed={collapsed}>Kitab Bivag</SideBarUI.Text>
-            </SideBarUI.Item>
-            <SideBarUI.Item collapsed={collapsed} className="flex h-[64px] items-center space-x-[12px] px-[50px] hover:bg-[#F2F2F2]">
-                <SideBarUI.Icon>
-                    <img src={madani} alt="madani" className="h-[24px] w-[24px]" />
-                </SideBarUI.Icon>
-                <SideBarUI.Text collapsed={collapsed}>Madani nesab</SideBarUI.Text>
-            </SideBarUI.Item> */}
             <div className={`my-2 flex items-center space-x-[12px] ${collapsed ? 'pl-0' : 'pl-[24px]'}`}>
                 <SideBarUI.Text collapsed={collapsed} className="w-[120px]">
                     Mobile app
@@ -126,12 +107,6 @@ const LeftSide = () => {
                 <SideBarUI.Text collapsed={collapsed}>System</SideBarUI.Text>
                 <hr className="h-[0.5px] w-full bg-[#AFAFAF]" />
             </div>
-            <SideBarUI.Item collapsed={collapsed} className="flex h-[64px] items-center space-x-[12px] px-[50px] hover:bg-[#F2F2F2]">
-                <SideBarUI.Icon>
-                    <img src={setting} alt="Setting" className="h-[24px] w-[24px]" />
-                </SideBarUI.Icon>
-                <SideBarUI.Text collapsed={collapsed}>Setting</SideBarUI.Text>
-            </SideBarUI.Item>
             <SideBarUI.Item collapsed={collapsed} className="mt-[180px]">
                 <Link
                     href={route('logout')}
