@@ -33,7 +33,7 @@ const items = [
 const DashboardComponent = ({ data, auth }) => {
     return (
         <div className="bg-[#F6F6F6 ] rounded-3xl px-[50px]">
-            <div className="space-y-[20px]">
+            <div className="mb-5 space-y-[20px]">
                 <div className="flex items-center justify-between rounded-[8px] bg-white p-[24px]">
                     <div>
                         <div className="text-[24px] font-[500]">Assalamu Alaikum {auth.user.name} !</div>
