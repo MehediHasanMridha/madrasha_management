@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/migrate_database', function () {
-    Artisan::call('migrate:fresh');
+    Artisan::call('migrate:fresh --seed');
     return redirect('/');
 });
 
