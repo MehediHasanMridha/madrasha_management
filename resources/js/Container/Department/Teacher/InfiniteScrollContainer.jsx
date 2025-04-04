@@ -18,7 +18,7 @@ const InfiniteScrollContainer = () => {
             <StaffListContainer staffs={staffs?.data} />
         </InfiniteScrollComponent>
     ) : (
-        <>Loading ...</>
+        <>No Staff Found</>
     );
 };
 

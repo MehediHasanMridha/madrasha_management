@@ -2,16 +2,17 @@ import StudentSectionContainer from '@/Container/Department/StudentSectionContai
 import TeacherSectionContainer from '@/Container/Department/Teacher/TeacherSectionContainer';
 import { TeacherSectionProvider } from '@/contextApi&reducer/Department/TeacherContextApi';
 import AuthenticatedLayout from '@/layouts/AuthenticatedLayout';
-import { cn, deleteUrlParams, setUrlParams } from '@/lib/utils';
+import { cn, deleteUrlParams, getUrlParams, setUrlParams } from '@/lib/utils';
 import { Head, WhenVisible } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import { FaUserGroup } from 'react-icons/fa6';
 
 const Dashboard = ({ department, students, filters, sortOrder }) => {
-    const [tab, setTab] = useState('student');
+    const [tab, setTab] = useState(() => (getUrlParams() === 'staff' ? 'staff' : 'student'));
+
     useEffect(() => {
         if (tab === 'staff') {
-            setUrlParams(tab);
+            setUrlParams('staff');
         } else {
             deleteUrlParams();
         }

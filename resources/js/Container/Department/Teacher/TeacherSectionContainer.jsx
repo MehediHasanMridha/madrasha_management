@@ -21,7 +21,6 @@ const TeacherSectionContainer = ({ department }) => {
     const handleOk = async () => {
         // Handle the OK button click event here
         const { data } = await axios.post(route('assign.staff.store'), { staffs: checkedList, department_id: department.id });
-        console.log('🚀 ~ handleOk ~ data:', data);
         checkListDispatch({ type: 'resetCheckedList' });
         setModal(false);
         // then url hit

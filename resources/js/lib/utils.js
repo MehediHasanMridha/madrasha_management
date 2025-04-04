@@ -15,3 +15,8 @@ export const deleteUrlParams = () => {
     url.searchParams.delete('type');
     window.history.pushState({}, '', url);
 };
+
+export const getUrlParams = () => {
+    const url = new URL(window.location.href);
+    return url.searchParams.get('type');
+};
