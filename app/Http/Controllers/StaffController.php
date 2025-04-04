@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\showStaffData;
 use App\Models\Academic;
 use App\Models\Address;
+use App\Models\ClassAssign;
 use App\Models\Guardian;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -123,4 +124,31 @@ class StaffController extends Controller
         return back()->with('success', 'Staff added successfully');
 
     }
+
+    public function assign_staff(Request $request)
+    {
+
+        $user = User::whereHas('roles', fn($q) => $q->where('name', 'staff'))
+            ->whereDoesntHave('classAssign', fn($q) => $q->where('dept_id', request()->department_id));
+
+        return response()->json([
+            'users' => $user->paginate(20),
+        ]);
+    }
+
+    public function assign_staff_store(Request $request)
+    {
+        // check an array
+        if (is_array($request->staffs)) {
+            foreach ($request->staffs as $staff) {
+                $staff                = User::find($staff);
+                $classAssign          = new ClassAssign();
+                $classAssign->user_id = $staff->id;
+                $classAssign->dept_id = $request->department_id;
+                $classAssign->save();
+            }
+            return back()->with('success', 'Staff assigned successfully');
+        }
+    }
+
 }

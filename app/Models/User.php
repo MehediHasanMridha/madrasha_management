@@ -62,6 +62,6 @@ class User extends Authenticatable
 
     public function classAssign()
     {
-        return $this->belongsTo(ClassAssign::class);
+        return $this->hasMany(ClassAssign::class);
     }
 }

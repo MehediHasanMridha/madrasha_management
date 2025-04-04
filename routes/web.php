@@ -23,11 +23,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
                     $q->where('name', 'student');
                 });
             },
-            'academics as teacher_count' => function ($query) {
-                $query->whereHas('student.roles', function ($q) {
-                    $q->where('name', 'teacher');
-                });
-            },
+            // 'academics as teacher_count' => function ($query) {
+            //     $query->whereHas('student.classAssign', function ($q) {
+            //         $q->where('dept_id', '==', 1);
+            //     });
+            // },
+            'classAssign as teacher_count',
         ])->get();
 
         // dd($data);
@@ -77,6 +78,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         });
 
     });
+
+    //assign teacher to department
+    Route::get('/assign-teacher', [StaffController::class, 'assign_staff'])->name('assign.staff');
+    Route::post('/assign-teacher-to-department', [StaffController::class, 'assign_staff_store'])->name('assign.staff.store');
 });
 
 require __DIR__ . '/settings.php';

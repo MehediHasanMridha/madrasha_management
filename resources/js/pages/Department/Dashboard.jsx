@@ -1,5 +1,6 @@
 import StudentSectionContainer from '@/Container/Department/StudentSectionContainer';
-import TeacherSectionContainer from '@/Container/Department/TeacherSectionContainer';
+import TeacherSectionContainer from '@/Container/Department/Teacher/TeacherSectionContainer';
+import { TeacherSectionProvider } from '@/contextApi&reducer/Department/TeacherContextApi';
 import AuthenticatedLayout from '@/layouts/AuthenticatedLayout';
 import { cn, deleteUrlParams, setUrlParams } from '@/lib/utils';
 import { Head, WhenVisible } from '@inertiajs/react';
@@ -25,7 +26,9 @@ const Dashboard = ({ department, students, filters, sortOrder }) => {
         case 'staff':
             content = (
                 <WhenVisible data={'staff'} fallback={<div>Loading...</div>}>
-                    <TeacherSectionContainer />
+                    <TeacherSectionProvider>
+                        <TeacherSectionContainer department={department} />
+                    </TeacherSectionProvider>
                 </WhenVisible>
             );
             break;

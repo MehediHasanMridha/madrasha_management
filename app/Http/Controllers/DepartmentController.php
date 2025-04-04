@@ -77,9 +77,10 @@ class DepartmentController extends Controller
         $search     = request()->input('search', '');
         $department = Department::with('classes')->where('slug', $department_slug)->firstOrFail();
 
-        $data = User::whereHas('roles', function ($q) {
-            $q->where('name', 'staff');
-        });
+        $data = User::whereHas('roles', fn($q) => $q->where('name', 'staff'))
+            ->whereHas('classAssign', function ($q) use ($department) {
+                $q->where('dept_id', $department->id);
+            });
         return $data;
     }
 

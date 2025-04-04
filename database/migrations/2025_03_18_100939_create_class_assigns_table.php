@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('class_assigns', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('class_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('dept_id', )->constrained('departments', 'id')->cascadeOnDelete();
+            $table->foreignId('class_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->foreignId('dept_id', )->nullable()->constrained('departments', 'id')->cascadeOnDelete();
             $table->timestamps();
         });
     }
