@@ -16,7 +16,7 @@ return [
                  */
                 'include'                       => [
                     // base_path(),
-                    base_path('public/uploads/images'),
+                    base_path('public/uploads'),
                 ],
 
                 /*
