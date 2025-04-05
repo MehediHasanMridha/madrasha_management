@@ -2,7 +2,7 @@ import { router } from '@inertiajs/react';
 import { notification } from 'antd';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import StudentSectionComponent from '../../Components/Department/StudentSectionComponent';
+import StudentSectionComponent from '../../../Components/Department/Student/StudentSectionComponent';
 
 const StudentSectionContainer = ({ department, students, filters, sortOrder }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);

@@ -4,13 +4,11 @@ import FileUploadField from '@/Components/UI/FileUploadField';
 import ModalUI from '@/Components/UI/ModalUI';
 import StaticBtn from '@/Components/UI/StaticBtn';
 import SubmitBtn from '@/Components/UI/SubmitBtn';
-import TableUI from '@/Components/UI/TableUI';
-import { router, usePage } from '@inertiajs/react';
-import { Avatar } from 'antd';
+import StaffTableListContainer from '@/Container/Staff/StaffTableListContainer';
 import { Controller } from 'react-hook-form';
 import { RiUserAddLine } from 'react-icons/ri';
 
-const StaffListComponent = ({
+const ManageStaffComponent = ({
     setIsModalOpen,
     isModalOpen,
     isLoading,
@@ -26,77 +24,13 @@ const StaffListComponent = ({
     staff,
     filters,
 }) => {
-    const { ziggy } = usePage().props;
-    const columns = [
-        {
-            title: 'ID',
-            dataIndex: 'id',
-            key: 'id',
-            hidden: true,
-        },
-        {
-            title: 'Name',
-            dataIndex: 'name',
-            key: 'name',
-            sorter: true,
-            defaultSortOrder: sortOrder === 'asc' ? 'ascend' : sortOrder === 'desc' ? 'descend' : undefined,
-            render: (text, record) => {
-                const imageUrl = ziggy.url + '/uploads/staff_images/' + record.image;
-                return (
-                    <span className="flex items-center gap-x-5">
-                        <Avatar src={(record.image && imageUrl) || 'https://randomuser.me/api/portraits/men/1.jpg'} size={60} />
-                        {text}
-                    </span>
-                );
-            },
-        },
-        {
-            title: "Father's Name",
-            dataIndex: 'father_name',
-            key: 'father_name',
-        },
-        {
-            title: 'Action',
-            dataIndex: 'action',
-            key: 'action',
-            render: (text, record) => (
-                <div className="flex gap-2">
-                    <span className="cursor-pointer text-xl">Edit</span>
-                    <span className="cursor-pointer text-xl text-red-500">Delete</span>
-                </div>
-            ),
-        },
-    ];
-
     return (
         <>
             <div className="mt-[8px] flex w-full flex-col items-end space-y-5 rounded-[8px] bg-white p-[24px] text-center">
                 <StaticBtn onClick={() => setIsModalOpen(true)}>
                     <RiUserAddLine className="inline-flex" /> <span>Add Staff</span>
                 </StaticBtn>
-                <TableUI
-                    columns={columns}
-                    dataSource={staff}
-                    className="w-full"
-                    onChange={(pagination, filters, sorter) => {
-                        router.get(
-                            route('staff.index', {
-                                page: pagination.current,
-                                per_page: pagination.pageSize,
-                                order: sorter?.order === 'ascend' ? 'asc' : sorter?.order === 'descend' ? 'desc' : undefined,
-                                filters: {
-                                    ...filters,
-                                },
-                            }),
-                            {},
-                            {
-                                onStart: () => {
-                                    setIsLoading(true);
-                                },
-                            },
-                        );
-                    }}
-                />
+                <StaffTableListContainer data={staff} filters={filters} sortOrder={sortOrder} setIsLoading={setIsLoading} />
             </div>
             <ModalUI
                 isModalOpen={isModalOpen}
@@ -277,4 +211,4 @@ const StaffListComponent = ({
     );
 };
 
-export default StaffListComponent;
+export default ManageStaffComponent;

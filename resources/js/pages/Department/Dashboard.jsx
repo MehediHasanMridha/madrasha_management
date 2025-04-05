@@ -1,4 +1,4 @@
-import StudentSectionContainer from '@/Container/Department/StudentSectionContainer';
+import StudentSectionContainer from '@/Container/Department/Student/StudentSectionContainer';
 import TeacherSectionContainer from '@/Container/Department/Teacher/TeacherSectionContainer';
 import { TeacherSectionProvider } from '@/contextApi&reducer/Department/TeacherContextApi';
 import AuthenticatedLayout from '@/layouts/AuthenticatedLayout';

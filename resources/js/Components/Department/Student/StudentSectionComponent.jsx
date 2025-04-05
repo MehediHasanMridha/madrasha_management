@@ -2,14 +2,11 @@ import FieldSet from '@/Components/UI/FieldSet';
 import ModalUI from '@/Components/UI/ModalUI';
 import StaticBtn from '@/Components/UI/StaticBtn';
 import SubmitBtn from '@/Components/UI/SubmitBtn';
-import { router, usePage } from '@inertiajs/react';
-import { Avatar } from 'antd';
+import StudentTableListContainer from '@/Container/Department/Student/StudentTableListContainer';
 import { Controller } from 'react-hook-form';
-import { FaFilter } from 'react-icons/fa6';
 import { RiUserAddLine } from 'react-icons/ri';
-import Field from '../../Components/UI/Field';
-import FileUploadField from '../../Components/UI/FileUploadField';
-import TableUI from '../../Components/UI/TableUI';
+import Field from '../../UI/Field';
+import FileUploadField from '../../UI/FileUploadField';
 
 const StudentSectionComponent = ({
     contextHolder,
@@ -29,65 +26,6 @@ const StudentSectionComponent = ({
     control,
     setIsLoading,
 }) => {
-    const { ziggy } = usePage().props;
-    const columns = [
-        {
-            title: 'ID',
-            dataIndex: 'id',
-            key: 'id',
-            hidden: true,
-        },
-        {
-            title: 'Name',
-            dataIndex: 'name',
-            key: 'name',
-            sorter: true,
-            defaultSortOrder: sortOrder === 'asc' ? 'ascend' : sortOrder === 'desc' ? 'descend' : undefined,
-            render: (text, record) => {
-                const imageUrl = ziggy.url + '/uploads/student_images/' + record.image || '';
-                return (
-                    <span className="flex items-center gap-x-5">
-                        <Avatar src={imageUrl} size={60} />
-                        {/* add space */}
-                        {/* <img src={ziggy.url + '/uploads/student_images/' + record.image}  alt="Student Image" /> */}
-                        {text}
-                    </span>
-                );
-            },
-        },
-        {
-            title: "Father's Name",
-            dataIndex: 'father_name',
-            key: 'father_name',
-        },
-        {
-            title: 'Class',
-            dataIndex: 'class',
-            key: 'class_id',
-            filters: department.classes.map((item) => ({
-                text: item.name,
-                value: item.id,
-            })),
-            filteredValue: filters.class_id,
-            filterIcon: (filtered) => <FaFilter className={`text-xl ${filtered ? 'text-red-500' : ''}`} />,
-        },
-        {
-            title: 'ID',
-            dataIndex: 'unique_id',
-            key: 'unique_id',
-        },
-        {
-            title: 'Action',
-            dataIndex: 'action',
-            key: 'action',
-            render: (text, record) => (
-                <div className="flex gap-2">
-                    <span className="cursor-pointer text-xl">Edit</span>
-                    <span className="cursor-pointer text-xl text-red-500">Delete</span>
-                </div>
-            ),
-        },
-    ];
     return (
         <>
             {contextHolder}
@@ -95,29 +33,12 @@ const StudentSectionComponent = ({
                 <StaticBtn onClick={() => setIsModalOpen(true)}>
                     <RiUserAddLine className="inline-flex" /> <span>Add Student</span>
                 </StaticBtn>
-                <TableUI
-                    dataSource={students}
-                    columns={columns}
-                    className="w-full"
-                    onChange={(pagination, filters, sorter) => {
-                        router.get(
-                            route('department.view', {
-                                department_slug: department.slug,
-                                page: pagination.current,
-                                per_page: pagination.pageSize,
-                                order: sorter?.order === 'ascend' ? 'asc' : sorter?.order === 'descend' ? 'desc' : undefined,
-                                filters: {
-                                    ...filters,
-                                },
-                            }),
-                            {},
-                            {
-                                onStart: () => {
-                                    setIsLoading(true);
-                                },
-                            },
-                        );
-                    }}
+                <StudentTableListContainer
+                    department={department}
+                    data={students}
+                    filters={filters}
+                    sortOrder={sortOrder}
+                    setIsLoading={setIsLoading}
                 />
             </div>
             <ModalUI
