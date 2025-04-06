@@ -12,7 +12,7 @@ const TeacherSectionContainer = ({ department }) => {
         try {
             setModal(true);
             const { data } = await axios.get('/assign-teacher?page=1', { params: { department_id: department.id } });
-            dispatch({ type: 'added', staffs: data?.users });
+            dispatch({ type: 'added', staffs: data });
         } catch (error) {
             console.log('🚀 ~ handleClick ~ error:', error);
         }
@@ -31,7 +31,15 @@ const TeacherSectionContainer = ({ department }) => {
         setModal(false);
     };
 
-    return <TeacherSectionComponent openModal={modal} handleOk={handleOk} handleCancel={handleCancel} handleClick={handleClick} />;
+    return (
+        <TeacherSectionComponent
+            department={department}
+            openModal={modal}
+            handleOk={handleOk}
+            handleCancel={handleCancel}
+            handleClick={handleClick}
+        />
+    );
 };
 
 export default TeacherSectionContainer;

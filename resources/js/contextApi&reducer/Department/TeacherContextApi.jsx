@@ -25,7 +25,7 @@ function allStaffListReducer(staffs, action) {
 function allStaffCheckListReducer(checkedList, action) {
     switch (action.type) {
         case 'setCheckedList':
-            return [...checkedList, ...action.list];
+            return action.list;
         case 'resetCheckedList':
             return [];
         default:

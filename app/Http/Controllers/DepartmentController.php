@@ -1,9 +1,12 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Http\Resources\showStaffData;
 use App\Http\Resources\showStudentData;
 use App\Models\Department;
 use App\Models\User;
+use Barryvdh\Debugbar\Facades\Debugbar;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -12,76 +15,94 @@ class DepartmentController extends Controller
 {
     public function view($department_slug)
     {
+        try {
+            $request   = request();
+            $page      = $request->input('page', 1);
+            $per_page  = $request->input('per_page', 10);
+            $sortField = $request->input('sort_field', 'created_at');
+            $filters   = $request->input('filters', []);
+            $search    = $request->input('search', '');
+            $type      = $request->input('type', '');
+            $order     = $request->input('order', null) === "ascend" ? 'asc' : ($request->input('order', null) === "descend" ? 'desc' : null);
 
-        $page      = request()->input('page', 1);
-        $per_page  = request()->input('per_page', 10);
-        $sortField = request()->input('sort_field', 'created_at');
-        $filters   = request()->input('filters', []);
-        $search    = request()->input('search', '');
-        $type      = request()->input('type', '');
-        $staff     = null;
+            $department = Department::with('classes')->where('slug', $department_slug)->firstOrFail();
 
-        $department = Department::with('classes')->where('slug', $department_slug)->firstOrFail();
-        $students   = User::whereHas('academics', function ($q) use ($department) {
-            $q->where('department_id', $department->id);
-        })->whereHas('roles', function ($q) {
-            $q->where('name', 'student');
-        })->with(['academics.class', 'academics.department', 'guardians']);
+            $studentsQuery = User::query()
+                ->whereHas('academics', fn($q) => $q->where('department_id', $department->id))
+                ->whereHas('roles', fn($q) => $q->where('name', 'student'))
+                ->with(['academics.class', 'academics.department', 'guardians']);
 
-        foreach ($filters as $field => $value) {
-            if (is_array($value)) {
-                $students->whereHas('academics', function ($q) use ($field, $value) {
-                    $q->whereIn($field, $value);
-                });
+            $this->applyFilters($studentsQuery, $filters);
+            $this->applySearch($studentsQuery, $search);
+            if ($order && in_array($sortField, ['name', 'email', 'created_at'])) {
+                $studentsQuery->orderBy($sortField, $order);
             } else {
-                $students->whereHas('academics', function ($q) use ($field, $value) {
-                    $q->where($field, $value);
-                });
+                $studentsQuery->latest($sortField);
             }
+
+            $staff = $type === 'staff' ? $this->staffDataShow($department_slug) : null;
+            Debugbar::info(['staff' => $staff]);
+            return Inertia::render('Department/Dashboard', [
+                'department' => $department,
+                'students'   => Inertia::defer(fn() => showStudentData::collection(
+                    $studentsQuery->paginate($per_page, ['*'], 'page', $page)->withQueryString()
+                )),
+                'filters'    => $filters,
+                'sortOrder'  => $order === 'asc' ? 'ascend' : ($order === 'desc' ? 'descend' : 'undefined'),
+                'staff'      => Inertia::defer(fn() => showStaffData::collection(
+                    $staff ?? [],
+                )),
+            ]);
+
+        } catch (Exception $th) {
+            return back()->with('error', $th->getMessage());
         }
-
-        if ($search) {
-            $students->where(function ($query) use ($search) {
-                $query->where('name', 'like', '%' . $search . '%')
-                    ->orWhere('email', 'like', '%' . $search . '%');
-            });
-        }
-
-        if (request()->has('order')) {
-            $order = request()->input('order');
-            $students->orderBy($sortField, $order);
-        } else {
-            $students->orderBy($sortField, 'desc');
-        }
-
-        if ($type == 'staff') {
-            $staff = $this->staffDataShow($department_slug);
-        }
-
-        return Inertia::render('Department/Dashboard', [
-            'department' => $department,
-            'students'   => Inertia::defer(fn() => showStudentData::collection($students->paginate($per_page, ['*'], 'page', $page))),
-            'filters'    => $filters,
-            'sortOrder'  => $order ?? null,
-            'staff'      => Inertia::defer(fn() => ($staff ? $staff->paginate($per_page, ['*'], 'page', $page) : null)),
-        ]);
-
     }
 
     private function staffDataShow($department_slug)
     {
-        $page       = request()->input('page', 1);
-        $per_page   = request()->input('per_page', 10);
-        $sortField  = request()->input('sort_field', 'created_at');
-        $filters    = request()->input('filters', []);
-        $search     = request()->input('search', '');
+        $request   = request();
+        $page      = $request->input('page', 1);
+        $per_page  = $request->input('per_page', 10);
+        $sortField = $request->input('sort_field', 'created_at');
+        $filters   = $request->input('filters', []);
+        $search    = $request->input('search', '');
+        $order     = $request->input('order', null) === "ascend" ? 'asc' : ($request->input('order', null) === "descend" ? 'desc' : null);
+
         $department = Department::with('classes')->where('slug', $department_slug)->firstOrFail();
 
-        $data = User::whereHas('roles', fn($q) => $q->where('name', 'staff'))
-            ->whereHas('classAssign', function ($q) use ($department) {
-                $q->where('dept_id', $department->id);
+        $staffQuery = User::query()
+            ->whereHas('roles', fn($q) => $q->where('name', 'staff'))
+            ->whereHas('classAssign', fn($q) => $q->where('dept_id', $department->id));
+
+        $this->applyFilters($staffQuery, $filters);
+        $this->applySearch($staffQuery, $search);
+        if ($order && in_array($sortField, ['name', 'email', 'created_at'])) {
+            $staffQuery->orderBy($sortField, $order);
+        } else {
+            $staffQuery->latest($sortField);
+        }
+
+        return $staffQuery->paginate($per_page, ['*'], 'page', $page)->withQueryString();
+    }
+
+    private function applyFilters($query, $filters)
+    {
+        foreach ($filters as $field => $value) {
+            $query->whereHas('academics', function ($q) use ($field, $value) {
+                is_array($value) ? $q->whereIn($field, $value) : $q->where($field, $value);
             });
-        return $data;
+        }
+    }
+
+    private function applySearch($query, $search)
+    {
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('email', 'like', '%' . $search . '%');
+            });
+        }
     }
 
     public function departmentCreateView()

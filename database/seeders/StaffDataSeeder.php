@@ -17,7 +17,7 @@ class StaffDataSeeder extends Seeder
     public function run(): void
     {
         User::factory(50)->create([
-            'name'     => 'John Doe',
+            'name'     => fake()->name(),
             // 'unique_id' => 'STU' . str_pad('3453454', 6, '0', STR_PAD_LEFT),
             'phone'    => '1234567890',
             'password' => Hash::make('12345678'),

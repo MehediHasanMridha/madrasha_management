@@ -1,10 +1,12 @@
 import TableUI from '@/Components/UI/TableUI';
 import { getAvatarImage } from '@/lib/avatarImageUrlUtils';
-import { usePage } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
 import { Avatar } from 'antd';
+import { useState } from 'react';
 
-const TeacherListTableContainer = () => {
+const TeacherListTableContainer = ({ department }) => {
     const { staff } = usePage().props;
+    const [loading, setLoading] = useState(false);
     const Columns = [
         {
             title: 'ID',
@@ -19,7 +21,7 @@ const TeacherListTableContainer = () => {
             sorter: true,
             render: (text, record) => (
                 <span className="flex items-center gap-x-5">
-                    <Avatar src={getAvatarImage(record.image, 'student_images', record.name)} size={60} />
+                    <Avatar src={getAvatarImage(record.image, 'staff_images', record.name)} size={60} />
                     {text}
                 </span>
             ),
@@ -36,7 +38,39 @@ const TeacherListTableContainer = () => {
             ),
         },
     ];
-    return <TableUI dataSource={staff} className="w-full" columns={Columns} />;
+
+    const handleTableChange = (pagination, filters, sorter) => {
+        router.get(
+            route('department.view', {
+                department_slug: department.slug,
+                page: pagination.current,
+                sort: sorter.field,
+                order: sorter.order,
+                per_page: pagination.pageSize,
+                type: 'staff',
+                filters: {
+                    ...filters,
+                },
+            }),
+            {},
+            {
+                onStart: () => {
+                    setLoading(true);
+                },
+                preserveState: true,
+                preserveScroll: true,
+                onFinish: () => {
+                    setLoading(false);
+                },
+                onError: (errors) => {
+                    console.log('🚀 ~ handleTableChange ~ errors:', errors);
+                    setLoading(false);
+                },
+            },
+        );
+    };
+
+    return <TableUI dataSource={staff} loading={loading} className="w-full" columns={Columns} onChange={handleTableChange} />;
 };
 
 export default TeacherListTableContainer;

@@ -8,7 +8,10 @@ const StaffListContainer = ({ staffs }) => {
     const handleCheckBox = (list) => {
         checkListDispatch({ type: 'setCheckedList', list });
     };
-    return <StaffListComponent staffs={staffs} assign_staff={assign_staff?.data} handleCheckBox={handleCheckBox} checkedList={checkedList} />;
+    const unassignedStaffs = staffs.filter((staff) => {
+        return !assign_staff.data.some((assignedStaff) => assignedStaff.id === staff.id);
+    });
+    return <StaffListComponent data={unassignedStaffs} handleCheckBox={handleCheckBox} checkedList={checkedList} />;
 };
 
 export default StaffListContainer;

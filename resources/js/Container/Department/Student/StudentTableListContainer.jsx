@@ -17,7 +17,7 @@ const StudentTableListContainer = ({ department, data, filters, sortOrder, setIs
             dataIndex: 'name',
             key: 'name',
             sorter: true,
-            defaultSortOrder: sortOrder === 'asc' ? 'ascend' : sortOrder === 'desc' ? 'descend' : undefined,
+            defaultSortOrder: sortOrder === 'undefined' ? undefined : sortOrder,
             render: (text, record) => (
                 <span className="flex items-center gap-x-5">
                     <Avatar src={getAvatarImage(record.image, 'student_images', record.name)} size={60} />
@@ -69,7 +69,8 @@ const StudentTableListContainer = ({ department, data, filters, sortOrder, setIs
                         department_slug: department.slug,
                         page: pagination.current,
                         per_page: pagination.pageSize,
-                        order: sorter?.order === 'ascend' ? 'asc' : sorter?.order === 'descend' ? 'desc' : undefined,
+                        order: sorter.order,
+                        sort_field: sorter.field,
                         filters: {
                             ...filters,
                         },
