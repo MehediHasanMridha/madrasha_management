@@ -41,7 +41,7 @@ class StaffDataSeeder extends Seeder
                 'numbers'     => json_encode(['01712345678']),
             ]);
 
-            $staff->academic()->create([
+            Academic::create([
                 'salary'           => 8540,
                 'blood'            => 'A+',
                 'reference'        => null,
