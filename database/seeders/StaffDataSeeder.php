@@ -16,42 +16,39 @@ class StaffDataSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory(50)->create([
-            'name'     => fake()->name(),
-            // 'unique_id' => 'STU' . str_pad('3453454', 6, '0', STR_PAD_LEFT),
-            'phone'    => '1234567890',
-            'password' => Hash::make('12345678'),
-        ])->each(function ($student) {
+
+        User::factory(50)->create()->each(function ($staff) {
+            $staff->name      = fake()->name();
+            $staff->unique_id = generateUniqueId('S');
+            $staff->phone     = '1234567890';
+            $staff->password  = Hash::make('12345678');
+            $staff->save();
+
             $role = Role::firstOrCreate(['name' => 'staff']);
-            $student->assignRole($role);
+            $staff->assignRole($role);
 
-            $address           = new Address();
-            $address->user_id  = $student->id;
-            $address->district = 'Dhaka';
-            $address->upazilla = 'Gazipur';
-            $address->location = 'Dhaka';
-            $address->save();
-
-            $guardian              = new Guardian();
-            $guardian->user_id     = $student->id;
-            $guardian->father_name = 'John Doe';
-            $guardian->mother_name = 'Jane Doe';
-            $guardian->numbers     = json_encode([
-                '01712345678',
+            Address::create([
+                'user_id'  => $staff->id,
+                'district' => 'Dhaka',
+                'upazilla' => 'Gazipur',
+                'location' => 'Dhaka',
             ]);
-            $guardian->save();
 
-            $academic                   = new Academic();
-            $academic->user_id          = $student->id;
-            $academic->boarding_fee     = 854;
-            $academic->academic_fee     = 854;
-            $academic->blood            = 'A+';
-            $academic->reference        = null;
-            $academic->reference_number = null;
-            $academic->class_id         = 1;
-            $academic->department_id    = 2;
-            $academic->save();
+            Guardian::create([
+                'user_id'     => $staff->id,
+                'father_name' => 'John Doe',
+                'mother_name' => 'Jane Doe',
+                'numbers'     => json_encode(['01712345678']),
+            ]);
 
+            $staff->academic()->create([
+                'salary'           => 8540,
+                'blood'            => 'A+',
+                'reference'        => null,
+                'reference_number' => null,
+                'class_id'         => 1,
+                'department_id'    => 2,
+            ]);
         });
 
     }

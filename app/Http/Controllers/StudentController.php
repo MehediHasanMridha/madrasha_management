@@ -16,7 +16,6 @@ class StudentController extends Controller
     {
         $request->validate([
             'name'                    => 'required|string|max:120',
-            'student_id'              => ['required', 'string', 'max:120', 'unique:users,unique_id'],
             'blood_group'             => 'required|in:O+,O-,A+,A-,B+,B-,AB+,AB-',
             'contact_number'          => 'required|string|max:14|unique:users,phone',
             'father_name'             => 'required|string|max:120',
@@ -36,7 +35,7 @@ class StudentController extends Controller
 
         $student            = new User();
         $student->name      = $request->name;
-        $student->unique_id = $request->student_id;
+        $student->unique_id = generateUniqueId('S');
         $student->phone     = $request->contact_number;
         if ($request->hasFile('student_image')) {
             $img          = uploadImage($student->img, $request->file('student_image'), 'uploads/student_images/');

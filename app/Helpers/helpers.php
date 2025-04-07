@@ -1,4 +1,6 @@
 <?php
+
+use App\Models\User;
 use Intervention\Image\Laravel\Facades\Image;
 
 //image processing & uploading function
@@ -28,5 +30,37 @@ if (! function_exists('uploadImage')) {
         $imageProcessed->save($imageUrl);
 
         return $filename;
+    }
+}
+
+// generate unique id for student and teacher
+if (! function_exists('generateUniqueId')) {
+    function generateUniqueId($type)
+    {
+        // বর্তমান বছর বের করুন
+        $year = date('Y');
+
+        // সর্বশেষ আইডি বের করুন
+        $lastUser = User::where('unique_id', 'like', "$year-$type%")
+            ->orderBy('id', 'desc')
+            ->first();
+
+        // যদি কোনো আইডি না থাকে, তাহলে প্রথম আইডি সেট করুন
+        if (! $lastUser) {
+            return "$year-$type" . '0001';
+        }
+
+        // সর্বশেষ আইডি থেকে সংখ্যা বের করুন
+        $lastIdNumber = (int) substr($lastUser->unique_id, 6);
+
+        // নতুন আইডি তৈরি করুন
+        $newIdNumber = str_pad($lastIdNumber + 1, 4, '0', STR_PAD_LEFT);
+
+        // যদি 4 ডিজিট পূর্ণ হয়ে যায়, তাহলে 5 বা তার বেশি ডিজিট ব্যবহার করুন
+        if (strlen($newIdNumber) > 4) {
+            $newIdNumber = str_pad($lastIdNumber + 1, strlen($lastIdNumber + 1), '0', STR_PAD_LEFT);
+        }
+
+        return "$year-$type" . $newIdNumber;
     }
 }

@@ -56,13 +56,7 @@ const ManageStaffComponent = ({
                                 defaultValue=""
                                 rules={{ required: 'Image is required' }}
                                 render={({ field: { ref, onChange } }) => (
-                                    <FileUploadField
-                                        type="picture-circle"
-                                        className="rounded-full"
-                                        text={'Upload Image'}
-                                        ref={ref}
-                                        onChange={onChange}
-                                    />
+                                    <FileUploadField type="picture-card" text={'Upload Image'} ref={ref} onChange={onChange} />
                                 )}
                             />
                         </Field>

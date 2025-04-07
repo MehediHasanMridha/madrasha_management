@@ -78,9 +78,10 @@ class StaffController extends Controller
             'contact_number.unique' => 'This contact number already exists',
         ]);
 
-        $staff        = new User();
-        $staff->name  = $request->name;
-        $staff->phone = $request->contact_number;
+        $staff            = new User();
+        $staff->name      = $request->name;
+        $staff->unique_id = generateUniqueId('T');
+        $staff->phone     = $request->contact_number;
         if ($request->hasFile('staff_image')) {
             $img        = uploadImage($staff->img, $request->file('staff_image'), 'uploads/staff_images/');
             $staff->img = $img;

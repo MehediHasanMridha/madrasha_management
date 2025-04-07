@@ -58,20 +58,23 @@ const StudentSectionComponent = ({
             >
                 <form className="max-h-[70vh] overflow-y-scroll">
                     <FieldSet label={'Personal Information'} labelClassName="text-[16px] font-bold" hr={true}>
+                        <Field error={errors.student_image}>
+                            <Controller
+                                name="student_image"
+                                control={control}
+                                defaultValue=""
+                                rules={{ required: 'Student Image is required' }}
+                                render={({ field: { ref, onChange } }) => (
+                                    <FileUploadField type="picture-card" text={'Upload Image'} ref={ref} onChange={onChange} />
+                                )}
+                            />
+                        </Field>
                         <Field error={errors.name} label={'Student Name'}>
                             <input
                                 type="text"
                                 className="rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
                                 placeholder="Enter Student Name"
                                 {...register('name', { required: 'Name is required' })}
-                            />
-                        </Field>
-                        <Field label={'Student ID'} error={errors.student_id}>
-                            <input
-                                type="text"
-                                className="rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
-                                placeholder="Enter Student ID"
-                                {...register('student_id', { required: 'Student ID is required' })}
                             />
                         </Field>
                         <Field label={'Blood Group'} error={errors.blood_group}>
@@ -97,23 +100,6 @@ const StudentSectionComponent = ({
                                 className="rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
                                 placeholder="Enter Contact Number"
                                 {...register('contact_number', { required: 'Contact Number is required' })}
-                            />
-                        </Field>
-                        <Field error={errors.student_image}>
-                            <Controller
-                                name="student_image"
-                                control={control}
-                                defaultValue=""
-                                rules={{ required: 'Student Image is required' }}
-                                render={({ field: { ref, onChange } }) => (
-                                    <FileUploadField
-                                        type="picture-circle"
-                                        className="rounded-full"
-                                        text={'Upload Image'}
-                                        ref={ref}
-                                        onChange={onChange}
-                                    />
-                                )}
                             />
                         </Field>
                     </FieldSet>
