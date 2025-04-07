@@ -17,13 +17,13 @@ class DepartmentController extends Controller
     {
         try {
             $request   = request();
-            $page      = $request->input('page', 1);
-            $per_page  = $request->input('per_page', 10);
-            $sortField = $request->input('sort_field', 'created_at');
+            $page      = $request->input('s_page', 1);
+            $per_page  = $request->input('s_per_page', 10);
+            $sortField = $request->input('s_sort_field', 'created_at');
             $filters   = $request->input('filters', []);
             $search    = $request->input('search', '');
             $type      = $request->input('type', '');
-            $order     = $request->input('order', null) === "ascend" ? 'asc' : ($request->input('order', null) === "descend" ? 'desc' : null);
+            $order     = $request->input('s_order', null) === "ascend" ? 'asc' : ($request->input('order', null) === "descend" ? 'desc' : null);
 
             $department = Department::with('classes')->where('slug', $department_slug)->firstOrFail();
 

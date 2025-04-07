@@ -33,11 +33,11 @@ function allStaffCheckListReducer(checkedList, action) {
     }
 }
 
-export function TeacherSectionProvider({ children }) {
+export function TeacherSectionProvider({ children, value }) {
     const [staffs, dispatch] = useReducer(allStaffListReducer, initialStaffs);
     const [checkedList, checkListDispatch] = useReducer(allStaffCheckListReducer, initialCheckedList);
 
-    return <TeachersContext.Provider value={{ staffs, dispatch, checkedList, checkListDispatch }}>{children}</TeachersContext.Provider>;
+    return <TeachersContext.Provider value={{ staffs, dispatch, checkedList, checkListDispatch, ...value }}>{children}</TeachersContext.Provider>;
 }
 
 export function useTeachersContext() {

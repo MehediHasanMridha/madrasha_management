@@ -67,10 +67,10 @@ const StudentTableListContainer = ({ department, data, filters, sortOrder, setIs
                 router.get(
                     route('department.view', {
                         department_slug: department.slug,
-                        page: pagination.current,
-                        per_page: pagination.pageSize,
-                        order: sorter.order,
-                        sort_field: sorter.field,
+                        s_page: pagination.current,
+                        s_per_page: pagination.pageSize,
+                        s_order: sorter.order,
+                        s_sort_field: sorter.field,
                         filters: {
                             ...filters,
                         },

@@ -20,3 +20,10 @@ export const getUrlParams = () => {
     const url = new URL(window.location.href);
     return url.searchParams.get('type');
 };
+
+
+export const deleteAllUrlParams = () => {
+    const url = window.location.origin + window.location.pathname; // Keep only the base URL and path
+    window.history.replaceState(null, '', url); // Update the URL without parameters
+};
+

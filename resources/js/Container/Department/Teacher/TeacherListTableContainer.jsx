@@ -6,7 +6,7 @@ import { useState } from 'react';
 
 const TeacherListTableContainer = ({ department }) => {
     const { staff } = usePage().props;
-    const [loading, setLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const Columns = [
         {
             title: 'ID',
@@ -55,22 +55,22 @@ const TeacherListTableContainer = ({ department }) => {
             {},
             {
                 onStart: () => {
-                    setLoading(true);
+                    setIsLoading(true);
                 },
                 preserveState: true,
                 preserveScroll: true,
                 onFinish: () => {
-                    setLoading(false);
+                    setIsLoading(false);
                 },
                 onError: (errors) => {
                     console.log('🚀 ~ handleTableChange ~ errors:', errors);
-                    setLoading(false);
+                    setIsLoading(false);
                 },
             },
         );
     };
 
-    return <TableUI dataSource={staff} loading={loading} className="w-full" columns={Columns} onChange={handleTableChange} />;
+    return <TableUI dataSource={staff} loading={isLoading} className="w-full" columns={Columns} onChange={handleTableChange} />;
 };
 
 export default TeacherListTableContainer;

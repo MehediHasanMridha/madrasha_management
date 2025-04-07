@@ -1,3 +1,4 @@
+import { StudentSectionProvider } from '@/contextApi&reducer/Department/StudentContextApi';
 import { router } from '@inertiajs/react';
 import { notification } from 'antd';
 import { useState } from 'react';
@@ -67,24 +68,26 @@ const StudentSectionContainer = ({ department, students, filters, sortOrder }) =
     };
 
     return (
-        <StudentSectionComponent
-            contextHolder={contextHolder}
-            department={department}
-            students={students}
-            filters={filters}
-            sortOrder={sortOrder}
-            isModalOpen={isModalOpen}
-            isLoading={isLoading}
-            handleOk={handleOk}
-            handleCancel={handleCancel}
-            setIsModalOpen={setIsModalOpen}
-            handleSubmit={handleSubmit}
-            onSubmit={onSubmit}
-            register={register}
-            errors={errors}
-            control={control}
-            setIsLoading={setIsLoading}
-        />
+        <StudentSectionProvider>
+            <StudentSectionComponent
+                contextHolder={contextHolder}
+                department={department}
+                students={students}
+                filters={filters}
+                sortOrder={sortOrder}
+                isModalOpen={isModalOpen}
+                isLoading={isLoading}
+                handleOk={handleOk}
+                handleCancel={handleCancel}
+                setIsModalOpen={setIsModalOpen}
+                handleSubmit={handleSubmit}
+                onSubmit={onSubmit}
+                register={register}
+                errors={errors}
+                control={control}
+                setIsLoading={setIsLoading}
+            />
+        </StudentSectionProvider>
     );
 };
 
