@@ -1,5 +1,6 @@
 import TableUI from '@/Components/UI/TableUI';
 import { getAvatarImage } from '@/lib/avatarImageUrlUtils';
+import { router } from '@inertiajs/react';
 import { Avatar } from 'antd';
 
 const StaffTableListContainer = ({ data, filters, sortOrder, setIsLoading }) => {

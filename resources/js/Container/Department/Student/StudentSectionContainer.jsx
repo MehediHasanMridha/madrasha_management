@@ -30,7 +30,7 @@ const StudentSectionContainer = ({ department, students, filters, sortOrder }) =
     const onSubmit = (data) => {
         router.post(
             route('student.add_student', { department_slug: department.slug }),
-            { ...data, student_image: data.student_image.file.originFileObj, department_id: department.id },
+            { ...data, student_image: data.student_image ? data.student_image.file.originFileObj : null, department_id: department.id },
             {
                 onStart: () => {
                     setIsLoading(true);
