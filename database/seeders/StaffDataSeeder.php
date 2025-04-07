@@ -42,6 +42,7 @@ class StaffDataSeeder extends Seeder
             ]);
 
             Academic::create([
+                'user_id'          => $staff->id,
                 'salary'           => 8540,
                 'blood'            => 'A+',
                 'reference'        => null,
