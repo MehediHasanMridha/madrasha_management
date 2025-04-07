@@ -16,7 +16,7 @@ class StudentDataSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory(500)->make()->each(function ($student) {
+        User::factory(100)->make()->each(function ($student) {
             $student->name      = fake()->name();
             $student->unique_id = generateUniqueId('S');
             $student->phone     = '1234567890';
