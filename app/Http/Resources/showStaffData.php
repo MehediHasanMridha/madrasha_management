@@ -17,6 +17,7 @@ class showStaffData extends JsonResource
         return [
             'id'          => $this->id,
             'name'        => $this->name,
+            'unique_id'   => $this->unique_id,
             'image'       => $this->img,
             'father_name' => $this->guardians->father_name,
         ];
