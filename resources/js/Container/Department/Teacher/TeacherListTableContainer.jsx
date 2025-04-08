@@ -2,11 +2,16 @@ import TableUI from '@/Components/UI/TableUI';
 import { getAvatarImage } from '@/lib/avatarImageUrlUtils';
 import { router, usePage } from '@inertiajs/react';
 import { Avatar } from 'antd';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const TeacherListTableContainer = ({ department }) => {
     const { staff } = usePage().props;
-    const [isLoading, setIsLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const timer = setTimeout(() => setLoading(false), 1000);
+        return () => clearTimeout(timer); // Cleanup the timer on component unmount
+    }, []);
     const Columns = [
         {
             title: 'ID',
@@ -55,22 +60,22 @@ const TeacherListTableContainer = ({ department }) => {
             {},
             {
                 onStart: () => {
-                    setIsLoading(true);
+                    setLoading(true);
                 },
                 preserveState: true,
                 preserveScroll: true,
                 onFinish: () => {
-                    setIsLoading(false);
+                    setLoading(false);
                 },
                 onError: (errors) => {
                     console.log('🚀 ~ handleTableChange ~ errors:', errors);
-                    setIsLoading(false);
+                    setLoading(false);
                 },
             },
         );
     };
 
-    return <TableUI dataSource={staff} loading={isLoading} className="w-full" columns={Columns} onChange={handleTableChange} />;
+    return <TableUI dataSource={staff} className="w-full" columns={Columns} onChange={handleTableChange} loading={loading} />;
 };
 
 export default TeacherListTableContainer;

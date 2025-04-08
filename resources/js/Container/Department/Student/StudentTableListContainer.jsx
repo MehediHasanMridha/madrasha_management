@@ -2,9 +2,16 @@ import TableUI from '@/Components/UI/TableUI';
 import { getAvatarImage } from '@/lib/avatarImageUrlUtils';
 import { router } from '@inertiajs/react';
 import { Avatar } from 'antd';
+import { useEffect, useState } from 'react';
 import { FaFilter } from 'react-icons/fa6';
 
-const StudentTableListContainer = ({ department, data, setIsLoading }) => {
+const StudentTableListContainer = ({ department, data }) => {
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const timer = setTimeout(() => setLoading(false), 1000);
+        return () => clearTimeout(timer); // Cleanup the timer on component unmount
+    }, []);
     const columns = [
         {
             title: 'ID',
@@ -75,21 +82,22 @@ const StudentTableListContainer = ({ department, data, setIsLoading }) => {
                     }),
                     {},
                     {
-                        onStart: () => {
-                            setIsLoading(true);
-                        },
                         preserveState: true,
                         preserveScroll: true,
+                        onStart: () => {
+                            setLoading(true);
+                        },
                         onFinish: () => {
-                            setIsLoading(false);
+                            setLoading(false);
                         },
                         onError: (errors) => {
                             console.log('🚀 ~ handleTableChange ~ errors:', errors);
-                            setIsLoading(false);
+                            setLoading(false);
                         },
                     },
                 );
             }}
+            loading={loading}
         />
     );
 };

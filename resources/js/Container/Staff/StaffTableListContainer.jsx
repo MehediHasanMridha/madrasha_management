@@ -2,8 +2,16 @@ import TableUI from '@/Components/UI/TableUI';
 import { getAvatarImage } from '@/lib/avatarImageUrlUtils';
 import { router } from '@inertiajs/react';
 import { Avatar } from 'antd';
+import { useEffect, useState } from 'react';
 
-const StaffTableListContainer = ({ data, filters, sortOrder, setIsLoading }) => {
+const StaffTableListContainer = ({ data }) => {
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const timer = setTimeout(() => setLoading(false), 1000);
+        return () => clearTimeout(timer); // Cleanup the timer on component unmount
+    }, []);
+
     const columns = [
         {
             title: 'ID',
@@ -16,7 +24,6 @@ const StaffTableListContainer = ({ data, filters, sortOrder, setIsLoading }) => 
             dataIndex: 'name',
             key: 'name',
             sorter: true,
-            defaultSortOrder: sortOrder === 'asc' ? 'ascend' : sortOrder === 'desc' ? 'descend' : undefined,
             render: (text, record) => {
                 return (
                     <span className="flex items-center gap-x-5">
@@ -61,11 +68,21 @@ const StaffTableListContainer = ({ data, filters, sortOrder, setIsLoading }) => 
                     {},
                     {
                         onStart: () => {
-                            setIsLoading(true);
+                            setLoading(true);
+                        },
+                        preserveState: true,
+                        preserveScroll: true,
+                        onFinish: () => {
+                            setLoading(false);
+                        },
+                        onError: (errors) => {
+                            console.log('🚀 ~ handleTableChange ~ errors:', errors);
+                            setLoading(false);
                         },
                     },
                 );
             }}
+            loading={loading}
         />
     );
 };
