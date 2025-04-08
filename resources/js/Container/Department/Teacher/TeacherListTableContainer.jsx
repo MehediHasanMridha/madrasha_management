@@ -83,7 +83,6 @@ const TeacherListTableContainer = ({ department }) => {
             key: 'action',
             render: (text, record) => (
                 <div className="flex gap-2">
-                    <Icons name="edit" />
                     <Confirmpop
                         key={record.id}
                         open={open.id === record.id && open.open}
