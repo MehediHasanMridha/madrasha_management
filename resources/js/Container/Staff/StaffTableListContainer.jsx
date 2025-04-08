@@ -1,4 +1,5 @@
 import TableUI from '@/Components/UI/TableUI';
+import Icons from '@/icons';
 import { getAvatarImage } from '@/lib/avatarImageUrlUtils';
 import { router } from '@inertiajs/react';
 import { Avatar } from 'antd';
@@ -44,8 +45,8 @@ const StaffTableListContainer = ({ data }) => {
             key: 'action',
             render: (text, record) => (
                 <div className="flex gap-2">
-                    <span className="cursor-pointer text-xl">Edit</span>
-                    <span className="cursor-pointer text-xl text-red-500">Delete</span>
+                    <Icons name="FilePenLine" />
+                    <Icons name="Trash2" />
                 </div>
             ),
         },
