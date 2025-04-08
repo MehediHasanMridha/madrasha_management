@@ -60,7 +60,8 @@ const StaffTableListContainer = ({ data }) => {
                     route('staff.index', {
                         page: pagination.current,
                         per_page: pagination.pageSize,
-                        order: sorter?.order === 'ascend' ? 'asc' : sorter?.order === 'descend' ? 'desc' : undefined,
+                        sort_field: sorter?.field,
+                        order: sorter?.order,
                         filters: {
                             ...filters,
                         },

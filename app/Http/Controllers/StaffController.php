@@ -19,8 +19,14 @@ class StaffController extends Controller
         $page      = request()->input('page', 1);
         $per_page  = request()->input('per_page', 10);
         $sortField = request()->input('sort_field', 'created_at');
-        $filters   = request()->input('filters', []);
-        $search    = request()->input('search', '');
+        $order     = match (request()->input('order', 'undefined')) {
+            'ascend' => 'asc',
+            'descend' => 'desc',
+            default => null,
+        };
+
+        $filters = request()->input('filters', []);
+        $search  = request()->input('search', '');
 
         $staff = User::with(['academics', 'guardians'])->whereHas('roles', function ($q) {
             $q->where('name', 'staff');
@@ -45,19 +51,16 @@ class StaffController extends Controller
             });
         }
 
-        if (request()->has('order')) {
-            $order = request()->input('order');
+        if ($order && in_array($sortField, ['name', 'email', 'created_at'])) {
             $staff->orderBy($sortField, $order);
         } else {
-            $staff->orderBy($sortField, 'desc');
+            $staff->latest($sortField);
         }
 
         // return $staff->get();
 
         return Inertia::render('Staff/StaffList', [
-            'staff'     => Inertia::defer(fn() => showStaffData::collection($staff->paginate($per_page, ['*'], 'page', $page))),
-            'filters'   => $filters,
-            'sortOrder' => $order ?? null,
+            'staff' => Inertia::defer(fn() => showStaffData::collection($staff->paginate($per_page, ['*'], 'page', $page))),
         ]);
     }
 

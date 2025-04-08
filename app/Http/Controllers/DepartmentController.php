@@ -68,7 +68,7 @@ class DepartmentController extends Controller
         $sortField = $request->input('sort_field', 'created_at');
         $filters   = $request->input('filters', []);
         $search    = $request->input('search', '');
-        $order     = match ($request->input('s_order', null)) {
+        $order     = match ($request->input('order', null)) {
             'ascend' => 'asc',
             'descend' => 'desc',
             default => null,
