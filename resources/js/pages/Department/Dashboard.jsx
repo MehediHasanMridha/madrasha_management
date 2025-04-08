@@ -9,7 +9,6 @@ import { FaUserGroup } from 'react-icons/fa6';
 
 const Dashboard = ({ department, students }) => {
     const [tab, setTab] = useState(() => (getUrlParams() === 'staff' ? 'staff' : 'student'));
-    console.log('rendering dashboard');
     useEffect(() => {
         if (tab === 'staff') {
             setUrlParams('staff');
