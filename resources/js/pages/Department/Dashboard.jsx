@@ -3,13 +3,13 @@ import TeacherSectionContainer from '@/Container/Department/Teacher/TeacherSecti
 import { TeacherSectionProvider } from '@/contextApi&reducer/Department/TeacherContextApi';
 import AuthenticatedLayout from '@/layouts/AuthenticatedLayout';
 import { cn, deleteAllUrlParams, deleteUrlParams, getUrlParams, setUrlParams } from '@/lib/utils';
-import { Head, WhenVisible } from '@inertiajs/react';
+import { Head, router, WhenVisible } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import { FaUserGroup } from 'react-icons/fa6';
 
-const Dashboard = ({ department, students, filters, sortOrder }) => {
+const Dashboard = ({ department, students }) => {
     const [tab, setTab] = useState(() => (getUrlParams() === 'staff' ? 'staff' : 'student'));
-
+    console.log('rendering dashboard');
     useEffect(() => {
         if (tab === 'staff') {
             setUrlParams('staff');
@@ -22,7 +22,11 @@ const Dashboard = ({ department, students, filters, sortOrder }) => {
 
     switch (tab) {
         case 'student':
-            content = <StudentSectionContainer department={department} students={students} filters={filters} sortOrder={sortOrder} />;
+            content = (
+                <WhenVisible data={'student'} fallback={<div>Loading...</div>}>
+                    <StudentSectionContainer department={department} students={students} />
+                </WhenVisible>
+            );
             break;
         case 'staff':
             content = (
@@ -60,8 +64,18 @@ const Dashboard = ({ department, students, filters, sortOrder }) => {
                         tab === 'staff' && 'border-b-[1px] border-[#4891FF] px-[8px] py-[6px] text-[#4891FF]',
                     )}
                     onClick={() => {
-                        deleteAllUrlParams();
                         setTab('staff');
+                        router.get(
+                            route('department.view', {
+                                department_slug: department.slug,
+                                type: 'staff',
+                            }),
+                            {},
+                            {
+                                preserveState: true,
+                                preserveScroll: true,
+                            },
+                        );
                     }}
                 >
                     <FaUserGroup className="inline-flex" size={24} />

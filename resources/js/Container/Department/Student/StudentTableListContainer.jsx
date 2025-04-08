@@ -4,7 +4,7 @@ import { router } from '@inertiajs/react';
 import { Avatar } from 'antd';
 import { FaFilter } from 'react-icons/fa6';
 
-const StudentTableListContainer = ({ department, data, filters, sortOrder, setIsLoading }) => {
+const StudentTableListContainer = ({ department, data, setIsLoading }) => {
     const columns = [
         {
             title: 'ID',
@@ -17,7 +17,6 @@ const StudentTableListContainer = ({ department, data, filters, sortOrder, setIs
             dataIndex: 'name',
             key: 'name',
             sorter: true,
-            defaultSortOrder: sortOrder === 'undefined' ? undefined : sortOrder,
             render: (text, record) => (
                 <span className="flex items-center gap-x-5">
                     <Avatar src={getAvatarImage(record.image, 'student_images', record.name)} size={60} />
@@ -38,7 +37,6 @@ const StudentTableListContainer = ({ department, data, filters, sortOrder, setIs
                 text: item.name,
                 value: item.id,
             })),
-            filteredValue: filters.class_id,
             filterIcon: (filtered) => <FaFilter className={`text-xl ${filtered ? 'text-red-500' : ''}`} />,
         },
         {
@@ -79,6 +77,15 @@ const StudentTableListContainer = ({ department, data, filters, sortOrder, setIs
                     {
                         onStart: () => {
                             setIsLoading(true);
+                        },
+                        preserveState: true,
+                        preserveScroll: true,
+                        onFinish: () => {
+                            setIsLoading(false);
+                        },
+                        onError: (errors) => {
+                            console.log('🚀 ~ handleTableChange ~ errors:', errors);
+                            setIsLoading(false);
                         },
                     },
                 );

@@ -1,11 +1,10 @@
-import { StudentSectionProvider } from '@/contextApi&reducer/Department/StudentContextApi';
 import { router } from '@inertiajs/react';
 import { notification } from 'antd';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import StudentSectionComponent from '../../../Components/Department/Student/StudentSectionComponent';
 
-const StudentSectionContainer = ({ department, students, filters, sortOrder }) => {
+const StudentSectionContainer = ({ department, students }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [api, contextHolder] = notification.useNotification();
@@ -68,26 +67,22 @@ const StudentSectionContainer = ({ department, students, filters, sortOrder }) =
     };
 
     return (
-        <StudentSectionProvider>
-            <StudentSectionComponent
-                contextHolder={contextHolder}
-                department={department}
-                students={students}
-                filters={filters}
-                sortOrder={sortOrder}
-                isModalOpen={isModalOpen}
-                isLoading={isLoading}
-                handleOk={handleOk}
-                handleCancel={handleCancel}
-                setIsModalOpen={setIsModalOpen}
-                handleSubmit={handleSubmit}
-                onSubmit={onSubmit}
-                register={register}
-                errors={errors}
-                control={control}
-                setIsLoading={setIsLoading}
-            />
-        </StudentSectionProvider>
+        <StudentSectionComponent
+            contextHolder={contextHolder}
+            department={department}
+            students={students}
+            isModalOpen={isModalOpen}
+            isLoading={isLoading}
+            handleOk={handleOk}
+            handleCancel={handleCancel}
+            setIsModalOpen={setIsModalOpen}
+            handleSubmit={handleSubmit}
+            onSubmit={onSubmit}
+            register={register}
+            errors={errors}
+            control={control}
+            setIsLoading={setIsLoading}
+        />
     );
 };
 

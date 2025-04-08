@@ -44,7 +44,7 @@ const TeacherListTableContainer = ({ department }) => {
             route('department.view', {
                 department_slug: department.slug,
                 page: pagination.current,
-                sort: sorter.field,
+                sort_field: sorter.field,
                 order: sorter.order,
                 per_page: pagination.pageSize,
                 type: 'staff',

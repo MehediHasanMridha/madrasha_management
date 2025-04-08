@@ -43,14 +43,13 @@ class DepartmentController extends Controller
                 $studentsQuery->latest($sortField);
             }
 
-            $staff = $type === 'staff' ? $this->staffDataShow($department_slug) : null;
+            $students = $studentsQuery->paginate($per_page, ['*'], 'page', $page)->withQueryString();
+            $staff    = $type === 'staff' ? $this->staffDataShow($department_slug) : null;
             return Inertia::render('Department/Dashboard', [
                 'department' => $department,
                 'students'   => Inertia::defer(fn() => showStudentData::collection(
-                    $studentsQuery->paginate($per_page, ['*'], 'page', $page)->withQueryString()
+                    $students ?? [],
                 )),
-                'filters'    => $filters,
-                'sortOrder'  => $request->input('s_order', 'undefined'),
                 'staff'      => Inertia::defer(fn() => showStaffData::collection(
                     $staff ?? [],
                 )),
@@ -69,7 +68,11 @@ class DepartmentController extends Controller
         $sortField = $request->input('sort_field', 'created_at');
         $filters   = $request->input('filters', []);
         $search    = $request->input('search', '');
-        $order     = $request->input('order', null) === "ascend" ? 'asc' : ($request->input('order', null) === "descend" ? 'desc' : null);
+        $order     = match ($request->input('s_order', null)) {
+            'ascend' => 'asc',
+            'descend' => 'desc',
+            default => null,
+        };
 
         $department = Department::with('classes')->where('slug', $department_slug)->firstOrFail();
 

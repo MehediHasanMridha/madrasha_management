@@ -12,8 +12,6 @@ const StudentSectionComponent = ({
     contextHolder,
     department,
     students,
-    filters,
-    sortOrder,
     isModalOpen,
     isLoading,
     handleOk,
@@ -33,13 +31,7 @@ const StudentSectionComponent = ({
                 <StaticBtn onClick={() => setIsModalOpen(true)}>
                     <RiUserAddLine className="inline-flex" /> <span>Add Student</span>
                 </StaticBtn>
-                <StudentTableListContainer
-                    department={department}
-                    data={students}
-                    filters={filters}
-                    sortOrder={sortOrder}
-                    setIsLoading={setIsLoading}
-                />
+                <StudentTableListContainer department={department} data={students} setIsLoading={setIsLoading} />
             </div>
             <ModalUI
                 isModalOpen={isModalOpen}
