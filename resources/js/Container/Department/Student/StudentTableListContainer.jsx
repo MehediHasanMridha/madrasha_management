@@ -1,3 +1,4 @@
+import Confirmpop from '@/Components/UI/Confirmpop';
 import TableUI from '@/Components/UI/TableUI';
 import Icons from '@/icons';
 import { getAvatarImage } from '@/lib/avatarImageUrlUtils';
@@ -8,11 +9,45 @@ import { FaFilter } from 'react-icons/fa6';
 
 const StudentTableListContainer = ({ department, data }) => {
     const [loading, setLoading] = useState(true);
+    const [open, setOpen] = useState({
+        id: null,
+        open: false,
+    });
+    const [confirmLoading, setConfirmLoading] = useState(false);
 
     useEffect(() => {
         const timer = setTimeout(() => setLoading(false), 1000);
         return () => clearTimeout(timer); // Cleanup the timer on component unmount
     }, []);
+
+    const handleConfirm = (id) => {
+        setOpen({
+            id,
+            open: true,
+        });
+    };
+
+    const handleCancel = () => {
+        setOpen(false);
+    };
+
+    const handleOk = async (id) => {
+        try {
+            setConfirmLoading(true);
+            router.delete(route('user.delete', id), {
+                onStart: () => {
+                    setConfirmLoading(true);
+                },
+                onFinish: () => {
+                    setConfirmLoading(false);
+                    setOpen(false);
+                },
+            });
+        } catch (error) {
+            console.log('🚀 ~ handleOk ~ error:', error);
+        }
+    };
+
     const columns = [
         {
             title: 'ID',
@@ -58,8 +93,20 @@ const StudentTableListContainer = ({ department, data }) => {
             key: 'action',
             render: (text, record) => (
                 <div className="flex gap-2">
-                    <Icons name="FilePenLine" />
-                    <Icons name="Trash2" />
+                    <Icons name="edit" />
+                    <Confirmpop
+                        key={record.id}
+                        open={open.id === record.id && open.open}
+                        handleOk={() => handleOk(record.id)}
+                        handleCancel={handleCancel}
+                        title="Are you sure You want to delete?"
+                        loading={confirmLoading}
+                        description="This action will delete the student."
+                        okText="Delete"
+                        cancelText="Cancel"
+                    >
+                        <Icons name="delete" onClick={() => handleConfirm(record.id)} />
+                    </Confirmpop>
                 </div>
             ),
         },

@@ -3,7 +3,7 @@ import { FilePenLine, Trash2 } from 'lucide-react';
 
 const Icons = ({ name, className, ...props }) => {
     switch (name) {
-        case 'FilePenLine':
+        case 'edit':
             return (
                 <FilePenLine
                     strokeWidth={1.5}
@@ -13,7 +13,7 @@ const Icons = ({ name, className, ...props }) => {
                 />
             );
             break;
-        case 'Trash2':
+        case 'delete':
             return (
                 <Trash2
                     strokeWidth={1.5}

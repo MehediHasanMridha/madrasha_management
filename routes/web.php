@@ -6,6 +6,7 @@ use App\Http\Controllers\StaffController;
 use App\Http\Controllers\StudentController;
 use App\Models\Classes;
 use App\Models\Department;
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -38,6 +39,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
     Route::get("/department/{department_slug}", [DepartmentController::class, "view"])->name("department.view");
     Route::post("/department/{department_slug}/add_student", [StudentController::class, "add_student"])->name("student.add_student");
+
+    // delete user
+    Route::delete('/user/{id}', function ($id) {
+        $user = User::find($id);
+        $user->delete();
+        return back();
+    })->name('user.delete');
 
     //staff
     Route::get("/staff", [StaffController::class, "index"])->name("staff.index");
@@ -82,6 +90,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     //assign teacher to department
     Route::get('/assign-teacher', [StaffController::class, 'assign_staff'])->name('assign.staff');
     Route::post('/assign-teacher-to-department', [StaffController::class, 'assign_staff_store'])->name('assign.staff.store');
+    Route::delete('/unassign-teacher-to-department', [StaffController::class, 'unassign_staff_store'])->name('unassign.staff.store');
 });
 
 require __DIR__ . '/settings.php';

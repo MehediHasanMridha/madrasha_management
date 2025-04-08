@@ -137,6 +137,12 @@ class StaffController extends Controller
         return showStaffData::collection($user->paginate(20)->withQueryString());
     }
 
+    public function unassign_staff_store(Request $request)
+    {
+        ClassAssign::where('user_id', $request->id)->where('dept_id', $request->department_id)->delete();
+        return back()->with('success', 'Staff unassigned successfully');
+    }
+
     public function assign_staff_store(Request $request)
     {
         // check an array
