@@ -19,7 +19,7 @@ class StaffDataSeeder extends Seeder
 
         User::factory(50)->create()->each(function ($staff) {
             $staff->name      = fake()->name();
-            $staff->unique_id = generateUniqueId('S');
+            $staff->unique_id = generateUniqueId('T');
             $staff->phone     = '1234567890';
             $staff->password  = Hash::make('12345678');
             $staff->save();

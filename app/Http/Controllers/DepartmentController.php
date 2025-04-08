@@ -5,7 +5,6 @@ use App\Http\Resources\showStaffData;
 use App\Http\Resources\showStudentData;
 use App\Models\Department;
 use App\Models\User;
-use Barryvdh\Debugbar\Facades\Debugbar;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -23,7 +22,11 @@ class DepartmentController extends Controller
             $filters   = $request->input('filters', []);
             $search    = $request->input('search', '');
             $type      = $request->input('type', '');
-            $order     = $request->input('s_order', null) === "ascend" ? 'asc' : ($request->input('order', null) === "descend" ? 'desc' : null);
+            $order     = match ($request->input('s_order', 'undefined')) {
+                'ascend' => 'asc',
+                'descend' => 'desc',
+                default => null,
+            };
 
             $department = Department::with('classes')->where('slug', $department_slug)->firstOrFail();
 
@@ -41,14 +44,13 @@ class DepartmentController extends Controller
             }
 
             $staff = $type === 'staff' ? $this->staffDataShow($department_slug) : null;
-            Debugbar::info(['staff' => $staff]);
             return Inertia::render('Department/Dashboard', [
                 'department' => $department,
                 'students'   => Inertia::defer(fn() => showStudentData::collection(
                     $studentsQuery->paginate($per_page, ['*'], 'page', $page)->withQueryString()
                 )),
                 'filters'    => $filters,
-                'sortOrder'  => $order === 'asc' ? 'ascend' : ($order === 'desc' ? 'descend' : 'undefined'),
+                'sortOrder'  => $request->input('s_order', 'undefined'),
                 'staff'      => Inertia::defer(fn() => showStaffData::collection(
                     $staff ?? [],
                 )),
