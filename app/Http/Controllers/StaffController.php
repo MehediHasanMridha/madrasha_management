@@ -7,7 +7,6 @@ use App\Models\Address;
 use App\Models\ClassAssign;
 use App\Models\Guardian;
 use App\Models\User;
-use Barryvdh\Debugbar\Facades\Debugbar;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
@@ -132,13 +131,7 @@ class StaffController extends Controller
 
         $user = User::whereHas('roles', fn($q) => $q->where('name', 'staff'))
             ->whereDoesntHave('classAssign', fn($q) => $q->where('dept_id', request()->department_id));
-
-        Debugbar::info(['assign_staff' => showStaffData::collection($user->paginate(20))]);
-        return showStaffData::collection($user->paginate(20));
-
-        return response()->json([
-            'users' => showStaffData::collection($user->paginate(20)),
-        ]);
+        return showStaffData::collection($user->paginate(20)->withQueryString());
     }
 
     public function assign_staff_store(Request $request)

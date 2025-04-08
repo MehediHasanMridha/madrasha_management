@@ -8,7 +8,7 @@ const InfiniteScrollContainer = () => {
     const handleScroll = async (url) => {
         try {
             const { data } = await axios.get(url);
-            dispatch({ type: 'loadData', staffs: data?.users });
+            dispatch({ type: 'loadData', staffs: data });
         } catch (error) {
             console.log('🚀 ~ handleClick ~ error:', error);
         }

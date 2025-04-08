@@ -11,7 +11,7 @@ const TeacherSectionContainer = ({ department }) => {
     const handleClick = async () => {
         try {
             setModal(true);
-            const { data } = await axios.get('/assign-teacher?page=1', { params: { department_id: department.id } });
+            const { data } = await axios.get('/assign-teacher', { params: { department_id: department.id, page: 1 } });
             dispatch({ type: 'added', staffs: data });
         } catch (error) {
             console.log('🚀 ~ handleClick ~ error:', error);

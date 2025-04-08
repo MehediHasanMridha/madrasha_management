@@ -12,11 +12,8 @@ function allStaffListReducer(staffs, action) {
             return action.staffs;
         case 'loadData':
             return {
-                ...staffs,
-                // ADD to unique list
-                data: [...staffs.data, ...action.staffs.data.filter((item) => !staffs.data.some((i) => i.id === item.id))],
-                // data: [...staffs.data, ...action.staffs.data],
-                next_page_url: action.staffs.next_page_url,
+                ...action.staffs,
+                data: [...staffs.data, ...action.staffs.data.filter((staff) => !staffs.data.some((s) => s.id === staff.id))],
             };
         default:
             throw new Error('Unknown action: ' + action.type);
