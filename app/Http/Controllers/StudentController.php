@@ -16,7 +16,7 @@ class StudentController extends Controller
     {
         $request->validate([
             'name'                    => 'required|string|max:120',
-            'blood_group'             => 'required|in:O+,O-,A+,A-,B+,B-,AB+,AB-',
+            'blood_group'             => 'nullable|in:O+,O-,A+,A-,B+,B-,AB+,AB-,null',
             'contact_number'          => 'required|string|max:14|unique:users,phone',
             'father_name'             => 'required|string|max:120',
             'mother_name'             => 'required|string|max:120',
@@ -72,7 +72,7 @@ class StudentController extends Controller
         $academic->user_id          = $student->id;
         $academic->boarding_fee     = $request->boarding_fee ?? null;
         $academic->academic_fee     = $request->academic_fee ?? null;
-        $academic->blood            = $request->blood_group ?? null;
+        $academic->blood            = $request->blood_group === 'null' ? null : $request->blood_group;
         $academic->reference        = $request->reference ?? null;
         $academic->reference_number = $request->reference_number ?? null;
         $academic->class_id         = $request->joining_class;

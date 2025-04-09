@@ -1,6 +1,8 @@
 import StudentSectionContainer from '@/Container/Department/Student/StudentSectionContainer';
 import TeacherSectionContainer from '@/Container/Department/Teacher/TeacherSectionContainer';
 import { TeacherSectionProvider } from '@/contextApi&reducer/Department/TeacherContextApi';
+import { useDistricts } from '@/hooks/api/useDistricts';
+import { useUpazillas } from '@/hooks/api/useUpazilla';
 import AuthenticatedLayout from '@/layouts/AuthenticatedLayout';
 import { cn, deleteAllUrlParams, deleteUrlParams, getUrlParams, setUrlParams } from '@/lib/utils';
 import { Head, router, WhenVisible } from '@inertiajs/react';
@@ -9,6 +11,9 @@ import { FaUserGroup } from 'react-icons/fa6';
 
 const Dashboard = ({ department, students }) => {
     const [tab, setTab] = useState(() => (getUrlParams() === 'staff' ? 'staff' : 'student'));
+    const { data: districts } = useDistricts();
+    const [districtId, setDistrictId] = useState(null);
+    const { data: upazillas } = useUpazillas(districtId);
     useEffect(() => {
         if (tab === 'staff') {
             setUrlParams('staff');
@@ -23,7 +28,14 @@ const Dashboard = ({ department, students }) => {
         case 'student':
             content = (
                 <WhenVisible data={'student'} fallback={<div>Loading...</div>}>
-                    <StudentSectionContainer department={department} students={students} />
+                    <StudentSectionContainer
+                        department={department}
+                        students={students}
+                        districts={districts}
+                        districtId={districtId}
+                        upazillas={upazillas}
+                        setDistrictId={setDistrictId}
+                    />
                 </WhenVisible>
             );
             break;
