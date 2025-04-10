@@ -4,7 +4,7 @@ import FileUploadField from '@/Components/UI/FileUploadField';
 import ModalUI from '@/Components/UI/ModalUI';
 import SubmitBtn from '@/Components/UI/SubmitBtn';
 import { useStudentContext } from '@/contextApi&reducer/Department/StudentContextApi';
-import { useDepartmentBoundStore } from '@/stores';
+import { useBoundStore } from '@/stores';
 import { router } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -12,7 +12,7 @@ import { Controller, useForm } from 'react-hook-form';
 const EditStudentModalFormContainer = () => {
     const [isLoading, setIsLoading] = useState(false);
     const { api, department, districts, districtId, upazillas, setDistrictId } = useStudentContext();
-    const { modal, setModal, passData } = useDepartmentBoundStore((state) => state);
+    const { modal, setModal, passData } = useBoundStore((state) => state);
 
     const {
         register,

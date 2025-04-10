@@ -2,14 +2,14 @@ import Confirmpop from '@/Components/UI/Confirmpop';
 import TableUI from '@/Components/UI/TableUI';
 import Icons from '@/icons';
 import { getAvatarImage } from '@/lib/avatarImageUrlUtils';
-import { useDepartmentBoundStore } from '@/stores';
+import { useBoundStore } from '@/stores';
 import { router } from '@inertiajs/react';
 import { Avatar } from 'antd';
 import { useEffect, useState } from 'react';
 import { FaFilter } from 'react-icons/fa6';
 
 const StudentTableListContainer = ({ department, data }) => {
-    const { setModal, setPassData } = useDepartmentBoundStore((state) => state);
+    const { setModal, setPassData } = useBoundStore((state) => state);
     const [loading, setLoading] = useState(true);
     const [open, setOpen] = useState({
         id: null,

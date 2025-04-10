@@ -1,10 +1,12 @@
 import Confirmpop from '@/Components/UI/Confirmpop';
 import TableUI from '@/Components/UI/TableUI';
 import Icons from '@/icons';
+import { useBoundStore } from '@/stores';
 import { router } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 
 const DepartmentTableListContainer = ({ data }) => {
+    const { setModal, setPassData } = useBoundStore((state) => state);
     const [loading, setLoading] = useState(true);
     const [open, setOpen] = useState({
         id: null,
@@ -45,10 +47,6 @@ const DepartmentTableListContainer = ({ data }) => {
         }
     };
 
-    const handleEdit = (slug) => {
-        router.get(route('department.edit', slug));
-    };
-
     const columns = [
         {
             title: 'Name',
@@ -68,7 +66,13 @@ const DepartmentTableListContainer = ({ data }) => {
             align: 'center',
             render: (text, record) => (
                 <div className="flex justify-center gap-2">
-                    <Icons name="edit" onClick={() => handleEdit(record.slug)} />
+                    <Icons
+                        name="edit"
+                        onClick={() => {
+                            setModal({ edit: true });
+                            setPassData(record);
+                        }}
+                    />
                     <Confirmpop
                         key={record.id}
                         open={open.id === record.id && open.open}

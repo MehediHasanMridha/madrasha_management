@@ -4,14 +4,14 @@ import FileUploadField from '@/Components/UI/FileUploadField';
 import ModalUI from '@/Components/UI/ModalUI';
 import SubmitBtn from '@/Components/UI/SubmitBtn';
 import { useStaffContext } from '@/contextApi&reducer/Staff/StaffContextApi';
-import { useStaffBoundStore } from '@/stores';
+import { useBoundStore } from '@/stores';
 import { router } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 const EditStaffModalFormContainer = () => {
     const [isLoading, setIsLoading] = useState(false);
-    const { modal, setModal, passData } = useStaffBoundStore((state) => state);
+    const { modal, setModal, passData } = useBoundStore((state) => state);
     const { api, districts, districtId, upazillas, setDistrictId } = useStaffContext();
 
     const {

@@ -1,6 +1,7 @@
 import StaticBtn from '@/Components/UI/StaticBtn';
 import AddDepartmentModalFormContainer from '@/Container/Department/AddDepartmentModalFormContainer';
 import DepartmentTableListContainer from '@/Container/Department/DepartmentTableListContainer';
+import EditDepartmentModalFormContainer from '@/Container/Department/EditDepartmentModalFormContainer';
 import SettingsLayout from '@/layouts/settings/layout';
 import { useState } from 'react';
 import { RiUserAddLine } from 'react-icons/ri';
@@ -19,6 +20,7 @@ const DepartmentView = ({ departments }) => {
                     <DepartmentTableListContainer data={departments} />
                 </div>
                 <AddDepartmentModalFormContainer isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
+                <EditDepartmentModalFormContainer />
             </div>
         </SettingsLayout>
     );

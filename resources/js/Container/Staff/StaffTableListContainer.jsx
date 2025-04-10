@@ -2,13 +2,13 @@ import Confirmpop from '@/Components/UI/Confirmpop';
 import TableUI from '@/Components/UI/TableUI';
 import Icons from '@/icons';
 import { getAvatarImage } from '@/lib/avatarImageUrlUtils';
-import { useStaffBoundStore } from '@/stores';
+import { useBoundStore } from '@/stores';
 import { router } from '@inertiajs/react';
 import { Avatar } from 'antd';
 import { useEffect, useState } from 'react';
 
 const StaffTableListContainer = ({ data, setIsLoading }) => {
-    const { setModal, setPassData } = useStaffBoundStore((state) => state);
+    const { setModal, setPassData } = useBoundStore((state) => state);
     const [loading, setLoading] = useState(true);
     const [open, setOpen] = useState({
         id: null,
