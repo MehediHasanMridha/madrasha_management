@@ -78,7 +78,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::prefix('class')->group(function () {
             Route::get('/', function () {
                 $classes = Classes::with('department')->get();
-                return Inertia::render('Class/ClassView', ['classes' => $classes]);
+                return Inertia::render('Class/index', ['classes' => $classes]);
 
             })->name('class');
             Route::get('add', [ClassController::class, 'classCreateView'])->name('class.create');

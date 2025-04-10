@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import { FilePenLine, Trash2 } from 'lucide-react';
+import { ArrowLeft, FilePenLine, Trash2 } from 'lucide-react';
 
 const Icons = ({ name, className, ...props }) => {
     switch (name) {
@@ -23,6 +23,15 @@ const Icons = ({ name, className, ...props }) => {
                 />
             );
             break;
+        case 'back_btn':
+            return (
+                <ArrowLeft
+                    strokeWidth={1.5}
+                    absoluteStrokeWidth
+                    className={cn('cursor-pointer text-black hover:text-gray-500', className)}
+                    {...props}
+                />
+            );
         default:
             break;
     }
