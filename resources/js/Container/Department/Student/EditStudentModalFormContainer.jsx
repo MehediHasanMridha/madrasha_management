@@ -74,9 +74,9 @@ const EditStudentModalFormContainer = () => {
                 department_id: department.id,
                 district: JSON.parse(data.district).name,
                 upazilla: JSON.parse(data.upazilla).name,
-                contact_number: passData.phone, // Keep existing contact number
-                academic_fee: passData.academic.academic_fee, // Keep existing academic fee
-                boarding_fee: passData.academic.boarding_fee, // Keep existing boarding fee
+                contact_number: data.contact_number,
+                academic_fee: data.academic_fee,
+                boarding_fee: data.boarding_fee,
             },
             {
                 onStart: () => {
@@ -92,10 +92,24 @@ const EditStudentModalFormContainer = () => {
                     setIsLoading(false);
                 },
                 onError: (errors) => {
-                    api.error({
-                        message: errors.message || 'An error occurred',
-                        placement: 'bottomRight',
+                    // Set form errors for each field
+                    Object.keys(errors).forEach((field) => {
+                        if (field !== 'message') {
+                            setError(field, {
+                                type: 'manual',
+                                message: errors[field],
+                            });
+                            // Set focus on the first field with an error
+                            if (field === Object.keys(errors)[0]) {
+                                setFocus(field);
+                            }
+                            api.error({
+                                message: errors[field] || 'An error occurred',
+                                placement: 'bottomRight',
+                            });
+                        }
                     });
+
                     setIsLoading(false);
                 },
             },

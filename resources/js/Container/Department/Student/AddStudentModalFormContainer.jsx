@@ -56,20 +56,22 @@ const AddStudentModalFormContainer = () => {
                     setIsLoading(false);
                 },
                 onError: (errors) => {
-                    console.log('🚀 ~ onSubmit ~ errors:', errors);
-                    if (errors.student_id) {
-                        setFocus('student_id');
-                        setError('student_id', {
-                            message: errors.student_id,
-                        });
-                    } else {
-                        setFocus('contact_number');
-                        setError('contact_number', {
-                            message: errors.contact_number,
-                        });
-                    }
+                    // Set form errors for each field
+                    Object.keys(errors).forEach((field) => {
+                        if (field !== 'message') {
+                            setError(field, {
+                                type: 'manual',
+                                message: errors[field],
+                            });
+                            // Set focus on the first field with an error
+                            if (field === Object.keys(errors)[0]) {
+                                setFocus(field);
+                            }
+                        }
+                    });
+
                     api.error({
-                        message: errors.student_id || errors.contact_number || errors.academic_fee,
+                        message: Object.values(errors)[0] || 'An error occurred',
                         placement: 'bottomRight',
                     });
                     setIsLoading(false);

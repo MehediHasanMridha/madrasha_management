@@ -87,16 +87,24 @@ const EditStaffModalFormContainer = () => {
                     setIsLoading(false);
                 },
                 onError: (errors) => {
-                    if (errors.contact_number) {
-                        setFocus('contact_number');
-                        setError('contact_number', {
-                            message: errors.contact_number,
-                        });
-                    }
-                    api.error({
-                        message: errors.contact_number,
-                        placement: 'bottomRight',
+                    // Set form errors for each field
+                    Object.keys(errors).forEach((field) => {
+                        if (field !== 'message') {
+                            setError(field, {
+                                type: 'manual',
+                                message: errors[field],
+                            });
+                            // Set focus on the first field with an error
+                            if (field === Object.keys(errors)[0]) {
+                                setFocus(field);
+                            }
+                            api.error({
+                                message: errors[field] || 'An error occurred',
+                                placement: 'bottomRight',
+                            });
+                        }
                     });
+
                     setIsLoading(false);
                 },
             },
