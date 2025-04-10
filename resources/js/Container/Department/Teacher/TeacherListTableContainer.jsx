@@ -69,7 +69,7 @@ const TeacherListTableContainer = ({ department }) => {
         },
         {
             title: "Father's Name",
-            dataIndex: 'father_name',
+            dataIndex: ['guardian', 'father_name'],
             key: 'father_name',
         },
         {

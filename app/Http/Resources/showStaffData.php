@@ -18,7 +18,6 @@ class showStaffData extends JsonResource
             'name'                    => $this->name,
             'unique_id'               => $this->unique_id,
             'image'                   => $this->img,
-            'email'                   => $this->email,
             'phone'                   => $this->phone,
             'blood_group'             => $this->academics->blood,
             'designation'             => $this->academics->designation,
