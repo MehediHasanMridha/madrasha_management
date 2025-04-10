@@ -4,7 +4,6 @@ use App\Http\Controllers\ClassController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\StudentController;
-use App\Models\Classes;
 use App\Models\Department;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
@@ -72,15 +71,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         //class
         Route::prefix('class')->group(function () {
-            Route::get('/', function () {
-                $classes = Classes::with('department')->get();
-                return Inertia::render('Class/index', ['classes' => $classes]);
-
-            })->name('class');
-            Route::get('add', [ClassController::class, 'classCreateView'])->name('class.create');
-            Route::post('add', [ClassController::class, 'classStore'])->name('class.store');
-            Route::get('{class_slug}/edit', [ClassController::class, 'edit'])->name('class.edit');
-            Route::post('{class_slug}/edit', [ClassController::class, 'update'])->name('class.update');
+            Route::get('/', [ClassController::class, 'index'])->name('class');
+            Route::post('store', [ClassController::class, 'classStore'])->name('class.store');
+            Route::post('{class_slug}/update', [ClassController::class, 'update'])->name('class.update');
             Route::delete('{class_slug}/delete', [ClassController::class, 'destroy'])->name('class.delete');
         });
 
