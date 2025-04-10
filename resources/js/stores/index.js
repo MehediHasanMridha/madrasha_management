@@ -1,0 +1,1 @@
+export { useDepartmentBoundStore } from './useDepartmentBoundStore';

@@ -83,6 +83,63 @@ class StudentController extends Controller
 
     }
 
+    public function update_student($student_id, Request $request)
+    {
+        $request->validate([
+            'name'                    => 'required|string|max:120',
+            'blood_group'             => 'nullable|in:O+,O-,A+,A-,B+,B-,AB+,AB-,null',
+            'contact_number'          => 'required|string|max:14|unique:users,phone,' . $student_id,
+            'father_name'             => 'required|string|max:120',
+            'mother_name'             => 'required|string|max:120',
+            'guardian_contact_number' => 'required|string|max:14',
+            'district'                => 'required|string|max:120',
+            'upazilla'                => 'required|string|max:120',
+            'joining_class'           => 'required',
+            'department_id'           => 'required',
+            'student_image'           => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'boarding_fee'            => 'numeric|nullable',
+            'academic_fee'            => 'numeric|nullable',
+        ]);
+
+        $student        = User::findOrFail($student_id);
+        $student->name  = $request->name;
+        $student->phone = $request->contact_number;
+
+        if ($request->hasFile('student_image')) {
+            $img          = uploadImage($student->img, $request->file('student_image'), 'uploads/student_images/');
+            $student->img = $img;
+        }
+
+        $student->save();
+
+        // Update Address
+        $address           = Address::where('user_id', $student_id)->firstOrFail();
+        $address->district = $request->district;
+        $address->upazilla = $request->upazilla;
+        $address->location = $request->location ?? null;
+        $address->save();
+
+        // Update Guardian
+        $guardian              = Guardian::where('user_id', $student_id)->firstOrFail();
+        $guardian->father_name = $request->father_name;
+        $guardian->mother_name = $request->mother_name;
+        $guardian->numbers     = json_encode([$request->guardian_contact_number]);
+        $guardian->save();
+
+        // Update Academic
+        $academic                   = Academic::where('user_id', $student_id)->firstOrFail();
+        $academic->boarding_fee     = $request->boarding_fee;
+        $academic->academic_fee     = $request->academic_fee;
+        $academic->blood            = $request->blood_group === 'null' ? null : $request->blood_group;
+        $academic->reference        = $request->reference;
+        $academic->reference_number = $request->reference_mobile_number;
+        $academic->class_id         = $request->joining_class;
+        $academic->department_id    = $request->department_id;
+        $academic->save();
+
+        return back()->with('success', 'Student updated successfully');
+    }
+
     public function students()
     {
         $page      = request()->input('page', 1);

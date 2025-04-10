@@ -12,6 +12,19 @@ use Inertia\Inertia;
 
 class DepartmentController extends Controller
 {
+    private function applyStudentQuery($department)
+    {
+        return User::query()
+            ->whereHas('academics', fn($q) => $q->where('department_id', $department->id))
+            ->whereHas('roles', fn($q) => $q->where('name', 'student'))
+            ->with([
+                'academics.class',
+                'academics.department',
+                'guardians',
+                'address',
+            ]);
+    }
+
     public function view($department_slug)
     {
         try {
@@ -30,10 +43,7 @@ class DepartmentController extends Controller
 
             $department = Department::with('classes')->where('slug', $department_slug)->firstOrFail();
 
-            $studentsQuery = User::query()
-                ->whereHas('academics', fn($q) => $q->where('department_id', $department->id))
-                ->whereHas('roles', fn($q) => $q->where('name', 'student'))
-                ->with(['academics.class', 'academics.department', 'guardians']);
+            $studentsQuery = $this->applyStudentQuery($department);
 
             $this->applyFilters($studentsQuery, $filters);
             $this->applySearch($studentsQuery, $search);
@@ -45,6 +55,7 @@ class DepartmentController extends Controller
 
             $students = $studentsQuery->paginate($per_page, ['*'], 'page', $page)->withQueryString();
             $staff    = $type === 'staff' ? $this->staffDataShow($department_slug) : null;
+
             return Inertia::render('Department/Dashboard', [
                 'department' => $department,
                 'students'   => Inertia::defer(fn() => showStudentData::collection(

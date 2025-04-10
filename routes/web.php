@@ -39,6 +39,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
     Route::get("/department/{department_slug}", [DepartmentController::class, "view"])->name("department.view");
     Route::post("/department/{department_slug}/add_student", [StudentController::class, "add_student"])->name("student.add_student");
+    Route::post("/student/{student_id}/update", [StudentController::class, "update_student"])->name("student.update_student");
 
     // delete user
     Route::delete('/user/{id}', function ($id) {

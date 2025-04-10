@@ -2,12 +2,14 @@ import Confirmpop from '@/Components/UI/Confirmpop';
 import TableUI from '@/Components/UI/TableUI';
 import Icons from '@/icons';
 import { getAvatarImage } from '@/lib/avatarImageUrlUtils';
+import { useDepartmentBoundStore } from '@/stores';
 import { router } from '@inertiajs/react';
 import { Avatar } from 'antd';
 import { useEffect, useState } from 'react';
 import { FaFilter } from 'react-icons/fa6';
 
 const StudentTableListContainer = ({ department, data }) => {
+    const { setModal, setPassData } = useDepartmentBoundStore((state) => state);
     const [loading, setLoading] = useState(true);
     const [open, setOpen] = useState({
         id: null,
@@ -69,7 +71,7 @@ const StudentTableListContainer = ({ department, data }) => {
         },
         {
             title: "Father's Name",
-            dataIndex: 'father_name',
+            dataIndex: ['guardian', 'father_name'],
             key: 'father_name',
         },
         {
@@ -93,7 +95,13 @@ const StudentTableListContainer = ({ department, data }) => {
             key: 'action',
             render: (text, record) => (
                 <div className="flex gap-2">
-                    <Icons name="edit" />
+                    <Icons
+                        name="edit"
+                        onClick={() => {
+                            setModal({ edit: true });
+                            setPassData(record);
+                        }}
+                    />
                     <Confirmpop
                         key={record.id}
                         open={open.id === record.id && open.open}

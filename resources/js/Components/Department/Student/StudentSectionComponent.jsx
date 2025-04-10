@@ -1,5 +1,6 @@
 import StaticBtn from '@/Components/UI/StaticBtn';
 import AddStudentModalFormContainer from '@/Container/Department/Student/AddStudentModalFormContainer';
+import EditStudentModalFormContainer from '@/Container/Department/Student/EditStudentModalFormContainer';
 import StudentTableListContainer from '@/Container/Department/Student/StudentTableListContainer';
 import { RiUserAddLine } from 'react-icons/ri';
 
@@ -12,6 +13,7 @@ const StudentSectionComponent = ({ contextHolder, department, students, setIsMod
                     <RiUserAddLine className="inline-flex" /> <span>Add Student</span>
                 </StaticBtn>
                 <StudentTableListContainer department={department} data={students} setIsLoading={setIsLoading} />
+                <EditStudentModalFormContainer />
             </div>
             <AddStudentModalFormContainer />
         </>
