@@ -2,17 +2,25 @@ import Confirmpop from '@/Components/UI/Confirmpop';
 import TableUI from '@/Components/UI/TableUI';
 import Icons from '@/icons';
 import { getAvatarImage } from '@/lib/avatarImageUrlUtils';
+import { useStaffBoundStore } from '@/stores';
 import { router } from '@inertiajs/react';
 import { Avatar } from 'antd';
 import { useEffect, useState } from 'react';
 
-const StaffTableListContainer = ({ data }) => {
+const StaffTableListContainer = ({ data, setIsLoading }) => {
+    const { setModal, setPassData } = useStaffBoundStore((state) => state);
     const [loading, setLoading] = useState(true);
     const [open, setOpen] = useState({
         id: null,
         open: false,
     });
     const [confirmLoading, setConfirmLoading] = useState(false);
+
+    useEffect(() => {
+        const timer = setTimeout(() => setLoading(false), 1000);
+        return () => clearTimeout(timer);
+    }, []);
+
     const handleConfirm = (id) => {
         setOpen({
             id,
@@ -27,7 +35,7 @@ const StaffTableListContainer = ({ data }) => {
     const handleOk = async (id) => {
         try {
             setConfirmLoading(true);
-            router.delete(route('user.delete', id), {
+            router.delete(route('staff.delete', id), {
                 onStart: () => {
                     setConfirmLoading(true);
                 },
@@ -37,40 +45,32 @@ const StaffTableListContainer = ({ data }) => {
                 },
             });
         } catch (error) {
-            console.log('🚀 ~ handleOk ~ error:', error);
+            console.log('Error deleting staff:', error);
         }
     };
 
-    useEffect(() => {
-        const timer = setTimeout(() => setLoading(false), 1000);
-        return () => clearTimeout(timer); // Cleanup the timer on component unmount
-    }, []);
-
     const columns = [
-        {
-            title: 'ID',
-            dataIndex: 'id',
-            key: 'id',
-            hidden: true,
-        },
         {
             title: 'Name',
             dataIndex: 'name',
             key: 'name',
             sorter: true,
-            render: (text, record) => {
-                return (
-                    <span className="flex items-center gap-x-5">
-                        <Avatar src={getAvatarImage(record.image, 'staff_images', record.name)} size={60} />
-                        {text}
-                    </span>
-                );
-            },
+            render: (text, record) => (
+                <span className="flex items-center gap-x-5">
+                    <Avatar src={getAvatarImage(record.image, 'staff_images', record.name)} size={60} />
+                    {text}
+                </span>
+            ),
         },
         {
             title: "Father's Name",
-            dataIndex: 'father_name',
+            dataIndex: ['guardian', 'father_name'],
             key: 'father_name',
+        },
+        {
+            title: 'ID',
+            dataIndex: 'unique_id',
+            key: 'unique_id',
         },
         {
             title: 'Action',
@@ -78,7 +78,13 @@ const StaffTableListContainer = ({ data }) => {
             key: 'action',
             render: (text, record) => (
                 <div className="flex gap-2">
-                    <Icons name="edit" />
+                    <Icons
+                        name="edit"
+                        onClick={() => {
+                            setModal({ edit: true });
+                            setPassData(record);
+                        }}
+                    />
                     <Confirmpop
                         key={record.id}
                         open={open.id === record.id && open.open}
@@ -86,7 +92,7 @@ const StaffTableListContainer = ({ data }) => {
                         handleCancel={handleCancel}
                         title="Are you sure You want to delete?"
                         loading={confirmLoading}
-                        description="This action will delete the student."
+                        description="This action will delete the staff member."
                         okText="Delete"
                         cancelText="Cancel"
                     >
@@ -96,6 +102,7 @@ const StaffTableListContainer = ({ data }) => {
             ),
         },
     ];
+
     return (
         <TableUI
             columns={columns}
@@ -103,27 +110,25 @@ const StaffTableListContainer = ({ data }) => {
             className="w-full"
             onChange={(pagination, filters, sorter) => {
                 router.get(
-                    route('staff.index', {
+                    route('staff.index'),
+                    {
                         page: pagination.current,
                         per_page: pagination.pageSize,
-                        sort_field: sorter?.field,
-                        order: sorter?.order,
-                        filters: {
-                            ...filters,
-                        },
-                    }),
-                    {},
+                        order: sorter.order,
+                        sort_field: sorter.field,
+                        filters,
+                    },
                     {
+                        preserveState: true,
+                        preserveScroll: true,
                         onStart: () => {
                             setLoading(true);
                         },
-                        preserveState: true,
-                        preserveScroll: true,
                         onFinish: () => {
                             setLoading(false);
                         },
                         onError: (errors) => {
-                            console.log('🚀 ~ handleTableChange ~ errors:', errors);
+                            console.log('Error in table change:', errors);
                             setLoading(false);
                         },
                     },

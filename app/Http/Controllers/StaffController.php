@@ -71,10 +71,12 @@ class StaffController extends Controller
             'blood_group'             => 'required|in:O+,O-,A+,A-,B+,B-,AB+,AB-',
             'contact_number'          => 'required|string|max:14|unique:users,phone',
             'father_name'             => 'required|string|max:120',
+            'mother_name'             => 'required|string|max:120',
             'guardian_contact_number' => 'required|string|max:14',
             'district'                => 'required|string|max:120',
             'upazilla'                => 'required|string|max:120',
-            'designation'             => 'required',
+            'designation'             => 'nullable|string|max:120',
+            'salary'                  => 'required|numeric|min:0',
             'staff_image'             => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ], [
             'contact_number.unique' => 'This contact number already exists',
@@ -120,13 +122,71 @@ class StaffController extends Controller
         $academic->user_id          = $staff->id;
         $academic->blood            = $request->blood_group ?? null;
         $academic->reference        = $request->reference ?? null;
-        $academic->reference_number = $request->reference_number ?? null;
+        $academic->reference_number = $request->reference_mobile_number ?? null;
         $academic->designation      = $request->designation;
+        $academic->salary           = $request->salary;
         $academic->department_id    = $request->department_id;
         $academic->save();
 
         return back()->with('success', 'Staff added successfully');
+    }
 
+    public function update($id, Request $request)
+    {
+        $request->validate([
+            'name'                    => 'required|string|max:120',
+            'blood_group'             => 'required|in:O+,O-,A+,A-,B+,B-,AB+,AB-,null',
+            'contact_number'          => 'required|string|max:14|unique:users,phone,' . $id,
+            'father_name'             => 'required|string|max:120',
+            'mother_name'             => 'required|string|max:120',
+            'guardian_contact_number' => 'required|string|max:14',
+            'district'                => 'required|string|max:120',
+            'upazilla'                => 'required|string|max:120',
+            'designation'             => 'nullable|string|max:120',
+            'salary'                  => 'required|numeric|min:0',
+            'staff_image'             => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+        $staff        = User::findOrFail($id);
+        $staff->name  = $request->name;
+        $staff->phone = $request->contact_number;
+        if ($request->hasFile('staff_image')) {
+            $img        = uploadImage($staff->img, $request->file('staff_image'), 'uploads/staff_images/');
+            $staff->img = $img;
+        }
+        $staff->save();
+
+        // Update Address
+        $address           = Address::where('user_id', $id)->firstOrFail();
+        $address->district = $request->district;
+        $address->upazilla = $request->upazilla;
+        $address->location = $request->location ?? null;
+        $address->save();
+
+        // Update Guardian
+        $guardian              = Guardian::where('user_id', $id)->firstOrFail();
+        $guardian->father_name = $request->father_name;
+        $guardian->mother_name = $request->mother_name;
+        $guardian->numbers     = json_encode([$request->guardian_contact_number]);
+        $guardian->save();
+
+        // Update Academic
+        $academic                   = Academic::where('user_id', $id)->firstOrFail();
+        $academic->blood            = $request->blood_group === 'null' ? null : $request->blood_group;
+        $academic->reference        = $request->reference ?? null;
+        $academic->reference_number = $request->reference_mobile_number ?? null;
+        $academic->designation      = $request->designation;
+        $academic->salary           = $request->salary;
+        $academic->save();
+
+        return back()->with('success', 'Staff updated successfully');
+    }
+
+    public function destroy($id)
+    {
+        $staff = User::findOrFail($id);
+        $staff->delete();
+        return back()->with('success', 'Staff deleted successfully');
     }
 
     public function assign_staff(Request $request)

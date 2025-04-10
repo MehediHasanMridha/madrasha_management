@@ -51,6 +51,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     //staff
     Route::get("/staff", [StaffController::class, "index"])->name("staff.index");
     Route::post("/staff/add", [StaffController::class, "store"])->name("staff.store");
+    Route::post("/staff/{id}/update", [StaffController::class, "update"])->name("staff.update");
+    Route::delete("/staff/{id}", [StaffController::class, "destroy"])->name("staff.delete");
 
     //settings
     Route::prefix("settings")->group(function () {

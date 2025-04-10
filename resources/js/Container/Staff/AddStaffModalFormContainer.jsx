@@ -3,16 +3,14 @@ import FieldSet from '@/Components/UI/FieldSet';
 import FileUploadField from '@/Components/UI/FileUploadField';
 import ModalUI from '@/Components/UI/ModalUI';
 import SubmitBtn from '@/Components/UI/SubmitBtn';
-import { useStudentContext } from '@/contextApi&reducer/Department/StudentContextApi';
-import { useDepartmentBoundStore } from '@/stores';
+import { useStaffContext } from '@/contextApi&reducer/Staff/StaffContextApi';
 import { router } from '@inertiajs/react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
-const EditStudentModalFormContainer = () => {
+const AddStaffModalFormContainer = () => {
     const [isLoading, setIsLoading] = useState(false);
-    const { api, department, districts, districtId, upazillas, setDistrictId } = useStudentContext();
-    const { modal, setModal, passData } = useDepartmentBoundStore((state) => state);
+    const { api, isModalOpen, setIsModalOpen, districts, districtId, upazillas, setDistrictId } = useStaffContext();
 
     const {
         register,
@@ -22,61 +20,24 @@ const EditStudentModalFormContainer = () => {
         reset,
         setFocus,
         setError,
-        setValue,
     } = useForm();
 
-    useEffect(() => {
-        if (passData) {
-            setValue('name', passData.name);
-            setValue('blood_group', passData.academic.blood);
-            setValue('contact_number', passData.phone); // Added back
-            setValue('father_name', passData.guardian.father_name);
-            setValue('mother_name', passData.guardian.mother_name);
-            setValue('guardian_contact_number', passData.guardian.numbers[0]);
-
-            // Find and set district from the list
-            const districtObj = districts?.data.find((d) => d.name === passData.address.district);
-            if (districtObj) {
-                setValue('district', JSON.stringify({ id: districtObj.id, name: districtObj.name }));
-                setDistrictId(districtObj.id);
-            }
-
-            setValue('location', passData.address.location);
-            setValue('joining_class', passData.academic.class_id);
-            setValue('boarding_fee', passData.academic.boarding_fee); // Added back
-            setValue('academic_fee', passData.academic.academic_fee); // Added back
-            setValue('reference', passData.academic.reference);
-            setValue('reference_mobile_number', passData.academic.reference_number);
-        }
-    }, [passData, setValue, districts]);
-
-    // Set upazilla after upazillas are loaded
-    useEffect(() => {
-        if (passData && upazillas?.data) {
-            const upazillaObj = upazillas.data.find((u) => u.name === passData.address.upazilla);
-            if (upazillaObj) {
-                setValue('upazilla', JSON.stringify({ id: upazillaObj.id, name: upazillaObj.name }));
-            }
-        }
-    }, [upazillas, passData, setValue]);
+    const handleOk = () => {
+        setIsModalOpen(false);
+    };
 
     const handleCancel = () => {
-        setModal({ edit: false });
-        reset();
+        setIsModalOpen(false);
     };
 
     const onSubmit = (data) => {
         router.post(
-            route('student.update_student', { student_id: passData.id }),
+            route('staff.store'),
             {
                 ...data,
-                student_image: data.student_image ? data.student_image.file.originFileObj : null,
-                department_id: department.id,
+                staff_image: data.staff_image ? data.staff_image.file.originFileObj : null,
                 district: JSON.parse(data.district).name,
                 upazilla: JSON.parse(data.upazilla).name,
-                contact_number: passData.phone, // Keep existing contact number
-                academic_fee: passData.academic.academic_fee, // Keep existing academic fee
-                boarding_fee: passData.academic.boarding_fee, // Keep existing boarding fee
             },
             {
                 onStart: () => {
@@ -84,16 +45,22 @@ const EditStudentModalFormContainer = () => {
                 },
                 onSuccess: () => {
                     reset();
-                    setModal({ edit: false });
+                    setIsModalOpen(false);
                     api.success({
-                        message: 'Student Updated Successfully',
+                        message: 'Staff Added Successfully',
                         placement: 'bottomRight',
                     });
                     setIsLoading(false);
                 },
                 onError: (errors) => {
+                    if (errors.contact_number) {
+                        setFocus('contact_number');
+                        setError('contact_number', {
+                            message: errors.contact_number,
+                        });
+                    }
                     api.error({
-                        message: errors.message || 'An error occurred',
+                        message: errors.contact_number,
                         placement: 'bottomRight',
                     });
                     setIsLoading(false);
@@ -104,14 +71,15 @@ const EditStudentModalFormContainer = () => {
 
     return (
         <ModalUI
-            isModalOpen={modal.edit}
+            isModalOpen={isModalOpen}
+            handleOk={handleOk}
             handleCancel={handleCancel}
             width={'80%'}
-            title="Edit Student"
+            title="Add Staff"
             footer={() => (
                 <SubmitBtn
                     loadingIndicator={isLoading}
-                    btnText={'Update Student'}
+                    btnText={'Add Staff'}
                     className="cursor-pointer bg-blue-400"
                     onClick={handleSubmit(onSubmit)}
                 />
@@ -119,28 +87,29 @@ const EditStudentModalFormContainer = () => {
         >
             <form className="max-h-[70vh] overflow-y-scroll">
                 <FieldSet label={'Personal Information'} labelClassName="text-[16px] font-bold" hr={true}>
-                    <Field error={errors.student_image}>
+                    <Field error={errors.staff_image}>
                         <Controller
-                            name="student_image"
+                            name="staff_image"
                             control={control}
                             defaultValue=""
+                            rules={{ required: 'Staff Image is required' }}
                             render={({ field: { ref, onChange } }) => (
                                 <FileUploadField type="picture-card" text={'Upload Image'} ref={ref} onChange={onChange} />
                             )}
                         />
                     </Field>
-                    <Field error={errors.name} label={'Student Name'}>
+                    <Field error={errors.name} label={'Staff Name'}>
                         <input
                             type="text"
                             className="rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
-                            placeholder="Enter Student Name"
+                            placeholder="Enter Staff Name"
                             {...register('name', { required: 'Name is required' })}
                         />
                     </Field>
                     <Field label={'Blood Group'} error={errors.blood_group}>
                         <select
                             className="w-full rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
-                            {...register('blood_group')}
+                            {...register('blood_group', { required: 'Blood Group is required' })}
                         >
                             <option value="">Select Blood Group</option>
                             <option value={'null'}>N/A</option>
@@ -163,6 +132,7 @@ const EditStudentModalFormContainer = () => {
                         />
                     </Field>
                 </FieldSet>
+
                 <FieldSet label={"Guardian's Information"} labelClassName="text-[16px] font-bold" hr={true}>
                     <Field label={'Father Name'} error={errors.father_name}>
                         <input
@@ -184,11 +154,12 @@ const EditStudentModalFormContainer = () => {
                         <input
                             type="text"
                             className="rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
-                            placeholder="Enter Contact Number"
-                            {...register('guardian_contact_number', { required: 'Contact Number is required' })}
+                            placeholder="Enter Guardian Contact Number"
+                            {...register('guardian_contact_number', { required: 'Guardian Contact Number is required' })}
                         />
                     </Field>
                 </FieldSet>
+
                 <FieldSet label={'Address Information'} labelClassName="text-[16px] font-bold" hr={true}>
                     <Field label={'District'} error={errors.district}>
                         <select
@@ -232,35 +203,34 @@ const EditStudentModalFormContainer = () => {
                         ></textarea>
                     </Field>
                 </FieldSet>
-                <FieldSet label={'Academic information'} labelClassName="text-[16px] font-bold" hr={true}>
-                    <Field label={'Joining Class'} error={errors.joining_class}>
+
+                <FieldSet label={'Academic Information'} labelClassName="text-[16px] font-bold" hr={true}>
+                    <Field label={'Designation'} error={errors.designation}>
                         <select
-                            name="joining_class"
                             className="w-full rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
-                            {...register('joining_class', { required: 'Joining Class is required' })}
+                            {...register('designation', { required: 'Designation is required' })}
                         >
-                            <option value="">Select Joining Class</option>
-                            {department.classes.map((classItem) => (
-                                <option value={classItem.id} key={classItem.id}>
-                                    {classItem.name}
-                                </option>
-                            ))}
+                            <option value="">Select Designation</option>
+                            <option value="Head Teacher">Head Teacher</option>
+                            <option value="Assistant Teacher">Assistant Teacher</option>
+                            <option value="Senior Teacher">Senior Teacher</option>
+                            <option value="Instructor">Instructor</option>
+                            <option value="Hafiz">Hafiz</option>
+                            <option value="Qari">Qari</option>
+                            <option value="Administrator">Administrator</option>
+                            <option value="Office Staff">Office Staff</option>
                         </select>
                     </Field>
-                    <Field label={'Boarding Fee'} error={errors.boarding_fee}>
+                    <Field label={'Salary'} error={errors.salary}>
                         <input
-                            type="text"
+                            type="number"
                             className="rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
-                            placeholder="Enter Boarding Fee"
-                            {...register('boarding_fee', { required: 'Boarding Fee is required' })}
-                        />
-                    </Field>
-                    <Field label={'Academic Fee'} error={errors.academic_fee}>
-                        <input
-                            type="text"
-                            className="rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
-                            placeholder="Enter Academic Fee"
-                            {...register('academic_fee', { required: 'Academic Fee is required' })}
+                            placeholder="Enter Salary"
+                            {...register('salary', {
+                                required: 'Salary is required',
+                                valueAsNumber: true,
+                                min: 0,
+                            })}
                         />
                     </Field>
                     <Field label={'Reference (Optional)'}>
@@ -285,4 +255,4 @@ const EditStudentModalFormContainer = () => {
     );
 };
 
-export default EditStudentModalFormContainer;
+export default AddStaffModalFormContainer;
