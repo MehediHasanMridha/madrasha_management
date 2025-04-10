@@ -25,6 +25,42 @@ class DepartmentController extends Controller
             ]);
     }
 
+    public function index()
+    {
+        $request   = request();
+        $page      = $request->input('page', 1);
+        $per_page  = $request->input('per_page', 10);
+        $sortField = $request->input('sort_field', 'created_at');
+        $filters   = $request->input('filters', []);
+        $search    = $request->input('search', '');
+        $order     = match ($request->input('order', null)) {
+            'ascend' => 'asc',
+            'descend' => 'desc',
+            default => null,
+        };
+
+        $query = Department::query();
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('des', 'like', '%' . $search . '%');
+            });
+        }
+
+        if ($order && in_array($sortField, ['name', 'des', 'created_at'])) {
+            $query->orderBy($sortField, $order);
+        } else {
+            $query->latest($sortField);
+        }
+
+        $departments = $query->paginate($per_page, ['*'], 'page', $page)->withQueryString();
+
+        return Inertia::render('Department/DepartmentView', [
+            'departments' => $departments,
+        ]);
+    }
+
     public function view($department_slug)
     {
         try {

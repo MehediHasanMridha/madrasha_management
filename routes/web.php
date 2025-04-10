@@ -62,16 +62,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         //department
         Route::prefix('department')->group(function () {
-            Route::get('/', function () {
-                $department = Department::all();
-                return Inertia::render('Department/DepartmentView', ['departments' => $department]);
-
-            })->name('department');
+            Route::get('/', [DepartmentController::class, 'index'])->name('department');
             Route::get('add', [DepartmentController::class, 'departmentCreateView'])->name('department.create');
             Route::post('add', [DepartmentController::class, 'departmentStore'])->name('department.store');
-            Route::get('{department_slug}/edit', [DepartmentController::class, 'edit'])->name('department.edit');
-            Route::post('{department_slug}/edit', [DepartmentController::class, 'update'])->name('department.update');
-            Route::delete('{department_slug}/delete', [DepartmentController::class, 'destroy'])->name('department.delete');
+            Route::get('{department_slug}/edit', [DepartmentController::class, 'departmentEditView'])->name('department.edit');
+            Route::post('{department_slug}/edit', [DepartmentController::class, 'departmentUpdate'])->name('department.update');
+            Route::delete('{department_slug}/delete', [DepartmentController::class, 'departmentDelete'])->name('department.delete');
         });
 
         //class
