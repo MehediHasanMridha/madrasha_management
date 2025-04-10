@@ -76,8 +76,9 @@ const StaffTableListContainer = ({ data, setIsLoading }) => {
             title: 'Action',
             dataIndex: 'action',
             key: 'action',
+            align: 'center',
             render: (text, record) => (
-                <div className="flex gap-2">
+                <div className="flex justify-center gap-2">
                     <Icons
                         name="edit"
                         onClick={() => {
