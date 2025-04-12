@@ -6,6 +6,7 @@ use App\Http\Resources\showStudentData;
 use App\Models\Department;
 use App\Models\User;
 use Exception;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -208,11 +209,26 @@ class DepartmentController extends Controller
         return redirect()->route('department')->with('success', 'Department updated successfully.');
     }
 
-    public function departmentDelete($slug)
+    public function departmentDelete(string $slug)
     {
-        $department = Department::where('slug', $slug)->firstOrFail();
-        $department->delete();
+        try {
+            $department = Department::where('slug', $slug)->firstOrFail();
+            $department->delete();
 
-        return redirect()->route('department')->with('success', 'Department deleted successfully.');
+            return redirect()
+                ->route('department')
+                ->with('success', 'Department deleted successfully.');
+
+        } catch (QueryException $e) {
+            if ($e->errorInfo[1] === 1451) {
+                return redirect()
+                    ->back()
+                    ->with('error', 'Cannot delete this department because it has associated students or staff. Please remove all students and staff from this department first.');
+            }
+
+            return redirect()
+                ->back()
+                ->with('error', 'An error occurred while deleting the department.');
+        }
     }
 }

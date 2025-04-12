@@ -37,9 +37,12 @@ const DepartmentTableListContainer = ({ data }) => {
                 onStart: () => {
                     setConfirmLoading(true);
                 },
-                onFinish: () => {
+                onFinish: (res) => {
                     setConfirmLoading(false);
                     setOpen(false);
+                },
+                onError: (errors) => {
+                    console.log('🚀 ~ router.delete ~ errors:', errors);
                 },
             });
         } catch (error) {
