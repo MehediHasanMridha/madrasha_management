@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Classes;
 use App\Models\Department;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -89,9 +90,22 @@ class ClassController extends Controller
 
     public function destroy($class_slug)
     {
-        $class = Classes::where('slug', $class_slug)->firstOrFail();
-        $class->delete();
+        try {
+            $class = Classes::where('slug', $class_slug)->firstOrFail();
+            $class->delete();
 
-        return redirect()->route('class')->with('success', 'Class deleted successfully.');
+            return redirect()->route('class')->with('success', 'Class deleted successfully.');
+
+        } catch (QueryException $e) {
+            if ($e->errorInfo[1] === 1451) {
+                return redirect()
+                    ->back()
+                    ->with('error', 'Cannot delete this Class because it has associated students or staff. Please remove all students and staff from this Class first.');
+            }
+
+            return redirect()
+                ->back()
+                ->with('error', 'An error occurred while deleting the Class.');
+        }
     }
 }
