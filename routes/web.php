@@ -4,8 +4,8 @@ use App\Http\Controllers\ClassController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\StudentController;
-use App\Models\Classes;
 use App\Models\Department;
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -23,11 +23,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
                     $q->where('name', 'student');
                 });
             },
-            'academics as teacher_count' => function ($query) {
-                $query->whereHas('student.roles', function ($q) {
-                    $q->where('name', 'teacher');
-                });
-            },
+            // 'academics as teacher_count' => function ($query) {
+            //     $query->whereHas('student.classAssign', function ($q) {
+            //         $q->where('dept_id', '==', 1);
+            //     });
+            // },
+            'classAssign as teacher_count',
         ])->get();
 
         // dd($data);
@@ -37,10 +38,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
     Route::get("/department/{department_slug}", [DepartmentController::class, "view"])->name("department.view");
     Route::post("/department/{department_slug}/add_student", [StudentController::class, "add_student"])->name("student.add_student");
+    Route::post("/student/{student_id}/update", [StudentController::class, "update_student"])->name("student.update_student");
+
+    // delete user
+    Route::delete('/user/{id}', function ($id) {
+        $user = User::find($id);
+        $user->delete();
+        return back();
+    })->name('user.delete');
 
     //staff
     Route::get("/staff", [StaffController::class, "index"])->name("staff.index");
     Route::post("/staff/add", [StaffController::class, "store"])->name("staff.store");
+    Route::post("/staff/{id}/update", [StaffController::class, "update"])->name("staff.update");
+    Route::delete("/staff/{id}", [StaffController::class, "destroy"])->name("staff.delete");
 
     //settings
     Route::prefix("settings")->group(function () {
@@ -50,33 +61,28 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         //department
         Route::prefix('department')->group(function () {
-            Route::get('/', function () {
-                $department = Department::all();
-                return Inertia::render('Department/DepartmentView', ['departments' => $department]);
-
-            })->name('department');
+            Route::get('/', [DepartmentController::class, 'index'])->name('department');
             Route::get('add', [DepartmentController::class, 'departmentCreateView'])->name('department.create');
             Route::post('add', [DepartmentController::class, 'departmentStore'])->name('department.store');
-            Route::get('{department_slug}/edit', [DepartmentController::class, 'edit'])->name('department.edit');
-            Route::post('{department_slug}/edit', [DepartmentController::class, 'update'])->name('department.update');
-            Route::delete('{department_slug}/delete', [DepartmentController::class, 'destroy'])->name('department.delete');
+            Route::get('{department_slug}/edit', [DepartmentController::class, 'departmentEditView'])->name('department.edit');
+            Route::post('{department_slug}/edit', [DepartmentController::class, 'departmentUpdate'])->name('department.update');
+            Route::delete('{department_slug}/delete', [DepartmentController::class, 'departmentDelete'])->name('department.delete');
         });
 
         //class
         Route::prefix('class')->group(function () {
-            Route::get('/', function () {
-                $classes = Classes::with('department')->get();
-                return Inertia::render('Class/ClassView', ['classes' => $classes]);
-
-            })->name('class');
-            Route::get('add', [ClassController::class, 'classCreateView'])->name('class.create');
-            Route::post('add', [ClassController::class, 'classStore'])->name('class.store');
-            Route::get('{class_slug}/edit', [ClassController::class, 'edit'])->name('class.edit');
-            Route::post('{class_slug}/edit', [ClassController::class, 'update'])->name('class.update');
+            Route::get('/', [ClassController::class, 'index'])->name('class');
+            Route::post('store', [ClassController::class, 'classStore'])->name('class.store');
+            Route::post('{class_slug}/update', [ClassController::class, 'update'])->name('class.update');
             Route::delete('{class_slug}/delete', [ClassController::class, 'destroy'])->name('class.delete');
         });
 
     });
+
+    //assign teacher to department
+    Route::get('/assign-teacher', [StaffController::class, 'assign_staff'])->name('assign.staff');
+    Route::post('/assign-teacher-to-department', [StaffController::class, 'assign_staff_store'])->name('assign.staff.store');
+    Route::delete('/unassign-teacher-to-department', [StaffController::class, 'unassign_staff_store'])->name('unassign.staff.store');
 });
 
 require __DIR__ . '/settings.php';

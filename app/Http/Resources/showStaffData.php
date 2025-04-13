@@ -13,12 +13,27 @@ class showStaffData extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        // return parent::toArray($request);
         return [
-            'id'          => $this->id,
-            'name'        => $this->name,
-            'image'       => $this->img,
-            'father_name' => $this->guardians->father_name,
+            'id'                      => $this->id,
+            'name'                    => $this->name,
+            'unique_id'               => $this->unique_id,
+            'image'                   => $this->img,
+            'phone'                   => $this->phone,
+            'blood_group'             => $this->academics->blood,
+            'designation'             => $this->academics->designation,
+            'salary'                  => $this->academics->salary,
+            'address'                 => [
+                'district' => $this->address->district,
+                'upazilla' => $this->address->upazilla,
+                'location' => $this->address->location,
+            ],
+            'guardian'                => [
+                'father_name'    => $this->guardians->father_name,
+                'mother_name'    => $this->guardians->mother_name,
+                'contact_number' => json_decode($this->guardians->numbers)[0] ?? null,
+            ],
+            'reference'               => $this->academics->reference,
+            'reference_mobile_number' => $this->academics->reference_number,
         ];
     }
 }

@@ -6,7 +6,6 @@ use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Inertia\Middleware;
-use Tighten\Ziggy\Ziggy;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -46,10 +45,6 @@ class HandleInertiaRequests extends Middleware
             'quote'       => ['message' => trim($message), 'author' => trim($author)],
             'auth'        => [
                 'user' => $request->user(),
-            ],
-            'ziggy'       => fn()       => [
-                 ...(new Ziggy)->toArray(),
-                'location' => $request->url(),
             ],
             'flash'       => [
                 'success' => Session::get('success'),

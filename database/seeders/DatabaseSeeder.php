@@ -25,43 +25,16 @@ class DatabaseSeeder extends Seeder
         $role = Role::firstOrCreate(['name' => 'super-admin']);
         $user->assignRole($role);
 
-        // User::factory(50)->create([
-        //     'name'     => 'John Doe',
-        //     // 'unique_id' => 'STU' . str_pad('3453454', 6, '0', STR_PAD_LEFT),
-        //     'phone'    => '1234567890',
-        //     'password' => Hash::make('12345678'),
-        // ])->each(function ($student) {
-        //     $role = Role::firstOrCreate(['name' => 'student']);
-        //     $student->assignRole($role);
-
-        //     $address           = new Address();
-        //     $address->user_id  = $student->id;
-        //     $address->district = 'Dhaka';
-        //     $address->upazilla = 'Gazipur';
-        //     $address->location = 'Dhaka';
-        //     $address->save();
-
-        //     $guardian              = new Guardian();
-        //     $guardian->user_id     = $student->id;
-        //     $guardian->father_name = 'John Doe';
-        //     $guardian->mother_name = 'Jane Doe';
-        //     $guardian->numbers     = json_encode([
-        //         '01712345678',
-        //     ]);
-        //     $guardian->save();
-
-        //     $academic                   = new Academic();
-        //     $academic->user_id          = $student->id;
-        //     $academic->boarding_fee     = 854;
-        //     $academic->academic_fee     = 854;
-        //     $academic->blood            = 'A+';
-        //     $academic->reference        = null;
-        //     $academic->reference_number = null;
-        //     $academic->class_id         = 1;
-        //     $academic->department_id    = 2;
-        //     $academic->save();
-
-        // });
-
+        // call other seeders
+        $this->call([
+            DepartmentDataSeeder::class,
+            ClassDataSeeder::class,
+            StaffDataSeeder::class,
+            StudentDataSeeder::class,
+            // SubjectDataSeeder::class,
+            // GuardianDataSeeder::class,
+            // AddressDataSeeder::class,
+            // AcademicDataSeeder::class,
+        ]);
     }
 }

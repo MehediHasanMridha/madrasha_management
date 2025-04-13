@@ -1,10 +1,10 @@
-import StaffListContainer from '@/Container/Staff/StaffListContainer';
+import ManageStaffContainer from '@/Container/Staff/ManageStaffContainer';
 import AuthenticatedLayout from '@/layouts/AuthenticatedLayout';
 
 const StaffList = ({ staff, filters, sortOrder }) => {
     return (
         <AuthenticatedLayout>
-            <StaffListContainer staff={staff} filters={filters} sortOrder={sortOrder} />
+            <ManageStaffContainer staff={staff} filters={filters} sortOrder={sortOrder} />
         </AuthenticatedLayout>
     );
 };

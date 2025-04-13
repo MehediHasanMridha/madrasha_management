@@ -17,4 +17,9 @@ class Department extends Model
         return $this->hasMany(Academic::class);
     }
 
+    public function classAssign()
+    {
+        return $this->hasMany(ClassAssign::class, 'dept_id');
+    }
+
 }
