@@ -27,10 +27,10 @@ class DatabaseSeeder extends Seeder
 
         // call other seeders
         $this->call([
-            DepartmentDataSeeder::class,
-            ClassDataSeeder::class,
-            StaffDataSeeder::class,
-            StudentDataSeeder::class,
+            // DepartmentDataSeeder::class,
+            // ClassDataSeeder::class,
+            // StaffDataSeeder::class,
+            // StudentDataSeeder::class,
             // SubjectDataSeeder::class,
             // GuardianDataSeeder::class,
             // AddressDataSeeder::class,
