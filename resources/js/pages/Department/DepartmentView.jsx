@@ -23,10 +23,10 @@ const DepartmentView = ({ departments, flash }) => {
         <SettingsLayout>
             {contextHolder}
             <div className="p-4">
-                <h1 className="mb-4 text-2xl font-bold">Department List</h1>
+                <h1 className="mb-4 text-2xl font-bold">Campus List</h1>
                 <div className="mt-[8px] flex w-full flex-col items-end space-y-5 rounded-[8px] bg-white p-[24px] text-center">
                     <StaticBtn className="w-fit" onClick={() => setIsModalOpen(true)}>
-                        <RiUserAddLine className="inline-flex" /> <span>Add Department</span>
+                        <RiUserAddLine className="inline-flex" /> <span>Add Campus</span>
                     </StaticBtn>
                     <DepartmentTableListContainer data={departments} />
                 </div>

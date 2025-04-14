@@ -55,7 +55,7 @@ const ClassListTableContainer = ({ classes, departments }) => {
             sorter: true,
         },
         {
-            title: 'Department',
+            title: 'Campus',
             dataIndex: ['department', 'name'],
             key: 'department',
         },
