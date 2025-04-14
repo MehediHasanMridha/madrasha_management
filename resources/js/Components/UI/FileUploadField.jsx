@@ -24,8 +24,8 @@ const FileUploadField = ({ control, fieldName, type = 'picture-card', className,
     };
 
     const handleBeforeUpload = (file) => {
-        //check file size less than or equal 1MB
-        if (file.size > 1024 * 1024) {
+        //check file size less than or equal 4MB
+        if (file.size > 1024 * 1024 * 4) {
             api.error({
                 message: 'File size is too large, please select a file that is less than 1MB.',
                 placement: 'bottomRight',

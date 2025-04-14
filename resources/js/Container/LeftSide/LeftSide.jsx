@@ -3,7 +3,6 @@ import Dashboard from '@/assets/images/dashboard.svg';
 import Finance from '@/assets/images/finance.svg';
 import Islamic_School from '@/assets/images/islamic_school.svg';
 import Logo from '@/assets/images/logo.png';
-import logout from '@/assets/images/logout.svg';
 import Staff_Icon from '@/assets/images/staff_Icon.svg';
 import SideBarUI from '@/Components/UI/SideBarUI';
 import { cn } from '@/lib/utils';
@@ -102,21 +101,6 @@ const LeftSide = () => {
                     <img src={Logo} alt="Mobile app" className="h-[24px] w-[24px]" />
                 </SideBarUI.Icon>
                 <SideBarUI.Text collapsed={collapsed}>Mobile app</SideBarUI.Text>
-            </SideBarUI.Item>
-            <SideBarUI.Item collapsed={collapsed} className="mt-[180px]">
-                <Link
-                    href={route('logout')}
-                    method="post"
-                    as="button"
-                    className="flex h-[64px] w-full cursor-pointer items-center space-x-[12px] px-[50px] hover:bg-[#F2F2F2]"
-                >
-                    <SideBarUI.Icon>
-                        <img src={logout} alt="Log out" className="h-[24px] w-[24px]" />
-                    </SideBarUI.Icon>
-                    <SideBarUI.Text collapsed={collapsed} className="text-red-500">
-                        Log out
-                    </SideBarUI.Text>
-                </Link>
             </SideBarUI.Item>
         </SideBarUI>
     );

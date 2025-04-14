@@ -25,7 +25,7 @@ class StudentController extends Controller
             'upazilla'                => 'required|string|max:120',
             'joining_class'           => 'required',
             'department_id'           => 'required',
-            'student_image'           => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'student_image'           => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:4096',
             'boarding_fee'            => 'numeric',
             'academic_fee'            => 'numeric',
         ], [
@@ -96,7 +96,7 @@ class StudentController extends Controller
             'upazilla'                => 'required|string|max:120',
             'joining_class'           => 'required',
             'department_id'           => 'required',
-            'student_image'           => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'student_image'           => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:4096',
             'boarding_fee'            => 'numeric|nullable',
             'academic_fee'            => 'numeric|nullable',
         ]);
