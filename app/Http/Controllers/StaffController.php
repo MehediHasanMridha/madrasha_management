@@ -77,7 +77,7 @@ class StaffController extends Controller
             'upazilla'                => 'required|string|max:120',
             'designation'             => 'nullable|string|max:120',
             'salary'                  => 'required|numeric|min:0',
-            'staff_image'             => 'image|mimes:jpeg,png,jpg,gif,svg|max:4096', //4MB,
+            'staff_image'             => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:4096', //4MB,
         ], [
             'contact_number.unique' => 'This contact number already exists',
         ]);
