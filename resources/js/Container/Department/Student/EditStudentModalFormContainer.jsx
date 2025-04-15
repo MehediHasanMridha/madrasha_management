@@ -8,6 +8,7 @@ import { useBoundStore } from '@/stores';
 import { router } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import DistrictUpazillaSelectionContainer from '../../Shared/DistrictUpazillaSelectionContainer';
 
 const EditStudentModalFormContainer = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -47,7 +48,7 @@ const EditStudentModalFormContainer = () => {
 
             const districtObj = districts?.data.find((d) => d.name === passData.address.district);
             if (districtObj) {
-                setValue('district', JSON.stringify({ id: districtObj.id, name: districtObj.name }));
+                setValue('district', districtObj.name);
                 setDistrictId(districtObj.id);
             }
 
@@ -65,7 +66,7 @@ const EditStudentModalFormContainer = () => {
         if (passData && upazillas?.data) {
             const upazillaObj = upazillas.data.find((u) => u.name === passData.address.upazilla);
             if (upazillaObj) {
-                setValue('upazilla', JSON.stringify({ id: upazillaObj.id, name: upazillaObj.name }));
+                setValue('upazilla', upazillaObj.name);
             }
         }
     }, [upazillas, passData, setValue]);
@@ -99,11 +100,6 @@ const EditStudentModalFormContainer = () => {
                 ...data,
                 student_image: data.student_image?.file?.originFileObj || null,
                 department_id: department.id,
-                district: JSON.parse(data.district).name,
-                upazilla: JSON.parse(data.upazilla).name,
-                contact_number: data.contact_number,
-                academic_fee: data.academic_fee,
-                boarding_fee: data.boarding_fee,
             },
             {
                 onStart: () => {
@@ -239,35 +235,39 @@ const EditStudentModalFormContainer = () => {
                 </FieldSet>
                 <FieldSet label={'Address Information'} labelClassName="text-[16px] font-bold" hr={true}>
                     <Field label={'District'} error={errors.district}>
-                        <select
+                        <Controller
                             name="district"
-                            className="w-full rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
-                            {...register('district', { required: 'District is required' })}
-                            onChange={(e) => {
-                                setDistrictId(JSON.parse(e.target.value).id);
-                            }}
-                        >
-                            <option value="">Select District</option>
-                            {districts?.data.map((district) => (
-                                <option key={district.id} value={JSON.stringify({ id: district.id, name: district.name })}>
-                                    {district.name}
-                                </option>
-                            ))}
-                        </select>
+                            control={control}
+                            rules={{ required: 'District is required' }}
+                            render={({ field: { ref, onChange } }) => (
+                                <DistrictUpazillaSelectionContainer
+                                    data={districts?.data}
+                                    onChange={(value, option) => {
+                                        onChange(value);
+                                        setDistrictId(option?.id);
+                                    }}
+                                    ref={ref}
+                                    defaultValue={passData?.address?.district}
+                                />
+                            )}
+                        />
                     </Field>
                     <Field label={'Upazilla'} error={errors.upazilla}>
-                        <select
+                        <Controller
                             name="upazilla"
-                            className="w-full rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
-                            {...register('upazilla', { required: 'Upazilla is required' })}
-                        >
-                            <option value="">Select Upazilla</option>
-                            {upazillas?.data.map((upazilla) => (
-                                <option key={upazilla.id} value={JSON.stringify({ id: upazilla.id, name: upazilla.name })}>
-                                    {upazilla.name}
-                                </option>
-                            ))}
-                        </select>
+                            control={control}
+                            rules={{ required: 'Upazilla is required' }}
+                            render={({ field: { ref, onChange } }) => (
+                                <DistrictUpazillaSelectionContainer
+                                    data={upazillas?.data}
+                                    onChange={(value) => {
+                                        onChange(value);
+                                    }}
+                                    ref={ref}
+                                    defaultValue={passData?.address?.upazilla}
+                                />
+                            )}
+                        />
                     </Field>
                     <Field label={'Location'}>
                         <textarea
