@@ -11,6 +11,7 @@ import { Controller, useForm } from 'react-hook-form';
 const AddStaffModalFormContainer = () => {
     const [isLoading, setIsLoading] = useState(false);
     const { api, isModalOpen, setIsModalOpen, districts, districtId, upazillas, setDistrictId } = useStaffContext();
+    const [fileList, setFileList] = useState([]);
 
     const {
         register,
@@ -20,6 +21,7 @@ const AddStaffModalFormContainer = () => {
         reset,
         setFocus,
         setError,
+        setValue,
     } = useForm();
 
     const handleOk = () => {
@@ -30,12 +32,22 @@ const AddStaffModalFormContainer = () => {
         setIsModalOpen(false);
     };
 
+    // Handle file change for ImgCrop component
+    const handleFileChange = ({ fileList: newFileList }) => {
+        setFileList(newFileList);
+
+        setValue('staff_image', {
+            file: newFileList[0],
+            fileList: newFileList,
+        });
+    };
+
     const onSubmit = (data) => {
         router.post(
             route('staff.store'),
             {
                 ...data,
-                staff_image: data.staff_image ? data.staff_image.file.originFileObj : null,
+                staff_image: data.staff_image?.file?.originFileObj || null,
                 district: JSON.parse(data.district).name,
                 upazilla: JSON.parse(data.upazilla).name,
             },
@@ -44,8 +56,16 @@ const AddStaffModalFormContainer = () => {
                     setIsLoading(true);
                 },
                 onSuccess: () => {
+                    // Reset form
                     reset();
+
+                    // Clear image states
+                    setFileList([]);
+
+                    // Close modal
                     setIsModalOpen(false);
+
+                    // Show success message
                     api.success({
                         message: 'Staff Added Successfully',
                         placement: 'bottomRight',
@@ -100,9 +120,14 @@ const AddStaffModalFormContainer = () => {
                             name="staff_image"
                             control={control}
                             defaultValue=""
-                            rules={{ required: 'Staff Image is required' }}
                             render={({ field: { ref, onChange } }) => (
-                                <FileUploadField type="picture-card" text={'Upload Image'} ref={ref} onChange={onChange} />
+                                <FileUploadField.Crop
+                                    type="picture-card"
+                                    text="Upload Staff Image"
+                                    fileList={fileList}
+                                    onChange={handleFileChange}
+                                    ref={ref}
+                                />
                             )}
                         />
                     </Field>

@@ -13,6 +13,7 @@ const EditStaffModalFormContainer = () => {
     const [isLoading, setIsLoading] = useState(false);
     const { modal, setModal, passData } = useBoundStore((state) => state);
     const { api, districts, districtId, upazillas, setDistrictId } = useStaffContext();
+    const [fileList, setFileList] = useState([]);
 
     const {
         register,
@@ -36,7 +37,6 @@ const EditStaffModalFormContainer = () => {
             setValue('mother_name', passData.guardian?.mother_name);
             setValue('guardian_contact_number', passData.guardian?.contact_number);
 
-            // Find and set district from the list
             const districtObj = districts?.data.find((d) => d.name === passData.address?.district);
             if (districtObj) {
                 setValue('district', JSON.stringify({ id: districtObj.id, name: districtObj.name }));
@@ -46,10 +46,19 @@ const EditStaffModalFormContainer = () => {
             setValue('location', passData.address?.location);
             setValue('reference', passData.reference);
             setValue('reference_mobile_number', passData.reference_mobile_number);
+
+            if (passData.image) {
+                const fileObj = {
+                    uid: '-1',
+                    name: passData.image,
+                    status: 'done',
+                    url: `/uploads/staff_images/${passData.image}`,
+                };
+                setFileList([fileObj]);
+            }
         }
     }, [passData, setValue, districts]);
 
-    // Set upazilla after upazillas are loaded
     useEffect(() => {
         if (passData && upazillas?.data) {
             const upazillaObj = upazillas.data.find((u) => u.name === passData.address?.upazilla);
@@ -62,6 +71,22 @@ const EditStaffModalFormContainer = () => {
     const handleCancel = () => {
         setModal({ edit: false });
         reset();
+        setFileList([]);
+    };
+
+    const handleFileChange = ({ fileList: newFileList }) => {
+        setFileList(newFileList);
+
+        if (newFileList.length > 0) {
+            if (newFileList[0].originFileObj) {
+                setValue('staff_image', {
+                    file: newFileList[0],
+                    fileList: newFileList,
+                });
+            }
+        } else {
+            setValue('staff_image', null);
+        }
     };
 
     const onSubmit = (data) => {
@@ -69,7 +94,7 @@ const EditStaffModalFormContainer = () => {
             route('staff.update', { id: passData.id }),
             {
                 ...data,
-                staff_image: data.staff_image ? data.staff_image.file.originFileObj : null,
+                staff_image: data.staff_image?.file?.originFileObj || null,
                 district: JSON.parse(data.district).name,
                 upazilla: JSON.parse(data.upazilla).name,
             },
@@ -79,6 +104,7 @@ const EditStaffModalFormContainer = () => {
                 },
                 onSuccess: () => {
                     reset();
+                    setFileList([]);
                     setModal({ edit: false });
                     api.success({
                         message: 'Staff Updated Successfully',
@@ -87,14 +113,12 @@ const EditStaffModalFormContainer = () => {
                     setIsLoading(false);
                 },
                 onError: (errors) => {
-                    // Set form errors for each field
                     Object.keys(errors).forEach((field) => {
                         if (field !== 'message') {
                             setError(field, {
                                 type: 'manual',
                                 message: errors[field],
                             });
-                            // Set focus on the first field with an error
                             if (field === Object.keys(errors)[0]) {
                                 setFocus(field);
                             }
@@ -136,7 +160,14 @@ const EditStaffModalFormContainer = () => {
                                 control={control}
                                 defaultValue=""
                                 render={({ field: { ref, onChange } }) => (
-                                    <FileUploadField type="picture-card" text={'Upload Image'} ref={ref} onChange={onChange} />
+                                    <FileUploadField.Crop
+                                        fieldName="staff_image"
+                                        type="picture-card"
+                                        text={'Update Staff Image'}
+                                        fileList={fileList}
+                                        onChange={handleFileChange}
+                                        ref={ref}
+                                    />
                                 )}
                             />
                         </Field>
