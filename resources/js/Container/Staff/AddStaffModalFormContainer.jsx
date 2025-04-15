@@ -7,6 +7,7 @@ import { useStaffContext } from '@/contextApi&reducer/Staff/StaffContextApi';
 import { router } from '@inertiajs/react';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import DistrictUpazillaSelectionContainer from '../Shared/DistrictUpazillaSelectionContainer';
 
 const AddStaffModalFormContainer = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -48,8 +49,6 @@ const AddStaffModalFormContainer = () => {
             {
                 ...data,
                 staff_image: data.staff_image?.file?.originFileObj || null,
-                district: JSON.parse(data.district).name,
-                upazilla: JSON.parse(data.upazilla).name,
             },
             {
                 onStart: () => {
@@ -195,35 +194,37 @@ const AddStaffModalFormContainer = () => {
 
                 <FieldSet label={'Address Information'} labelClassName="text-[16px] font-bold" hr={true}>
                     <Field label={'District'} error={errors.district}>
-                        <select
+                        <Controller
                             name="district"
-                            className="w-full rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
-                            {...register('district', { required: 'District is required' })}
-                            onChange={(e) => {
-                                setDistrictId(JSON.parse(e.target.value).id);
-                            }}
-                        >
-                            <option value="">Select District</option>
-                            {districts?.data.map((district) => (
-                                <option key={district.id} value={JSON.stringify({ id: district.id, name: district.name })}>
-                                    {district.name}
-                                </option>
-                            ))}
-                        </select>
+                            control={control}
+                            rules={{ required: 'District is required' }}
+                            render={({ field: { ref, onChange } }) => (
+                                <DistrictUpazillaSelectionContainer
+                                    data={districts?.data}
+                                    onChange={(value, option) => {
+                                        onChange(name);
+                                        setDistrictId(option?.id);
+                                    }}
+                                    ref={ref}
+                                />
+                            )}
+                        />
                     </Field>
                     <Field label={'Upazilla'} error={errors.upazilla}>
-                        <select
+                        <Controller
                             name="upazilla"
-                            className="w-full rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
-                            {...register('upazilla', { required: 'Upazilla is required' })}
-                        >
-                            <option value="">Select Upazilla</option>
-                            {upazillas?.data.map((upazilla) => (
-                                <option key={upazilla.id} value={JSON.stringify({ id: upazilla.id, name: upazilla.name })}>
-                                    {upazilla.name}
-                                </option>
-                            ))}
-                        </select>
+                            control={control}
+                            rules={{ required: 'Upazilla is required' }}
+                            render={({ field: { ref, onChange } }) => (
+                                <DistrictUpazillaSelectionContainer
+                                    data={upazillas?.data}
+                                    onChange={(value) => {
+                                        onChange(value);
+                                    }}
+                                    ref={ref}
+                                />
+                            )}
+                        />
                     </Field>
                     <Field label={'Location'}>
                         <textarea
