@@ -11,6 +11,7 @@ import { Controller, useForm } from 'react-hook-form';
 const AddStudentModalFormContainer = () => {
     const [isLoading, setIsLoading] = useState(false);
     const { api, department, isModalOpen, setIsModalOpen, districts, districtId, upazillas, setDistrictId } = useStudentContext();
+    const [fileList, setFileList] = useState([]);
 
     const {
         register,
@@ -31,13 +32,22 @@ const AddStudentModalFormContainer = () => {
         setIsModalOpen(false);
     };
 
+    // Handle file change for ImgCrop component
+    const handleFileChange = ({ fileList: newFileList }) => {
+        setFileList(newFileList);
+
+        setValue('student_image', {
+            file: newFileList[0],
+            fileList: newFileList,
+        });
+    };
+
     const onSubmit = (data) => {
-        console.log('🚀 ~ onSubmit ~ data:', data);
         router.post(
             route('student.add_student', { department_slug: department.slug }),
             {
                 ...data,
-                student_image: data.student_image ? data.student_image.file.originFileObj : null,
+                student_image: data.student_image?.file?.originFileObj || null,
                 department_id: department.id,
                 district: JSON.parse(data.district).name,
                 upazilla: JSON.parse(data.upazilla).name,
@@ -48,6 +58,7 @@ const AddStudentModalFormContainer = () => {
                 },
                 onSuccess: () => {
                     reset();
+                    setFileList([]);
                     setIsModalOpen(false);
                     api.success({
                         message: 'Student Added Successfully',
@@ -67,13 +78,13 @@ const AddStudentModalFormContainer = () => {
                             if (field === Object.keys(errors)[0]) {
                                 setFocus(field);
                             }
+                            api.error({
+                                message: errors[field] || 'An error occurred',
+                                placement: 'bottomRight',
+                            });
                         }
                     });
 
-                    api.error({
-                        message: Object.values(errors)[0] || 'An error occurred',
-                        placement: 'bottomRight',
-                    });
                     setIsLoading(false);
                 },
             },
@@ -103,9 +114,14 @@ const AddStudentModalFormContainer = () => {
                             name="student_image"
                             control={control}
                             defaultValue=""
-                            rules={{ required: 'Student Image is required' }}
                             render={({ field: { ref, onChange } }) => (
-                                <FileUploadField type="picture-card" text={'Upload Image'} ref={ref} onChange={onChange} />
+                                <FileUploadField.Crop
+                                    type="picture-card"
+                                    text={'Upload Student Image'}
+                                    fileList={fileList}
+                                    onChange={handleFileChange}
+                                    ref={ref}
+                                />
                             )}
                         />
                     </Field>

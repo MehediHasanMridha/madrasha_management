@@ -13,6 +13,7 @@ const EditStudentModalFormContainer = () => {
     const [isLoading, setIsLoading] = useState(false);
     const { api, department, districts, districtId, upazillas, setDistrictId } = useStudentContext();
     const { modal, setModal, passData } = useBoundStore((state) => state);
+    const [fileList, setFileList] = useState([]);
 
     const {
         register,
@@ -29,12 +30,21 @@ const EditStudentModalFormContainer = () => {
         if (passData) {
             setValue('name', passData.name);
             setValue('blood_group', passData.academic.blood);
-            setValue('contact_number', passData.phone); // Added back
+            setValue('contact_number', passData.phone);
             setValue('father_name', passData.guardian.father_name);
             setValue('mother_name', passData.guardian.mother_name);
             setValue('guardian_contact_number', passData.guardian.numbers[0]);
 
-            // Find and set district from the list
+            if (passData.image) {
+                const fileObj = {
+                    uid: '-1',
+                    name: passData.image,
+                    status: 'done',
+                    url: `/uploads/student_images/${passData.image}`,
+                };
+                setFileList([fileObj]);
+            }
+
             const districtObj = districts?.data.find((d) => d.name === passData.address.district);
             if (districtObj) {
                 setValue('district', JSON.stringify({ id: districtObj.id, name: districtObj.name }));
@@ -43,8 +53,8 @@ const EditStudentModalFormContainer = () => {
 
             setValue('location', passData.address.location);
             setValue('joining_class', passData.academic.class_id);
-            setValue('boarding_fee', passData.academic.boarding_fee); // Added back
-            setValue('academic_fee', passData.academic.academic_fee); // Added back
+            setValue('boarding_fee', passData.academic.boarding_fee);
+            setValue('academic_fee', passData.academic.academic_fee);
             setValue('reference', passData.academic.reference);
             setValue('reference_mobile_number', passData.academic.reference_number);
         }
@@ -63,6 +73,23 @@ const EditStudentModalFormContainer = () => {
     const handleCancel = () => {
         setModal({ edit: false });
         reset();
+        setFileList([]);
+    };
+
+    // Handle file change for ImgCrop component
+    const handleFileChange = ({ fileList: newFileList }) => {
+        setFileList(newFileList);
+
+        if (newFileList.length > 0) {
+            if (newFileList[0].originFileObj) {
+                setValue('student_image', {
+                    file: newFileList[0],
+                    fileList: newFileList,
+                });
+            }
+        } else {
+            setValue('student_image', null);
+        }
     };
 
     const onSubmit = (data) => {
@@ -70,7 +97,7 @@ const EditStudentModalFormContainer = () => {
             route('student.update_student', { student_id: passData.id }),
             {
                 ...data,
-                student_image: data.student_image ? data.student_image.file.originFileObj : null,
+                student_image: data.student_image?.file?.originFileObj || null,
                 department_id: department.id,
                 district: JSON.parse(data.district).name,
                 upazilla: JSON.parse(data.upazilla).name,
@@ -84,6 +111,7 @@ const EditStudentModalFormContainer = () => {
                 },
                 onSuccess: () => {
                     reset();
+                    setFileList([]);
                     setModal({ edit: false });
                     api.success({
                         message: 'Student Updated Successfully',
@@ -139,7 +167,13 @@ const EditStudentModalFormContainer = () => {
                             control={control}
                             defaultValue=""
                             render={({ field: { ref, onChange } }) => (
-                                <FileUploadField type="picture-card" text={'Upload Image'} ref={ref} onChange={onChange} />
+                                <FileUploadField.Crop
+                                    type="picture-card"
+                                    text={'Update Student Image'}
+                                    fileList={fileList}
+                                    onChange={handleFileChange}
+                                    ref={ref}
+                                />
                             )}
                         />
                     </Field>
