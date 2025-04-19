@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ClassController;
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\FinanceController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\StudentController;
 use App\Models\Department;
@@ -83,6 +84,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/assign-teacher', [StaffController::class, 'assign_staff'])->name('assign.staff');
     Route::post('/assign-teacher-to-department', [StaffController::class, 'assign_staff_store'])->name('assign.staff.store');
     Route::delete('/unassign-teacher-to-department', [StaffController::class, 'unassign_staff_store'])->name('unassign.staff.store');
+
+    //finance routes
+    Route::prefix('finance')->group(function () {
+        Route::get('/summary', [FinanceController::class, 'summary'])->name('finance.summary');
+        Route::get('/earnings', [FinanceController::class, 'earnings'])->name('finance.earnings');
+        Route::get('/outgoings', [FinanceController::class, 'outgoings'])->name('finance.outgoings');
+        Route::get('/monthly-reports', [FinanceController::class, 'monthlyReports'])->name('finance.monthly-reports');
+        Route::get('/get_student_data/{student_id}', [FinanceController::class, 'get_student_data'])->name('finance.get_student_data');
+        Route::post('/add_money', [FinanceController::class, 'add_money'])->name('finance.add_money');
+    });
 });
 
 require __DIR__ . '/settings.php';

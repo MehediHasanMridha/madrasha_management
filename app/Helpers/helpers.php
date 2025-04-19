@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Academic;
+use App\Models\FeeType;
 use App\Models\User;
 use Intervention\Image\Laravel\Facades\Image;
 
@@ -63,4 +65,25 @@ if (! function_exists('generateUniqueId')) {
 
         return "$year-$type" . $newIdNumber;
     }
+}
+
+// get student fee
+if (! function_exists('getStudentFee')) {
+    function getStudentFee($studentId, $feeSlug)
+    {
+        // ছাত্রের একাডেমিক তথ্য বের করা
+        $student = Academic::where('user_id', $studentId)->first();
+
+        // fee_types টেবিল থেকে ফি টাইপের তথ্য বের করা
+        $feeType = FeeType::where('slug', $feeSlug)->first();
+
+                                        // ছাত্রের একাডেমিক বা বোর্ডিং ফি নাম নির্ধারণ করা
+        $fieldName = $feeSlug . '_fee'; // 'academic_fee' অথবা 'boarding_fee'
+
+        // যদি ছাত্রের কাস্টম ফি থাকে, তবে তা ব্যবহার করো, না থাকলে fee_types টেবিলের default_amount ব্যবহার করো
+        $amount = $student->$fieldName ?? $feeType->default_amount;
+
+        return $amount;
+    }
+
 }

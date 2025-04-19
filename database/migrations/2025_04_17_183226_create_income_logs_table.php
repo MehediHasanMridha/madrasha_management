@@ -1,0 +1,37 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('income_logs', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete()->nullable();
+            $table->enum('source_type', ['student', 'donation', 'sponsor', 'other'])->default('student'); // student, donation, sale, sponsor, etc.
+            $table->string('source_details')->nullable();
+            $table->decimal('amount', 10, 2);
+            $table->foreignId('fee_type_id')->constrained()->cascadeOnDelete()->nullable();
+            $table->foreignId('payment_method_id')->constrained()->cascadeOnDelete();
+            $table->string('payment_period')->nullable(); // e.g. 2025-04
+            $table->enum('status', ['paid', 'pending', 'failed'])->default('paid');
+            $table->text('remarks')->nullable();
+            $table->timestamps();
+        });
+
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('income_logs');
+    }
+};
