@@ -138,8 +138,8 @@ class FinanceController extends Controller
                     'user_id'           => $student->id,
                     'month'             => $month,
                     'amount'            => $request->boarding_fee,
-                    'fee_type_id'       => FeeType::where('slug', 'boarding')->first()->id,   // get from fee_types table
-                    'payment_method_id' => PaymentMethod::where('slug', 'cash')->first()->id, // get from payment_methods table
+                    'fee_type_id'       => FeeType::where('name', 'like', '%boarding%')->first()->id, // get from fee_types table
+                    'payment_method_id' => PaymentMethod::where('slug', 'cash')->first()->id,         // get from payment_methods table
                     'status'            => 'paid',
                     'payment_period'    => $month,
                 ]);
@@ -150,8 +150,8 @@ class FinanceController extends Controller
                     'user_id'           => $student->id,
                     'month'             => $month,
                     'amount'            => $request->academic_fee,
-                    'fee_type_id'       => FeeType::where('slug', 'academic')->first()->id,   // get from fee_types table
-                    'payment_method_id' => PaymentMethod::where('slug', 'cash')->first()->id, // get from payment_methods table
+                    'fee_type_id'       => FeeType::where('name', 'like', '%academic%')->first()->id, // get from fee_types table
+                    'payment_method_id' => PaymentMethod::where('slug', 'cash')->first()->id,         // get from payment_methods table
                     'status'            => 'paid',
                     'payment_period'    => $month,
                 ]);
@@ -160,7 +160,7 @@ class FinanceController extends Controller
             if ($request->academic_due > 0) {
                 StudentDue::create([
                     'user_id'         => $student->id,
-                    'fee_type_id'     => FeeType::where('slug', 'academic')->first()->id, // get from fee_types table
+                    'fee_type_id'     => FeeType::where('name', 'like', '%academic%')->first()->id, // get from fee_types table
                     'paid_amount'     => $request->academic_fee,
                     'due_period'      => $month,
                     'expected_amount' => $request->academic_fee + $request->academic_due,
@@ -170,7 +170,7 @@ class FinanceController extends Controller
             if ($request->boarding_due > 0) {
                 StudentDue::create([
                     'user_id'         => $student->id,
-                    'fee_type_id'     => FeeType::where('slug', 'boarding')->first()->id, // get from fee_types table
+                    'fee_type_id'     => FeeType::where('name', 'like', '%boarding%')->first()->id, // get from fee_types table
                     'paid_amount'     => $request->boarding_fee,
                     'due_period'      => $month,
                     'expected_amount' => $request->boarding_fee + $request->boarding_due,

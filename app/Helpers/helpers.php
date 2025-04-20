@@ -71,17 +71,19 @@ if (! function_exists('generateUniqueId')) {
 if (! function_exists('getStudentFee')) {
     function getStudentFee($studentId, $feeSlug)
     {
-        // ছাত্রের একাডেমিক তথ্য বের করা
+        // ছাত্রের একাডেমিক তথ্য এবং ফি টাইপের তথ্য একসাথে বের করা
         $student = Academic::where('user_id', $studentId)->first();
+        $feeType = FeeType::where('name', 'like', '%' . $feeSlug . '%')->first();
 
-        // fee_types টেবিল থেকে ফি টাইপের তথ্য বের করা
-        $feeType = FeeType::where('slug', $feeSlug)->first();
+        // ফি নাম নির্ধারণ করা
+        $fieldName = match (true) {
+            in_array($feeSlug, ['academic_fee', 'academic', 'academic-fee']) => 'academic_fee',
+            in_array($feeSlug, ['boarding_fee', 'boarding', 'boarding-fee']) => 'boarding_fee',
+            default => null,
+        };
 
-                                        // ছাত্রের একাডেমিক বা বোর্ডিং ফি নাম নির্ধারণ করা
-        $fieldName = $feeSlug . '_fee'; // 'academic_fee' অথবা 'boarding_fee'
-
-        // যদি ছাত্রের কাস্টম ফি থাকে, তবে তা ব্যবহার করো, না থাকলে fee_types টেবিলের default_amount ব্যবহার করো
-        $amount = $student->$fieldName ?? $feeType->default_amount;
+        // ফি নির্ধারণ করা
+        $amount = $fieldName && $student ? ($student->$fieldName ?? $feeType->default_amount) : $feeType->default_amount;
 
         return $amount;
     }
