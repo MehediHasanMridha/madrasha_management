@@ -8,7 +8,6 @@ import { Avatar } from 'antd';
 import { useEffect, useState } from 'react';
 
 const StaffTableListContainer = ({ data, setIsLoading }) => {
-    console.log('🚀 ~ StaffTableListContainer ~ data:', data);
     const { setModal, setPassData } = useBoundStore((state) => state);
     const [loading, setLoading] = useState(true);
     const [open, setOpen] = useState({
