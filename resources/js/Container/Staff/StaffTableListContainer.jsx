@@ -8,6 +8,7 @@ import { Avatar } from 'antd';
 import { useEffect, useState } from 'react';
 
 const StaffTableListContainer = ({ data, setIsLoading }) => {
+    console.log('🚀 ~ StaffTableListContainer ~ data:', data);
     const { setModal, setPassData } = useBoundStore((state) => state);
     const [loading, setLoading] = useState(true);
     const [open, setOpen] = useState({
@@ -66,6 +67,16 @@ const StaffTableListContainer = ({ data, setIsLoading }) => {
             title: "Father's Name",
             dataIndex: ['guardian', 'father_name'],
             key: 'father_name',
+        },
+        {
+            title: 'Phone',
+            dataIndex: ['phone'],
+            key: 'phone',
+        },
+        {
+            title: 'Designation',
+            dataIndex: 'designation',
+            key: 'designation',
         },
         {
             title: 'ID',
