@@ -91,8 +91,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/earnings', [FinanceController::class, 'earnings'])->name('finance.earnings');
         Route::get('/outgoings', [FinanceController::class, 'outgoings'])->name('finance.outgoings');
         Route::get('/monthly-reports', [FinanceController::class, 'monthlyReports'])->name('finance.monthly-reports');
-        Route::get('/get_student_data/{student_id}', [FinanceController::class, 'get_student_data'])->name('finance.get_student_data');
+        Route::get('/get_user_data/{user_id}', [FinanceController::class, 'get_user_data'])->name('finance.get_user_data');
         Route::post('/add_money', [FinanceController::class, 'add_money'])->name('finance.add_money');
+        Route::post('/add_voucher', [FinanceController::class, 'add_voucher'])->name('finance.add_voucher');
     });
 });
 

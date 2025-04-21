@@ -1,11 +1,13 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Models\ExpenseLog;
 use App\Models\FeeType;
 use App\Models\IncomeLog;
 use App\Models\PaymentMethod;
 use App\Models\StudentDue;
 use App\Models\User;
+use App\Models\VoucherType;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -18,14 +20,20 @@ class FinanceController extends Controller
      */
     public function summary($period = null)
     {
-        $month = request()->input('month');
-        $year  = request()->input('year');
+        $earningMonth  = request()->input('earningMonth');
+        $earningYear   = request()->input('earningYear');
+        $outgoingMonth = request()->input('outgoingMonth');
+        $outgoingYear  = request()->input('outgoingYear');
 
         // how to convert month & year to Y-m
-        $period = date('Y-m', strtotime($month . ' ' . $year));
+        $period = date('Y-m', strtotime($earningMonth . ' ' . $earningYear));
+        $date   = date('Y-m', strtotime($outgoingMonth . ' ' . $outgoingYear));
         // If no period is provided, use the current month
         if (! $period) {
             $period = date('Y-m');
+        }
+        if (! $date) {
+            $date = date('Y-m');
         }
 
         // Mock data for demonstration
@@ -42,19 +50,23 @@ class FinanceController extends Controller
                 ];
             });
 
-        // return $earnings;
+        $outgoings = ExpenseLog::with('voucherType')
+            ->where('date', 'like', $date . '%') // get all vouchers for the month but date is "2025-04-22" format
+            ->groupBy('voucher_type_id')
+            ->selectRaw('voucher_type_id, sum(amount) as amount')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'voucherType' => $item->voucherType->name ?? 'Unknown',
+                    'amount'      => $item->amount,
+                ];
+            });
+
+        // return $outgoings;
         $data = [
             'remaining_amount' => 234567,
             'earnings'         => $earnings,
-            'expenses'         => [
-                'boarding'              => 3456789,
-                'staff_salary'          => 3456789,
-                'institute_development' => 3456789,
-                'others'                => 3456789,
-                'total'                 => 13827156,
-                'month'                 => 'January',
-                'year'                  => '2024',
-            ],
+            'expenses'         => $outgoings,
         ];
 
         return Inertia::render('Finance/Summary', [
@@ -92,20 +104,35 @@ class FinanceController extends Controller
         return Inertia::render('Finance/MonthlyReports');
     }
 
-    public function get_student_data($student_id)
+    public function get_user_data($user_id)
     {
 
-        // find student by id
-        $student = User::whereHas('roles', fn($q) => $q->where('name', 'student'))->where('unique_id', $student_id)->firstOrFail();
+        if (request()->input('type') == 'staff') {
+            $user = User::whereHas('roles', fn($q) => $q->where('name', 'staff'))->where('unique_id', $user_id)->with('academics')->firstOrFail();
+
+            return response()->json([
+                'id'        => $user->id,
+                'name'      => $user->name,
+                'email'     => $user->email,
+                'phone'     => $user->phone,
+                'image'     => $user->img,
+                'unique_id' => $user->unique_id,
+                'salary'    => $user->academics->salary,
+            ]);
+
+        }
+        // find user by id
+        $user = User::whereHas('roles', fn($q) => $q->where('name', 'student'))->where('unique_id', $user_id)->firstOrFail();
 
         return response()->json([
-            'id'           => $student->id,
-            'name'         => $student->name,
-            'email'        => $student->email,
-            'phone'        => $student->phone,
-            'image'        => $student->img,
-            'boarding_fee' => getStudentFee($student->id, 'boarding'),
-            'academic_fee' => getStudentFee($student->id, 'academic'),
+            'id'           => $user->id,
+            'name'         => $user->name,
+            'email'        => $user->email,
+            'phone'        => $user->phone,
+            'image'        => $user->img,
+            'unique_id'    => $user->unique_id,
+            'boarding_fee' => getStudentFee($user->id, 'boarding'),
+            'academic_fee' => getStudentFee($user->id, 'academic'),
         ]);
     }
 
@@ -179,6 +206,42 @@ class FinanceController extends Controller
 
             // return response
             return to_route('finance.earnings')->with('success', 'Money added successfully');
+
+        }
+
+    }
+    public function add_voucher(Request $request)
+    {
+        // dd($request->all());
+        // Validate the request data
+        $request->validate([
+            'staff_id' => 'required|exists:users,unique_id',
+            'month'    => 'required|in:January,February,March,April,May,June,July,August,September,October,November,December', // 'January',
+            'type'     => 'required|in:salary',
+            'note'     => 'nullable|string|max:255',
+        ]);
+
+        // Find the student by unique_id
+        $staff = User::where('unique_id', $request->staff_id)->first();
+
+        if (! $staff) {
+            return response()->json(['error' => 'Staff not found'], 404);
+        }
+
+        // convert date to 2025-04-22
+        $date = date('Y-m-d', strtotime($request->month));
+
+        if ($request->type == 'salary') {
+
+            ExpenseLog::create([
+                'user_id'         => $staff->id,
+                'voucher_type_id' => VoucherType::where('name', 'like', '%salary%')->first()->id, // get from fee_types table
+                'date'            => $date,
+                'amount'          => $request->salary,
+            ]);
+
+            // return response
+            return to_route('finance.outgoings')->with('success', 'Voucher added successfully');
 
         }
 

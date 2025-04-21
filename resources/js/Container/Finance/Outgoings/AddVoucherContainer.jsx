@@ -1,25 +1,20 @@
-import ModalStepOneComponent from '@/Components/Finance/Earnings/ModalStepOneComponent';
-import ModalStepThreeComponent from '@/Components/Finance/Earnings/ModalStepThreeComponent';
-import ModalStepTwoComponent from '@/Components/Finance/Earnings/ModalStepTwoComponent';
 import ModalComponent from '@/Components/Finance/ModalComponent';
+import ExpenseModalStepOneComponent from '@/Components/Finance/Outgoings/ExpenseModalStepOneComponent';
+import ExpenseModalStepThreeComponent from '@/Components/Finance/Outgoings/ExpenseModalStepThreeComponent';
+import ExpenseModalStepTwoComponent from '@/Components/Finance/Outgoings/ExpenseModalStepTwoComponent';
 import { router } from '@inertiajs/react';
 import { notification } from 'antd';
 import axios from 'axios';
 import { useState } from 'react';
 
-const AddMoneyContainer = ({ modal, setModal }) => {
+const AddVoucherContainer = ({ modal, setModal }) => {
     const [step, setStep] = useState(1);
-    const [studentId, setStudentId] = useState('');
+    const [staffId, setStaffId] = useState('');
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState(null);
-    const [fee, setFee] = useState({
-        boarding_fee: 0,
-        academic_fee: 0,
-        boarding_due: 0,
-        academic_due: 0,
-    });
-    const [month, setMonth] = useState('January');
     const [type, setType] = useState();
+    const [month, setMonth] = useState('January');
+    const [salary, setSalary] = useState(0);
 
     let content = null;
 
@@ -28,9 +23,11 @@ const AddMoneyContainer = ({ modal, setModal }) => {
     const getData = async () => {
         try {
             setLoading(true);
-            const { data: info } = await axios.get(route('finance.get_user_data', { user_id: studentId }));
+            const { data: info } = await axios.get(route('finance.get_user_data', { user_id: staffId, type: 'staff' }));
+            console.log('🚀 ~ getData ~ info:', info);
             if (info) {
                 setData(info);
+                setSalary(info.salary);
             }
         } catch (error) {
             setLoading(false);
@@ -42,14 +39,11 @@ const AddMoneyContainer = ({ modal, setModal }) => {
 
     const submitData = () => {
         router.post(
-            route('finance.add_money'),
+            route('finance.add_voucher'),
             {
-                student_id: studentId,
+                staff_id: staffId,
                 month: month,
-                boarding_fee: fee.boarding_fee,
-                academic_fee: fee.academic_fee,
-                boarding_due: fee.boarding_due,
-                academic_due: fee.academic_due,
+                salary: salary,
                 type: type,
             },
             {
@@ -59,13 +53,8 @@ const AddMoneyContainer = ({ modal, setModal }) => {
                 onSuccess: (response) => {
                     setLoading(false);
                     setStep(1);
-                    setStudentId('');
-                    setFee({
-                        boarding_fee: 0,
-                        academic_fee: 0,
-                        boarding_due: 0,
-                        academic_due: 0,
-                    });
+                    setStaffId('');
+                    setSalary(0);
                     setData(null);
                     setModal(false);
                     api.success({
@@ -86,29 +75,25 @@ const AddMoneyContainer = ({ modal, setModal }) => {
 
     switch (step) {
         case 1:
-            content = <ModalStepOneComponent setStep={setStep} setType={setType} />;
+            content = <ExpenseModalStepOneComponent setStep={setStep} setType={setType} />;
 
             break;
         case 2:
-            content = <ModalStepTwoComponent studentId={studentId} setStudentId={setStudentId} setStep={setStep} getData={getData} />;
+            content = <ExpenseModalStepTwoComponent staffId={staffId} setStaffId={setStaffId} setStep={setStep} getData={getData} />;
             break;
         case 3:
             content = (
-                <ModalStepThreeComponent
+                <ExpenseModalStepThreeComponent
                     data={data}
-                    loading={loading}
                     setStep={setStep}
+                    loading={loading}
                     month={month}
                     setMonth={setMonth}
-                    fee={fee}
-                    setFee={setFee}
-                    type={type}
-                    setType={setType}
+                    salary={salary}
+                    setSalary={setSalary}
                     submitData={submitData}
                 />
             );
-            break;
-
         default:
             break;
     }
@@ -116,9 +101,9 @@ const AddMoneyContainer = ({ modal, setModal }) => {
     return (
         <>
             {contextHolder}
-            <ModalComponent modal={modal} setModal={setModal} content={content} />
+            <ModalComponent modal={modal} setModal={setModal} content={content} />;
         </>
     );
 };
 
-export default AddMoneyContainer;
+export default AddVoucherContainer;

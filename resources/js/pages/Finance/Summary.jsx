@@ -6,11 +6,11 @@ import { useEffect, useState } from 'react';
 export default function Summary({ data }) {
     const [activeTab, setActiveTab] = useState('summary');
     const [earnings, setEarnings] = useState({
-        month: new Date().toLocaleString('default', { month: 'long' }),
-        year: new Date().getFullYear(),
+        earningMonth: new Date().toLocaleString('default', { month: 'long' }),
+        earningYear: new Date().getFullYear(),
+        outgoingMonth: new Date().toLocaleString('default', { month: 'long' }),
+        outgoingYear: new Date().getFullYear(),
     }); //get the current month dynamically
-    const [expensesMonth, setExpensesMonth] = useState('January');
-    const [expensesYear, setExpensesYear] = useState('2024');
     const [showEarningsMonthDropdown, setShowEarningsMonthDropdown] = useState(false);
     const [showEarningsYearDropdown, setShowEarningsYearDropdown] = useState(false);
     const [showExpensesMonthDropdown, setShowExpensesMonthDropdown] = useState(false);
@@ -67,7 +67,7 @@ export default function Summary({ data }) {
                                             className="flex cursor-pointer items-center rounded border border-gray-300 px-2 py-1 text-xs text-gray-600"
                                             onClick={() => setShowEarningsMonthDropdown(!showEarningsMonthDropdown)}
                                         >
-                                            <span>{earnings.month}</span>
+                                            <span>{earnings.earningMonth}</span>
                                             <svg className="ml-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 9l-7 7-7-7" />
                                             </svg>
@@ -79,7 +79,7 @@ export default function Summary({ data }) {
                                                         key={month}
                                                         className={`cursor-pointer px-3 py-2 text-sm hover:bg-gray-100 ${month === earnings.month ? 'bg-gray-100' : ''}`}
                                                         onClick={() => {
-                                                            setEarnings({ ...earnings, month });
+                                                            setEarnings({ ...earnings, earningMonth: month });
                                                             setShowEarningsMonthDropdown(false);
                                                         }}
                                                     >
@@ -95,7 +95,7 @@ export default function Summary({ data }) {
                                             className="flex cursor-pointer items-center rounded border border-gray-300 px-2 py-1 text-xs text-gray-600"
                                             onClick={() => setShowEarningsYearDropdown(!showEarningsYearDropdown)}
                                         >
-                                            <span>{earnings.year}</span>
+                                            <span>{earnings.earningYear}</span>
                                             <svg className="ml-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 9l-7 7-7-7" />
                                             </svg>
@@ -107,7 +107,7 @@ export default function Summary({ data }) {
                                                         key={year}
                                                         className={`cursor-pointer px-3 py-2 text-sm hover:bg-gray-100 ${year === earnings.year ? 'bg-gray-100' : ''}`}
                                                         onClick={() => {
-                                                            setEarnings({ ...earnings, year });
+                                                            setEarnings({ ...earnings, earningYear: year });
                                                             setShowEarningsYearDropdown(false);
                                                         }}
                                                     >
@@ -163,7 +163,7 @@ export default function Summary({ data }) {
                                             className="flex cursor-pointer items-center rounded border border-gray-300 px-2 py-1 text-xs text-gray-600"
                                             onClick={() => setShowExpensesMonthDropdown(!showExpensesMonthDropdown)}
                                         >
-                                            <span>{expensesMonth}</span>
+                                            <span>{earnings.outgoingMonth}</span>
                                             <svg className="ml-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 9l-7 7-7-7" />
                                             </svg>
@@ -173,9 +173,9 @@ export default function Summary({ data }) {
                                                 {months.map((month) => (
                                                     <div
                                                         key={month}
-                                                        className={`cursor-pointer px-3 py-2 text-sm hover:bg-gray-100 ${month === expensesMonth ? 'bg-gray-100' : ''}`}
+                                                        className={`cursor-pointer px-3 py-2 text-sm hover:bg-gray-100 ${month === earnings.outgoingMonth ? 'bg-gray-100' : ''}`}
                                                         onClick={() => {
-                                                            setExpensesMonth(month);
+                                                            setEarnings({ ...earnings, outgoingMonth: month });
                                                             setShowExpensesMonthDropdown(false);
                                                         }}
                                                     >
@@ -191,7 +191,7 @@ export default function Summary({ data }) {
                                             className="flex cursor-pointer items-center rounded border border-gray-300 px-2 py-1 text-xs text-gray-600"
                                             onClick={() => setShowExpensesYearDropdown(!showExpensesYearDropdown)}
                                         >
-                                            <span>{expensesYear}</span>
+                                            <span>{earnings.outgoingYear}</span>
                                             <svg className="ml-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 9l-7 7-7-7" />
                                             </svg>
@@ -201,9 +201,9 @@ export default function Summary({ data }) {
                                                 {years.map((year) => (
                                                     <div
                                                         key={year}
-                                                        className={`cursor-pointer px-3 py-2 text-sm hover:bg-gray-100 ${year === expensesYear ? 'bg-gray-100' : ''}`}
+                                                        className={`cursor-pointer px-3 py-2 text-sm hover:bg-gray-100 ${year === earnings.outgoingYear ? 'bg-gray-100' : ''}`}
                                                         onClick={() => {
-                                                            setExpensesYear(year);
+                                                            setEarnings({ ...earnings, outgoingYear: year });
                                                             setShowExpensesYearDropdown(false);
                                                         }}
                                                     >
@@ -233,40 +233,18 @@ export default function Summary({ data }) {
                                 </div>
 
                                 <div className="w-2/3 space-y-2">
-                                    <div className="p-2">
-                                        <div className="flex items-center">
-                                            <div className="mr-2 h-4 w-4 rounded bg-[#49D946]" />
-                                            <span className="text-gray-600">Boarding:</span>
-                                            <span className="ml-auto font-medium">{data.expenses.boarding.toLocaleString()} BDT</span>
-                                        </div>
-                                    </div>
-                                    <hr className="border-gray-100" />
-
-                                    <div className="p-2">
-                                        <div className="flex items-center">
-                                            <div className="mr-2 h-4 w-4 rounded bg-[#F0CA41]" />
-                                            <span className="text-gray-600">Staff salary:</span>
-                                            <span className="ml-auto font-medium">{data.expenses.staff_salary.toLocaleString()} BDT</span>
-                                        </div>
-                                    </div>
-                                    <hr className="border-gray-100" />
-
-                                    <div className="p-2">
-                                        <div className="flex items-center">
-                                            <div className="mr-2 h-4 w-4 rounded bg-[#9658ED]" />
-                                            <span className="text-gray-600">Institute development:</span>
-                                            <span className="ml-auto font-medium">{data.expenses.institute_development.toLocaleString()} BDT</span>
-                                        </div>
-                                    </div>
-                                    <hr className="border-gray-100" />
-
-                                    <div className="p-2">
-                                        <div className="flex items-center">
-                                            <div className="mr-2 h-4 w-4 rounded bg-[#E6583F]" />
-                                            <span className="text-gray-600">Others:</span>
-                                            <span className="ml-auto font-medium">{data.expenses.others.toLocaleString()} BDT</span>
-                                        </div>
-                                    </div>
+                                    {data?.expenses?.map((expense) => (
+                                        <>
+                                            <div className="p-2">
+                                                <div className="flex items-center">
+                                                    <div className="mr-2 h-4 w-4 rounded bg-[#49D946]" />
+                                                    <span className="text-gray-600">{expense.voucherType}:</span>
+                                                    <span className="ml-auto font-medium">{expense.amount} BDT</span>
+                                                </div>
+                                            </div>
+                                            <hr className="border-gray-100" />
+                                        </>
+                                    ))}
                                 </div>
                             </div>
                         </div>
