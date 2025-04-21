@@ -53,12 +53,19 @@ const LeftSide = () => {
                     <SideBarUI.Text collapsed={collapsed}>Dashboard</SideBarUI.Text>
                 </SideBarUI.Item>
             </Link>
-            <SideBarUI.Item collapsed={collapsed} className="flex h-[64px] items-center space-x-[12px] px-[50px] hover:bg-[#F2F2F2]">
-                <SideBarUI.Icon>
-                    <img src={Finance} alt="Finance" className="h-[24px] w-[24px]" />
-                </SideBarUI.Icon>
-                <SideBarUI.Text collapsed={collapsed}>Finance</SideBarUI.Text>
-            </SideBarUI.Item>
+            <Link href={route('finance.summary')} as="button" className="w-full cursor-pointer">
+                <SideBarUI.Item
+                    collapsed={collapsed}
+                    className={`flex h-[64px] items-center space-x-[12px] px-[50px] hover:bg-[#F2F2F2] ${
+                        route().current('finance.*') ? 'w-full bg-[#F2F2F2]' : ''
+                    }`}
+                >
+                    <SideBarUI.Icon>
+                        <img src={Finance} alt="Finance" className="h-[24px] w-[24px]" />
+                    </SideBarUI.Icon>
+                    <SideBarUI.Text collapsed={collapsed}>Finance</SideBarUI.Text>
+                </SideBarUI.Item>
+            </Link>
             <Link as="button" className="w-full cursor-pointer" href={route('staff.index')}>
                 <SideBarUI.Item
                     collapsed={collapsed}

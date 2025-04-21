@@ -1,4 +1,4 @@
-import { cn } from '../../lib/utils';
+import { cn } from '@/lib/utils';
 
 const StaticBtn = ({ className, children, ...props }) => {
     return (

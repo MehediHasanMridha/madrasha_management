@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Academic;
+use App\Models\FeeType;
 use App\Models\User;
 use Intervention\Image\Laravel\Facades\Image;
 
@@ -63,4 +65,27 @@ if (! function_exists('generateUniqueId')) {
 
         return "$year-$type" . $newIdNumber;
     }
+}
+
+// get student fee
+if (! function_exists('getStudentFee')) {
+    function getStudentFee($studentId, $feeSlug)
+    {
+        // ছাত্রের একাডেমিক তথ্য এবং ফি টাইপের তথ্য একসাথে বের করা
+        $student = Academic::where('user_id', $studentId)->first();
+        $feeType = FeeType::where('name', 'like', '%' . $feeSlug . '%')->first();
+
+        // ফি নাম নির্ধারণ করা
+        $fieldName = match (true) {
+            in_array($feeSlug, ['academic_fee', 'academic', 'academic-fee']) => 'academic_fee',
+            in_array($feeSlug, ['boarding_fee', 'boarding', 'boarding-fee']) => 'boarding_fee',
+            default => null,
+        };
+
+        // ফি নির্ধারণ করা
+        $amount = $fieldName && $student ? ($student->$fieldName ?? $feeType->default_amount) : $feeType->default_amount;
+
+        return $amount;
+    }
+
 }

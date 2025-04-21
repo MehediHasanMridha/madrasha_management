@@ -54,7 +54,6 @@ const AddStudentModalFormComponent = ({
                                     fileList={fileList}
                                     onChange={handleFileChange}
                                     ref={ref}
-                                    {...register('student_image')}
                                 />
                             )}
                         />
