@@ -1,72 +1,15 @@
 import student_present_graph from '@/assets/images/student_present_graph.svg';
-import { Link } from '@inertiajs/react';
-import { FaChartLine } from 'react-icons/fa';
-import { IoLogOutOutline, IoMenuOutline, IoSettingsOutline } from 'react-icons/io5';
-import DropdownUI from '../UI/DropdownUI';
-const items = [
-    {
-        label: (
-            <Link href={route('settings')} className="text-xl">
-                Settings
-            </Link>
-        ),
-        key: '1',
-        icon: (
-            <span>
-                <IoSettingsOutline className="text-xl" />
-            </span>
-        ),
-    },
-    {
-        label: (
-            <Link href={route('logout')} method="post" className="text-xl text-red-400">
-                Logout
-            </Link>
-        ),
-        key: '2',
-        icon: (
-            <span>
-                <IoLogOutOutline className="text-xl" />
-            </span>
-        ),
-    },
-];
+import SettingDropdownContainer from '@/Container/Shared/SettingDropdownContainer';
 const DashboardComponent = ({ data, auth }) => {
     return (
         <div className="bg-[#F6F6F6 ] rounded-3xl px-[50px]">
             <div className="mb-5 space-y-[20px]">
-                <div className="flex items-center justify-between rounded-[8px] bg-white p-[10px]">
+                <div className="flex items-center justify-between rounded-[8px] bg-white px-[30px] py-[10px]">
                     <div>
                         <div className="text-[24px] font-[500]">Assalamu Alaikum {auth.user.name} !</div>
                         <div className="text-[16px] font-[400] text-[#4A4A4A]">Hope everything is doing well.</div>
                     </div>
-                    <div className="flex items-center">
-                        <Link
-                            href={route('finance.summary')}
-                            className="mr-4 flex items-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-600"
-                        >
-                            <FaChartLine className="text-lg" />
-                            <span>Finance</span>
-                        </Link>
-                        <div className="flex h-[50px] w-[50px] items-center justify-center rounded-2xl bg-[#F6F6F6]">
-                            <DropdownUI
-                                placement="bottomRight"
-                                items={items}
-                                boxShadow={'none'}
-                                dropdownRender={(menu) => (
-                                    <>
-                                        <div className="mt-1 w-full bg-white px-[16px] py-[6px]">
-                                            <p>Renew in</p>
-                                            <div className="text-[16px] text-[#00A606]">22d 03h</div>
-                                        </div>
-                                        {menu}
-                                    </>
-                                )}
-                            >
-                                <IoMenuOutline className="cursor-pointer text-3xl" />
-                            </DropdownUI>
-                        </div>
-                    </div>
+                    <SettingDropdownContainer />
                 </div>
                 {data.map((department) => (
                     <div className="space-y-[20px] rounded-[12px] border-[1px] border-[#AFAFAF] p-[24px]">
