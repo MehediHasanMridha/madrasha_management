@@ -2,11 +2,15 @@ import EditStudentModalFormComponent from '@/Components/Department/Student/EditS
 import { useStudentContext } from '@/contextApi&reducer/Department/StudentContextApi';
 import { useBoundStore } from '@/stores';
 import { router } from '@inertiajs/react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 const EditStudentModalFormContainer = () => {
     const [isLoading, setIsLoading] = useState(false);
+    const [showWebcam, setShowWebcam] = useState(false);
+    const [hasWebcamPermission, setHasWebcamPermission] = useState(false);
+    const [webcamError, setWebcamError] = useState(null);
+    const webcamRef = useRef(null);
     const { api, department, districts, districtId, upazillas, setDistrictId } = useStudentContext();
     const { modal, setModal, passData } = useBoundStore((state) => state);
     const [fileList, setFileList] = useState([]);
@@ -56,7 +60,6 @@ const EditStudentModalFormContainer = () => {
         }
     }, [passData, setValue, districts]);
 
-    // Set upazilla after upazillas are loaded
     useEffect(() => {
         if (passData && upazillas?.data) {
             const upazillaObj = upazillas.data.find((u) => u.name === passData.address.upazilla);
@@ -66,13 +69,41 @@ const EditStudentModalFormContainer = () => {
         }
     }, [upazillas, passData, setValue]);
 
+    useEffect(() => {
+        if (showWebcam) {
+            handleWebcamPermission();
+        }
+    }, [showWebcam]);
+
     const handleCancel = () => {
         setModal({ edit: false });
         reset();
         setFileList([]);
+        setShowWebcam(false);
     };
 
-    // Handle file change for ImgCrop component
+    const videoConstraints = {
+        width: 320,
+        height: 320,
+        facingMode: 'user',
+        aspectRatio: 1,
+    };
+
+    const handleWebcamPermission = async () => {
+        if (showWebcam) {
+            setWebcamError(null);
+            try {
+                await navigator.mediaDevices.getUserMedia({ video: videoConstraints });
+                setHasWebcamPermission(true);
+                setWebcamError(null);
+            } catch (err) {
+                console.error('Webcam error:', err);
+                setHasWebcamPermission(false);
+                setWebcamError(err.message);
+            }
+        }
+    };
+
     const handleFileChange = ({ fileList: newFileList }) => {
         setFileList(newFileList);
 
@@ -86,6 +117,52 @@ const EditStudentModalFormContainer = () => {
         } else {
             setValue('student_image', null);
         }
+    };
+
+    const capture = useCallback(() => {
+        if (webcamRef.current) {
+            try {
+                const imageSrc = webcamRef.current.getScreenshot();
+                if (imageSrc) {
+                    fetch(imageSrc)
+                        .then((res) => res.blob())
+                        .then((blob) => {
+                            const file = new File([blob], 'webcam-capture.jpg', { type: 'image/jpeg' });
+                            const tempFileList = [
+                                {
+                                    originFileObj: file,
+                                    name: file.name,
+                                    type: file.type,
+                                },
+                            ];
+                            setValue('student_image', {
+                                file: { originFileObj: file },
+                                fileList: {
+                                    originFileObj: file,
+                                    name: file.name,
+                                    type: file.type,
+                                },
+                            });
+                            setFileList(tempFileList);
+                            setShowWebcam(false);
+                        })
+                        .catch((error) => {
+                            console.error('Error converting image:', error);
+                            setWebcamError('Failed to process captured image');
+                        });
+                } else {
+                    setWebcamError('Failed to capture image');
+                }
+            } catch (error) {
+                console.error('Capture error:', error);
+                setWebcamError('Failed to capture image');
+            }
+        }
+    }, [webcamRef]);
+
+    const toggleWebcam = () => {
+        setShowWebcam((prev) => !prev);
+        setWebcamError(null);
     };
 
     const onSubmit = (data) => {
@@ -111,14 +188,12 @@ const EditStudentModalFormContainer = () => {
                     setIsLoading(false);
                 },
                 onError: (errors) => {
-                    // Set form errors for each field
                     Object.keys(errors).forEach((field) => {
                         if (field !== 'message') {
                             setError(field, {
                                 type: 'manual',
                                 message: errors[field],
                             });
-                            // Set focus on the first field with an error
                             if (field === Object.keys(errors)[0]) {
                                 setFocus(field);
                             }
@@ -128,7 +203,6 @@ const EditStudentModalFormContainer = () => {
                             });
                         }
                     });
-
                     setIsLoading(false);
                 },
             },
@@ -153,6 +227,13 @@ const EditStudentModalFormContainer = () => {
             upazillas={upazillas}
             department={department}
             setDistrictId={setDistrictId}
+            showWebcam={showWebcam}
+            toggleWebcam={toggleWebcam}
+            webcamRef={webcamRef}
+            capture={capture}
+            hasWebcamPermission={hasWebcamPermission}
+            webcamError={webcamError}
+            videoConstraints={videoConstraints}
         />
     );
 };
