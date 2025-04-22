@@ -123,7 +123,6 @@ const AddStaffModalFormContainer = () => {
                         .then((res) => res.blob())
                         .then((blob) => {
                             const file = new File([blob], 'webcam-capture.jpg', { type: 'image/jpeg' });
-                            setShowCropModal(true);
                             const tempFileList = [
                                 {
                                     originFileObj: file,
@@ -140,7 +139,6 @@ const AddStaffModalFormContainer = () => {
                                 },
                             });
                             setFileList(tempFileList);
-                            setShowCropModal(true);
                             setShowWebcam(false);
                         })
                         .catch((error) => {
