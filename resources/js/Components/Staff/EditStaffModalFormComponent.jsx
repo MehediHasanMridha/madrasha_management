@@ -1,9 +1,11 @@
 import DistrictUpazillaSelectionContainer from '@/Container/Shared/DistrictUpazillaSelectionContainer';
 import { Controller } from 'react-hook-form';
+import Webcam from 'react-webcam';
 import Field from '../UI/Field';
 import FieldSet from '../UI/FieldSet';
 import FileUploadField from '../UI/FileUploadField';
 import ModalUI from '../UI/ModalUI';
+import StaticBtn from '../UI/StaticBtn';
 import SubmitBtn from '../UI/SubmitBtn';
 
 const EditStaffModalFormComponent = ({
@@ -21,6 +23,13 @@ const EditStaffModalFormComponent = ({
     setDistrictId,
     upazillas,
     passData,
+    showWebcam,
+    toggleWebcam,
+    webcamRef,
+    capture,
+    hasWebcamPermission,
+    webcamError,
+    videoConstraints,
 }) => {
     return (
         <ModalUI
@@ -35,21 +44,71 @@ const EditStaffModalFormComponent = ({
             <form className="max-h-[70vh] overflow-y-scroll">
                 <FieldSet label={'Personal Information'} labelClassName="text-[16px] font-bold" hr={true}>
                     <Field error={errors.staff_image}>
-                        <Controller
-                            name="staff_image"
-                            control={control}
-                            defaultValue=""
-                            render={({ field: { ref, onChange } }) => (
-                                <FileUploadField.Crop
-                                    fieldName="staff_image"
-                                    type="picture-card"
-                                    text={'Update Staff Image'}
-                                    fileList={fileList}
-                                    onChange={handleFileChange}
-                                    ref={ref}
+                        <div className="space-y-4">
+                            <div className="mt-4 flex gap-2">
+                                <Controller
+                                    name="staff_image"
+                                    control={control}
+                                    defaultValue=""
+                                    render={({ field: { ref } }) => (
+                                        <FileUploadField.Crop
+                                            type="picture-card"
+                                            text="Upload From Computer"
+                                            fileList={fileList}
+                                            onChange={handleFileChange}
+                                            className={
+                                                'h-fit w-fit rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] text-center focus:outline-0'
+                                            }
+                                            ref={ref}
+                                        />
+                                    )}
                                 />
+                                <StaticBtn
+                                    className="w-[110px] rounded-[8px] border-[1px] border-[#AFAFAF] px-[0px] py-[12px] text-center focus:outline-0"
+                                    onClick={toggleWebcam}
+                                >
+                                    {showWebcam ? 'Switch to File Upload' : 'Use Webcam'}
+                                </StaticBtn>
+                            </div>
+
+                            {showWebcam && (
+                                <div className="space-y-4">
+                                    {webcamError && <div className="text-red-500">{webcamError}</div>}
+                                    {!hasWebcamPermission ? (
+                                        <div className="text-red-500">Please allow camera access to use this feature</div>
+                                    ) : (
+                                        <ModalUI
+                                            isModalOpen={showWebcam}
+                                            handleCancel={toggleWebcam}
+                                            width={'80%'}
+                                            title="Capture Image"
+                                            width={'20%'}
+                                            onCancel={toggleWebcam}
+                                        >
+                                            <div className="space-y-4">
+                                                <div className="h-[320px] w-[320px] overflow-hidden rounded-lg border">
+                                                    <Webcam
+                                                        audio={false}
+                                                        ref={webcamRef}
+                                                        screenshotFormat="image/jpeg"
+                                                        videoConstraints={videoConstraints}
+                                                        width={320}
+                                                        height={320}
+                                                        mirrored={true}
+                                                    />
+                                                </div>
+                                                <div className="flex justify-center gap-4">
+                                                    <StaticBtn onClick={toggleWebcam} className="bg-red-500">
+                                                        Cancel
+                                                    </StaticBtn>
+                                                    <StaticBtn onClick={capture}>Capture Photo</StaticBtn>
+                                                </div>
+                                            </div>
+                                        </ModalUI>
+                                    )}
+                                </div>
                             )}
-                        />
+                        </div>
                     </Field>
                     <Field error={errors.name} label={'Staff Name'}>
                         <input
@@ -169,14 +228,16 @@ const EditStaffModalFormComponent = ({
                             {...register('designation', { required: 'Designation is required' })}
                         >
                             <option value="">Select Designation</option>
-                            <option value="Head Teacher">Head Teacher</option>
-                            <option value="Assistant Teacher">Assistant Teacher</option>
-                            <option value="Senior Teacher">Senior Teacher</option>
-                            <option value="Instructor">Instructor</option>
-                            <option value="Hafiz">Hafiz</option>
-                            <option value="Qari">Qari</option>
-                            <option value="Administrator">Administrator</option>
-                            <option value="Office Staff">Office Staff</option>
+                            <option value="Principle">Principle</option>
+                            <option value="Islamic shool">Islamic shool</option>
+                            <option value="Kitab bivag (Kodim)">Kitab bivag (Kodim)</option>
+                            <option value="Kitab bivag (Madani)">Kitab bivag (Madani)</option>
+                            <option value="Hifjo bivag">Hifjo bivag</option>
+                            <option value="Najera bivag">Najera bivag</option>
+                            <option value="Hifjo revision">Hifjo revision</option>
+                            <option value="Accountant">Accountant</option>
+                            <option value="Office assistant">Office assistant</option>
+                            <option value="Other staff">Other staff</option>
                         </select>
                     </Field>
                     <Field label={'Salary'} error={errors.salary}>

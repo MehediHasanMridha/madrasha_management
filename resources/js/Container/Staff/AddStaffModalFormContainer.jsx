@@ -1,10 +1,14 @@
 import AddStaffModalComponent from '@/Components/Staff/AddStaffModalFormComponent';
 import { useStaffContext } from '@/contextApi&reducer/Staff/StaffContextApi';
 import { router } from '@inertiajs/react';
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 const AddStaffModalFormContainer = () => {
+    const [showWebcam, setShowWebcam] = useState(false);
+    const [hasWebcamPermission, setHasWebcamPermission] = useState(false);
+    const [webcamError, setWebcamError] = useState(null);
+    const webcamRef = useRef(null);
     const [isLoading, setIsLoading] = useState(false);
     const { api, isModalOpen, setIsModalOpen, districts, districtId, upazillas, setDistrictId } = useStaffContext();
     const [fileList, setFileList] = useState([]);
@@ -20,18 +24,46 @@ const AddStaffModalFormContainer = () => {
         setValue,
     } = useForm();
 
+    useEffect(() => {
+        if (showWebcam) {
+            handleWebcamPermission();
+        }
+    }, [showWebcam]);
+
     const handleOk = () => {
         setIsModalOpen(false);
     };
 
     const handleCancel = () => {
         setIsModalOpen(false);
+        reset();
+        setFileList([]);
     };
 
-    // Handle file change for ImgCrop component
+    const videoConstraints = {
+        width: 320,
+        height: 320,
+        facingMode: 'user',
+        aspectRatio: 1,
+    };
+
+    const handleWebcamPermission = async () => {
+        if (showWebcam) {
+            setWebcamError(null);
+            try {
+                await navigator.mediaDevices.getUserMedia({ video: videoConstraints });
+                setHasWebcamPermission(true);
+                setWebcamError(null);
+            } catch (err) {
+                console.error('Webcam error:', err);
+                setHasWebcamPermission(false);
+                setWebcamError(err.message);
+            }
+        }
+    };
+
     const handleFileChange = ({ fileList: newFileList }) => {
         setFileList(newFileList);
-
         setValue('staff_image', {
             file: newFileList[0],
             fileList: newFileList,
@@ -50,16 +82,10 @@ const AddStaffModalFormContainer = () => {
                     setIsLoading(true);
                 },
                 onSuccess: () => {
-                    // Reset form
                     reset();
-
-                    // Clear image states
                     setFileList([]);
-
-                    // Close modal
+                    setShowWebcam(false);
                     setIsModalOpen(false);
-
-                    // Show success message
                     api.success({
                         message: 'Staff Added Successfully',
                         placement: 'bottomRight',
@@ -67,14 +93,12 @@ const AddStaffModalFormContainer = () => {
                     setIsLoading(false);
                 },
                 onError: (errors) => {
-                    // Set form errors for each field
                     Object.keys(errors).forEach((field) => {
                         if (field !== 'message') {
                             setError(field, {
                                 type: 'manual',
                                 message: errors[field],
                             });
-                            // Set focus on the first field with an error
                             if (field === Object.keys(errors)[0]) {
                                 setFocus(field);
                             }
@@ -84,31 +108,85 @@ const AddStaffModalFormContainer = () => {
                             });
                         }
                     });
-
                     setIsLoading(false);
                 },
             },
         );
     };
 
+    const capture = useCallback(() => {
+        if (webcamRef.current) {
+            try {
+                const imageSrc = webcamRef.current.getScreenshot();
+                if (imageSrc) {
+                    fetch(imageSrc)
+                        .then((res) => res.blob())
+                        .then((blob) => {
+                            const file = new File([blob], 'webcam-capture.jpg', { type: 'image/jpeg' });
+                            const tempFileList = [
+                                {
+                                    originFileObj: file,
+                                    name: file.name,
+                                    type: file.type,
+                                },
+                            ];
+                            setValue('staff_image', {
+                                file: { originFileObj: file },
+                                fileList: {
+                                    originFileObj: file,
+                                    name: file.name,
+                                    type: file.type,
+                                },
+                            });
+                            setFileList(tempFileList);
+                            setShowWebcam(false);
+                        })
+                        .catch((error) => {
+                            console.error('Error converting image:', error);
+                            setWebcamError('Failed to process captured image');
+                        });
+                } else {
+                    setWebcamError('Failed to capture image');
+                }
+            } catch (error) {
+                console.error('Capture error:', error);
+                setWebcamError('Failed to capture image');
+            }
+        }
+    }, [webcamRef]);
+
+    const toggleWebcam = () => {
+        setShowWebcam((prev) => !prev);
+        setWebcamError(null);
+    };
+
     return (
-        <AddStaffModalComponent
-            isModalOpen={isModalOpen}
-            handleOk={handleOk}
-            handleCancel={handleCancel}
-            control={control}
-            register={register}
-            errors={errors}
-            fileList={fileList}
-            handleFileChange={handleFileChange}
-            handleSubmit={handleSubmit}
-            onSubmit={onSubmit}
-            isLoading={isLoading}
-            setValue={setValue}
-            districts={districts}
-            setDistrictId={setDistrictId}
-            upazillas={upazillas}
-        />
+        <>
+            <AddStaffModalComponent
+                isModalOpen={isModalOpen}
+                handleOk={handleOk}
+                handleCancel={handleCancel}
+                control={control}
+                register={register}
+                errors={errors}
+                fileList={fileList}
+                handleFileChange={handleFileChange}
+                handleSubmit={handleSubmit}
+                onSubmit={onSubmit}
+                isLoading={isLoading}
+                setValue={setValue}
+                districts={districts}
+                setDistrictId={setDistrictId}
+                upazillas={upazillas}
+                showWebcam={showWebcam}
+                toggleWebcam={toggleWebcam}
+                webcamRef={webcamRef}
+                capture={capture}
+                hasWebcamPermission={hasWebcamPermission}
+                webcamError={webcamError}
+                videoConstraints={videoConstraints}
+            />
+        </>
     );
 };
 

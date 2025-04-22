@@ -2,10 +2,14 @@ import EditStaffModalComponent from '@/Components/Staff/EditStaffModalFormCompon
 import { useStaffContext } from '@/contextApi&reducer/Staff/StaffContextApi';
 import { useBoundStore } from '@/stores';
 import { router } from '@inertiajs/react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 const EditStaffModalFormContainer = () => {
+    const [showWebcam, setShowWebcam] = useState(false);
+    const [hasWebcamPermission, setHasWebcamPermission] = useState(false);
+    const [webcamError, setWebcamError] = useState(null);
+    const webcamRef = useRef(null);
     const [isLoading, setIsLoading] = useState(false);
     const { modal, setModal, passData } = useBoundStore((state) => state);
     const { api, districts, districtId, upazillas, setDistrictId } = useStaffContext();
@@ -64,10 +68,39 @@ const EditStaffModalFormContainer = () => {
         }
     }, [upazillas, passData, setValue]);
 
+    useEffect(() => {
+        if (showWebcam) {
+            handleWebcamPermission();
+        }
+    }, [showWebcam]);
+
     const handleCancel = () => {
         setModal({ edit: false });
         reset();
         setFileList([]);
+        setShowWebcam(false);
+    };
+
+    const videoConstraints = {
+        width: 320,
+        height: 320,
+        facingMode: 'user',
+        aspectRatio: 1,
+    };
+
+    const handleWebcamPermission = async () => {
+        if (showWebcam) {
+            setWebcamError(null);
+            try {
+                await navigator.mediaDevices.getUserMedia({ video: videoConstraints });
+                setHasWebcamPermission(true);
+                setWebcamError(null);
+            } catch (err) {
+                console.error('Webcam error:', err);
+                setHasWebcamPermission(false);
+                setWebcamError(err.message);
+            }
+        }
     };
 
     const handleFileChange = ({ fileList: newFileList }) => {
@@ -83,6 +116,52 @@ const EditStaffModalFormContainer = () => {
         } else {
             setValue('staff_image', null);
         }
+    };
+
+    const capture = useCallback(() => {
+        if (webcamRef.current) {
+            try {
+                const imageSrc = webcamRef.current.getScreenshot();
+                if (imageSrc) {
+                    fetch(imageSrc)
+                        .then((res) => res.blob())
+                        .then((blob) => {
+                            const file = new File([blob], 'webcam-capture.jpg', { type: 'image/jpeg' });
+                            const tempFileList = [
+                                {
+                                    originFileObj: file,
+                                    name: file.name,
+                                    type: file.type,
+                                },
+                            ];
+                            setValue('staff_image', {
+                                file: { originFileObj: file },
+                                fileList: {
+                                    originFileObj: file,
+                                    name: file.name,
+                                    type: file.type,
+                                },
+                            });
+                            setFileList(tempFileList);
+                            setShowWebcam(false);
+                        })
+                        .catch((error) => {
+                            console.error('Error converting image:', error);
+                            setWebcamError('Failed to process captured image');
+                        });
+                } else {
+                    setWebcamError('Failed to capture image');
+                }
+            } catch (error) {
+                console.error('Capture error:', error);
+                setWebcamError('Failed to capture image');
+            }
+        }
+    }, [webcamRef]);
+
+    const toggleWebcam = () => {
+        setShowWebcam((prev) => !prev);
+        setWebcamError(null);
     };
 
     const onSubmit = (data) => {
@@ -148,6 +227,13 @@ const EditStaffModalFormContainer = () => {
                 districts={districts}
                 upazillas={upazillas}
                 passData={passData}
+                showWebcam={showWebcam}
+                toggleWebcam={toggleWebcam}
+                webcamRef={webcamRef}
+                capture={capture}
+                hasWebcamPermission={hasWebcamPermission}
+                webcamError={webcamError}
+                videoConstraints={videoConstraints}
             />
         </>
     );
