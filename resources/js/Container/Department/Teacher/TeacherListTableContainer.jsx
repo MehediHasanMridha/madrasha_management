@@ -73,6 +73,16 @@ const TeacherListTableContainer = ({ department }) => {
             key: 'father_name',
         },
         {
+            title: 'Phone',
+            dataIndex: ['phone'],
+            key: 'phone',
+        },
+        {
+            title: 'Designation',
+            dataIndex: 'designation',
+            key: 'designation',
+        },
+        {
             title: 'ID',
             dataIndex: 'unique_id',
             key: 'unique_id',
