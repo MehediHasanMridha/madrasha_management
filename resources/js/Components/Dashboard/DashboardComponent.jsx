@@ -1,6 +1,5 @@
 import student_present_graph from '@/assets/images/student_present_graph.svg';
 import { Link } from '@inertiajs/react';
-import { FaChartLine } from 'react-icons/fa';
 import { IoLogOutOutline, IoMenuOutline, IoSettingsOutline } from 'react-icons/io5';
 import DropdownUI from '../UI/DropdownUI';
 const items = [
@@ -41,13 +40,6 @@ const DashboardComponent = ({ data, auth }) => {
                         <div className="text-[16px] font-[400] text-[#4A4A4A]">Hope everything is doing well.</div>
                     </div>
                     <div className="flex items-center">
-                        <Link
-                            href={route('finance.summary')}
-                            className="mr-4 flex items-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-600"
-                        >
-                            <FaChartLine className="text-lg" />
-                            <span>Finance</span>
-                        </Link>
                         <div className="flex h-[50px] w-[50px] items-center justify-center rounded-2xl bg-[#F6F6F6]">
                             <DropdownUI
                                 placement="bottomRight"
