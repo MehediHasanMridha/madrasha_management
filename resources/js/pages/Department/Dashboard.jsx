@@ -1,5 +1,6 @@
 import StudentSectionContainer from '@/Container/Department/Student/StudentSectionContainer';
 import TeacherSectionContainer from '@/Container/Department/Teacher/TeacherSectionContainer';
+import SettingDropdownContainer from '@/Container/Shared/SettingDropdownContainer';
 import { TeacherSectionProvider } from '@/contextApi&reducer/Department/TeacherContextApi';
 import { useDistricts } from '@/hooks/api/useDistricts';
 import { useUpazillas } from '@/hooks/api/useUpazilla';
@@ -55,43 +56,46 @@ const Dashboard = ({ department, students }) => {
     return (
         <AuthenticatedLayout>
             <Head title="Islamic School" />
-            <div className="mt-[24px] flex space-x-[12px] rounded-[8px] bg-white p-[24px]">
-                <span
-                    className={cn(
-                        'flex w-fit cursor-pointer items-center space-x-[8px] text-gray-500',
-                        tab === 'student' && 'border-b-[1px] border-[#4891FF] px-[8px] py-[6px] text-[#4891FF]',
-                    )}
-                    onClick={() => {
-                        deleteAllUrlParams();
-                        setTab('student');
-                    }}
-                >
-                    <FaUserGroup className="inline-flex" size={24} />
-                    <span className="text-[16px]">Students</span>
-                </span>
-                <span
-                    className={cn(
-                        'flex w-fit cursor-pointer items-center space-x-[8px] text-gray-500',
-                        tab === 'staff' && 'border-b-[1px] border-[#4891FF] px-[8px] py-[6px] text-[#4891FF]',
-                    )}
-                    onClick={() => {
-                        setTab('staff');
-                        router.get(
-                            route('department.view', {
-                                department_slug: department.slug,
-                                type: 'staff',
-                            }),
-                            {},
-                            {
-                                preserveState: true,
-                                preserveScroll: true,
-                            },
-                        );
-                    }}
-                >
-                    <FaUserGroup className="inline-flex" size={24} />
-                    <span className="text-[16px]">Teachers</span>
-                </span>
+            <div className="mt-[24px] flex w-full items-center justify-between rounded-[8px] bg-white p-[24px]">
+                <div className="flex space-x-[12px]">
+                    <span
+                        className={cn(
+                            'flex w-fit cursor-pointer items-center space-x-[8px] text-gray-500',
+                            tab === 'student' && 'border-b-[1px] border-[#4891FF] px-[8px] py-[6px] text-[#4891FF]',
+                        )}
+                        onClick={() => {
+                            deleteAllUrlParams();
+                            setTab('student');
+                        }}
+                    >
+                        <FaUserGroup className="inline-flex" size={24} />
+                        <span className="text-[16px]">Students</span>
+                    </span>
+                    <span
+                        className={cn(
+                            'flex w-fit cursor-pointer items-center space-x-[8px] text-gray-500',
+                            tab === 'staff' && 'border-b-[1px] border-[#4891FF] px-[8px] py-[6px] text-[#4891FF]',
+                        )}
+                        onClick={() => {
+                            setTab('staff');
+                            router.get(
+                                route('department.view', {
+                                    department_slug: department.slug,
+                                    type: 'staff',
+                                }),
+                                {},
+                                {
+                                    preserveState: true,
+                                    preserveScroll: true,
+                                },
+                            );
+                        }}
+                    >
+                        <FaUserGroup className="inline-flex" size={24} />
+                        <span className="text-[16px]">Teachers</span>
+                    </span>
+                </div>
+                <SettingDropdownContainer />
             </div>
             {content}
         </AuthenticatedLayout>
