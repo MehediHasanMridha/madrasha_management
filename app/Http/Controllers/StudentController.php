@@ -17,7 +17,7 @@ class StudentController extends Controller
         $request->validate([
             'name'                    => 'required|string|max:120',
             'blood_group'             => 'nullable|in:O+,O-,A+,A-,B+,B-,AB+,AB-,null',
-            'contact_number'          => 'required|string|max:14|unique:users,phone',
+            'contact_number'          => 'nullable|string|max:14|unique:users,phone',
             'father_name'             => 'required|string|max:120',
             'mother_name'             => 'required|string|max:120',
             'guardian_contact_number' => 'required|string|max:14',
@@ -88,7 +88,7 @@ class StudentController extends Controller
         $request->validate([
             'name'                    => 'required|string|max:120',
             'blood_group'             => 'nullable|in:O+,O-,A+,A-,B+,B-,AB+,AB-,null',
-            'contact_number'          => 'required|string|max:14|unique:users,phone,' . $student_id,
+            'contact_number'          => 'nullable|string|max:14|unique:users,phone,' . $student_id,
             'father_name'             => 'required|string|max:120',
             'mother_name'             => 'required|string|max:120',
             'guardian_contact_number' => 'required|string|max:14',

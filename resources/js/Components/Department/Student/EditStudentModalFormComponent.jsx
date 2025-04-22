@@ -143,7 +143,7 @@ const EditStudentModalFormComponent = ({
                             type="text"
                             className="rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
                             placeholder="Enter Contact Number"
-                            {...register('contact_number', { required: 'Contact Number is required' })}
+                            {...register('contact_number')}
                         />
                     </Field>
                 </FieldSet>
