@@ -34,7 +34,7 @@ const DashboardComponent = ({ data, auth }) => {
     return (
         <div className="bg-[#F6F6F6 ] rounded-3xl px-[50px]">
             <div className="mb-5 space-y-[20px]">
-                <div className="flex items-center justify-between rounded-[8px] bg-white p-[10px]">
+                <div className="flex items-center justify-between rounded-[8px] bg-white px-[30px] py-[10px]">
                     <div>
                         <div className="text-[24px] font-[500]">Assalamu Alaikum {auth.user.name} !</div>
                         <div className="text-[16px] font-[400] text-[#4A4A4A]">Hope everything is doing well.</div>
