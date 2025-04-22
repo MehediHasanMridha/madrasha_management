@@ -233,14 +233,16 @@ const AddStaffModalFormComponent = ({
                             {...register('designation', { required: 'Designation is required' })}
                         >
                             <option value="">Select Designation</option>
-                            <option value="Head Teacher">Head Teacher</option>
-                            <option value="Assistant Teacher">Assistant Teacher</option>
-                            <option value="Senior Teacher">Senior Teacher</option>
-                            <option value="Instructor">Instructor</option>
-                            <option value="Hafiz">Hafiz</option>
-                            <option value="Qari">Qari</option>
-                            <option value="Administrator">Administrator</option>
-                            <option value="Office Staff">Office Staff</option>
+                            <option value="Principle">Principle</option>
+                            <option value="Islamic shool">Islamic shool</option>
+                            <option value="Kitab bivag (Kodim)">Kitab bivag (Kodim)</option>
+                            <option value="Kitab bivag (Madani)">Kitab bivag (Madani)</option>
+                            <option value="Hifjo bivag">Hifjo bivag</option>
+                            <option value="Najera bivag">Najera bivag</option>
+                            <option value="Hifjo revision">Hifjo revision</option>
+                            <option value="Accountant">Accountant</option>
+                            <option value="Office assistant">Office assistant</option>
+                            <option value="Other staff">Other staff</option>
                         </select>
                     </Field>
                     <Field label={'Salary'} error={errors.salary}>
