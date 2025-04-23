@@ -36,9 +36,7 @@ class DashboardController extends Controller
                 'student_count'  => $item->student_count,
                 'teacher_count'  => $item->teacher_count,
                 'total_tk'       => $total_tk,
-                'monthly_income' => $item->academics->map(function ($academic) {
-                    return $academic->student->incomeLogs->sum('amount');
-                })->sum(),
+                'monthly_income' => $monthly_income,
             ];
         });
 

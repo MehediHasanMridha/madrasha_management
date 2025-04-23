@@ -28,3 +28,11 @@ export const deleteAllUrlParams = () => {
     window.history.replaceState(null, '', url); // Update the URL without parameters
 };
 
+
+export const formattedAmount = (amount, locale = 'en-US') => {
+    if (amount) {
+        return amount.toLocaleString(locale); // 'en-US' লোকাল অনুযায়ী ফরম্যাট
+    }
+    return 0;
+}
+

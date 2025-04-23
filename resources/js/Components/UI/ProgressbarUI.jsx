@@ -7,7 +7,7 @@ const ProgressbarUI = ({ percent, type, color, status, showInfo = false, ...prop
             status={status ?? 'active'} // active, normal, exception, success
             showInfo={showInfo} // true, false
             size="small" // small, default, large
-            strokeWidth={8} // 0-100
+            // strokeWidth={8} // 0-100
             strokeLinecap="round" // round, square, butt
             trailColor="#e5e5e5" // #e5e5e5
             type={type ?? 'line'} // line, circle, dashboard
