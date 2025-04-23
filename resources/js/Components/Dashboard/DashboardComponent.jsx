@@ -1,5 +1,6 @@
 import student_present_graph from '@/assets/images/student_present_graph.svg';
 import SettingDropdownContainer from '@/Container/Shared/SettingDropdownContainer';
+import MonthlyFeeComponent from './MonthlyFeeComponent';
 const DashboardComponent = ({ data, auth }) => {
     return (
         <div className="bg-[#F6F6F6 ] rounded-3xl px-[50px]">
@@ -11,8 +12,8 @@ const DashboardComponent = ({ data, auth }) => {
                     </div>
                     <SettingDropdownContainer />
                 </div>
-                {data.map((department) => (
-                    <div className="space-y-[20px] rounded-[12px] border-[1px] border-[#AFAFAF] p-[24px]">
+                {data.map((department, index) => (
+                    <div key={index} className="space-y-[20px] rounded-[12px] border-[1px] border-[#AFAFAF] p-[24px]">
                         <div className="text-[20px] font-[500]">
                             {department.name}
                             <hr className="text-[#AFAFAF ] border-[0.5px]" />
@@ -91,25 +92,7 @@ const DashboardComponent = ({ data, auth }) => {
                                 </div>
                             </div>
                         </div>
-                        <div className="rounded-[8px] bg-white p-[24px]">
-                            <div className="text-base font-medium text-[#131313]">Monthly fee</div>
-                            <hr className="my-[12px] border-[1px] bg-[#AFAFAF]" />
-                            <div className="">
-                                <div className="flex items-end justify-start gap-1.5 py-[16px]">
-                                    <div className="text-[32px] leading-9 font-medium text-[#131313]">6,08,764</div>
-                                    <div className="text-base font-normal text-[#afafaf]">/8,98,567 BDT</div>
-                                </div>
-                                <div className="text-sm font-normal text-[#4a4a4a]">Total collected</div>
-                                <div className="inline-flex h-[18px] items-center justify-start gap-4">
-                                    <div className="text-xs font-normal text-[#4a4a4a]">0 BDT</div>
-                                    <div className="relative h-1 shrink grow basis-0">
-                                        <div className="relative top-0 left-0 h-1 w-[813px] rounded-[100px] bg-[#f2f2f2]" />
-                                        <div className="absolute top-0 left-0 h-1 w-[664.22px] rounded-[100px] bg-[#00a606]" />
-                                    </div>
-                                    <div className="text-xs font-normal text-[#4a4a4a]">2,34,567 BDT</div>
-                                </div>
-                            </div>
-                        </div>
+                        <MonthlyFeeComponent data={department} />
                     </div>
                 ))}
             </div>

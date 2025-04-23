@@ -1,42 +1,19 @@
 <?php
 
 use App\Http\Controllers\ClassController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\FinanceController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\StudentController;
-use App\Models\Department;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::redirect('/', '/login');
-// Route::get('/', function () {
-//     return Inertia::render('Welcome');
-// })->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', function () {
-        // $data = User::with('roles')->get();
-        $data = Department::withCount([
-            'academics as student_count' => function ($query) {
-                $query->whereHas('student.roles', function ($q) {
-                    $q->where('name', 'student');
-                });
-            },
-            // 'academics as teacher_count' => function ($query) {
-            //     $query->whereHas('student.classAssign', function ($q) {
-            //         $q->where('dept_id', '==', 1);
-            //     });
-            // },
-            'classAssign as teacher_count',
-        ])->get();
-
-        // dd($data);
-        // return $data;
-
-        return Inertia::render('Dashboard', ['data' => $data]);
-    })->name('dashboard');
+    Route::get('dashboard', [DashboardController::class, "index"])->name('dashboard');
     Route::get("/department/{department_slug}", [DepartmentController::class, "view"])->name("department.view");
     Route::post("/department/{department_slug}/add_student", [StudentController::class, "add_student"])->name("student.add_student");
     Route::post("/student/{student_id}/update", [StudentController::class, "update_student"])->name("student.update_student");
