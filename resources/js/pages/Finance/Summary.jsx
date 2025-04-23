@@ -1,7 +1,7 @@
 import TabBarContainer from '@/Container/Finance/TabBarContainer';
 import AuthenticatedLayout from '@/layouts/AuthenticatedLayout';
 import { Head, router } from '@inertiajs/react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 export default function Summary({ data }) {
     const [activeTab, setActiveTab] = useState('summary');
@@ -19,24 +19,12 @@ export default function Summary({ data }) {
     const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
     const years = ['2024', '2025', '2026', '2027', '2028', '2029', '2030', '2031', '2032', '2033', '2034', '2035'];
 
-    useEffect(() => {
-        router.get(route('finance.summary'), earnings, {
-            preserveState: true,
-            preserveScroll: true,
-            replace: true,
-        });
-    }, [earnings]);
-
-    const handleEarnings = () => {
-        router.get(route('finance.summary'), earnings, {
+    const handleEarnings = (data) => {
+        router.get(route('finance.summary'), data, {
             preserveState: true,
             preserveScroll: true,
             replace: true,
             // reset: true,
-            onSuccess: (response) => {
-                console.log('🚀 ~ handleEarnings ~ response:', response);
-                // setEarnings({ ...earnings, month });
-            },
         });
     };
 
@@ -81,6 +69,7 @@ export default function Summary({ data }) {
                                                         onClick={() => {
                                                             setEarnings({ ...earnings, earningMonth: month });
                                                             setShowEarningsMonthDropdown(false);
+                                                            handleEarnings({ ...earnings, earningMonth: month });
                                                         }}
                                                     >
                                                         {month}
@@ -109,6 +98,7 @@ export default function Summary({ data }) {
                                                         onClick={() => {
                                                             setEarnings({ ...earnings, earningYear: year });
                                                             setShowEarningsYearDropdown(false);
+                                                            handleEarnings({ ...earnings, earningYear: year });
                                                         }}
                                                     >
                                                         {year}
@@ -137,8 +127,8 @@ export default function Summary({ data }) {
                                 </div>
 
                                 <div className="w-2/3 space-y-2">
-                                    {data?.earnings?.map((earning) => (
-                                        <>
+                                    {data?.earnings?.map((earning, index) => (
+                                        <div key={index}>
                                             <div className="p-2">
                                                 <div className="flex items-center">
                                                     <div className="mr-2 h-4 w-4 rounded bg-[#49D946]" />
@@ -147,7 +137,7 @@ export default function Summary({ data }) {
                                                 </div>
                                             </div>
                                             <hr className="border-gray-100" />
-                                        </>
+                                        </div>
                                     ))}
                                 </div>
                             </div>
@@ -177,6 +167,7 @@ export default function Summary({ data }) {
                                                         onClick={() => {
                                                             setEarnings({ ...earnings, outgoingMonth: month });
                                                             setShowExpensesMonthDropdown(false);
+                                                            handleEarnings({ ...earnings, outgoingMonth: month });
                                                         }}
                                                     >
                                                         {month}
@@ -205,6 +196,7 @@ export default function Summary({ data }) {
                                                         onClick={() => {
                                                             setEarnings({ ...earnings, outgoingYear: year });
                                                             setShowExpensesYearDropdown(false);
+                                                            handleEarnings({ ...earnings, outgoingYear: year });
                                                         }}
                                                     >
                                                         {year}
@@ -233,8 +225,8 @@ export default function Summary({ data }) {
                                 </div>
 
                                 <div className="w-2/3 space-y-2">
-                                    {data?.expenses?.map((expense) => (
-                                        <>
+                                    {data?.expenses?.map((expense, index) => (
+                                        <div key={index}>
                                             <div className="p-2">
                                                 <div className="flex items-center">
                                                     <div className="mr-2 h-4 w-4 rounded bg-[#49D946]" />
@@ -243,7 +235,7 @@ export default function Summary({ data }) {
                                                 </div>
                                             </div>
                                             <hr className="border-gray-100" />
-                                        </>
+                                        </div>
                                     ))}
                                 </div>
                             </div>
