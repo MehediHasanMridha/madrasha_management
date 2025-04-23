@@ -14,9 +14,15 @@ const MonthlyFeeComponent = ({ data }) => {
                 <div className="flex h-[18px] items-center justify-start gap-4">
                     <div className="text-xs font-normal text-[#4a4a4a]">{data?.monthly_income} BDT</div>
                     <div className="w-[813px] shrink grow basis-0 items-center">
-                        <ProgressbarUI percent={(data?.monthly_income * 100) / data?.total_tk} />
+                        <ProgressbarUI
+                            color={{
+                                '0%': '#FFD016', //red
+                                '100%': '#00a606',
+                            }}
+                            percent={(data?.monthly_income * 100) / data?.total_tk}
+                        />
                     </div>
-                    <div className="text-xs font-normal text-[#4a4a4a]">{data?.total_tk} BDT</div>
+                    <div className="text-xs font-normal text-[#4a4a4a]">{data?.total_tk - data?.monthly_income} BDT</div>
                 </div>
             </div>
         </div>
