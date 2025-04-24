@@ -31,6 +31,7 @@ const EditStudentModalFormContainer = () => {
             setValue('name', passData.name);
             setValue('blood_group', passData.academic.blood);
             setValue('contact_number', passData.phone);
+            setValue('gender', passData.gender);
             setValue('father_name', passData.guardian.father_name);
             setValue('mother_name', passData.guardian.mother_name);
             setValue('guardian_contact_number', passData.guardian.numbers[0]);

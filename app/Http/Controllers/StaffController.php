@@ -70,6 +70,7 @@ class StaffController extends Controller
             'name'                    => 'required|string|max:120',
             'blood_group'             => 'required|in:O+,O-,A+,A-,B+,B-,AB+,AB-',
             'contact_number'          => 'required|string|max:14|unique:users,phone',
+            'gender'                  => 'required|in:male,female,other',
             'father_name'             => 'required|string|max:120',
             'mother_name'             => 'required|string|max:120',
             'guardian_contact_number' => 'required|string|max:14',
@@ -86,6 +87,7 @@ class StaffController extends Controller
         $staff->name      = $request->name;
         $staff->unique_id = generateUniqueId('T');
         $staff->phone     = $request->contact_number;
+        $staff->gender    = $request->gender;
         if ($request->hasFile('staff_image')) {
             $img        = uploadImage($staff->img, $request->file('staff_image'), 'uploads/staff_images/');
             $staff->img = $img;
@@ -137,6 +139,7 @@ class StaffController extends Controller
             'name'                    => 'required|string|max:120',
             'blood_group'             => 'required|in:O+,O-,A+,A-,B+,B-,AB+,AB-,null',
             'contact_number'          => 'required|string|max:14|unique:users,phone,' . $id,
+            'gender'                  => 'required|in:male,female,other',
             'father_name'             => 'required|string|max:120',
             'mother_name'             => 'required|string|max:120',
             'guardian_contact_number' => 'required|string|max:14',
@@ -147,9 +150,10 @@ class StaffController extends Controller
             'staff_image'             => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:4096',
         ]);
 
-        $staff        = User::findOrFail($id);
-        $staff->name  = $request->name;
-        $staff->phone = $request->contact_number;
+        $staff         = User::findOrFail($id);
+        $staff->name   = $request->name;
+        $staff->phone  = $request->contact_number;
+        $staff->gender = $request->gender;
         if ($request->hasFile('staff_image')) {
             $img        = uploadImage($staff->img, $request->file('staff_image'), 'uploads/staff_images/');
             $staff->img = $img;

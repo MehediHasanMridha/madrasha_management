@@ -19,6 +19,7 @@ class showStudentData extends JsonResource
             'unique_id' => $this->unique_id,
             'image'     => $this->img,
             'phone'     => $this->phone,
+            'gender'    => $this->gender,
             'address'   => [
                 'district' => $this->address->district,
                 'upazilla' => $this->address->upazilla,
