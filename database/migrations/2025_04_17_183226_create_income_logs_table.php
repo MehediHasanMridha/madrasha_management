@@ -17,8 +17,8 @@ return new class extends Migration
             $table->enum('source_type', ['student', 'donation', 'sponsor', 'other'])->default('student'); // student, donation, sale, sponsor, etc.
             $table->string('source_details')->nullable();
             $table->decimal('amount', 10, 2);
-            $table->foreignId('fee_type_id')->constrained()->cascadeOnDelete()->nullable();
-            $table->foreignId('payment_method_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('fee_type_id')->constrained()->nullable();
+            $table->foreignId('payment_method_id')->constrained()->nullable();
             $table->string('payment_period')->nullable(); // e.g. 2025-04
             $table->enum('status', ['paid', 'pending', 'failed'])->default('paid');
             $table->text('remarks')->nullable();
