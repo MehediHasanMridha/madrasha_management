@@ -31,6 +31,7 @@ const EditStaffModalFormContainer = () => {
             setValue('name', passData.name);
             setValue('blood_group', passData.blood_group);
             setValue('contact_number', passData.phone);
+            setValue('gender', passData.gender);
             setValue('designation', passData.designation);
             setValue('salary', passData.salary);
             setValue('father_name', passData.guardian?.father_name);

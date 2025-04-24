@@ -19,9 +19,10 @@ class showStaffData extends JsonResource
             'unique_id'               => $this->unique_id,
             'image'                   => $this->img,
             'phone'                   => $this->phone,
-            'blood_group'             => $this->academics->blood,
-            'designation'             => $this->academics->designation,
-            'salary'                  => $this->academics->salary,
+            'gender'                  => $this->gender,
+            'blood_group'             => $this->academics->blood ?? null,
+            'designation'             => $this->academics->designation ?? null,
+            'salary'                  => $this->academics->salary ?? null,
             'address'                 => [
                 'district' => $this->address->district,
                 'upazilla' => $this->address->upazilla,
@@ -32,8 +33,8 @@ class showStaffData extends JsonResource
                 'mother_name'    => $this->guardians->mother_name,
                 'contact_number' => json_decode($this->guardians->numbers)[0] ?? null,
             ],
-            'reference'               => $this->academics->reference,
-            'reference_mobile_number' => $this->academics->reference_number,
+            'reference'               => $this->academics->reference ?? null,
+            'reference_mobile_number' => $this->academics->reference_number ?? null,
         ];
     }
 }

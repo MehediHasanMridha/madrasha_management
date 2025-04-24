@@ -17,6 +17,7 @@ class StudentController extends Controller
         $request->validate([
             'name'                    => 'required|string|max:120',
             'blood_group'             => 'nullable|in:O+,O-,A+,A-,B+,B-,AB+,AB-,null',
+            'gender'                  => 'required|in:male,female,other',
             'contact_number'          => 'nullable|string|max:14|unique:users,phone',
             'father_name'             => 'required|string|max:120',
             'mother_name'             => 'required|string|max:120',
@@ -26,8 +27,8 @@ class StudentController extends Controller
             'joining_class'           => 'required',
             'department_id'           => 'required',
             'student_image'           => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:4096',
-            'boarding_fee'            => 'numeric',
-            'academic_fee'            => 'numeric',
+            'boarding_fee'            => 'nullable|numeric',
+            'academic_fee'            => 'nullable|numeric',
         ], [
             'student_id.unique'     => 'This student id already exists',
             'contact_number.unique' => 'This contact number already exists',
@@ -37,6 +38,7 @@ class StudentController extends Controller
         $student->name      = $request->name;
         $student->unique_id = generateUniqueId('S');
         $student->phone     = $request->contact_number;
+        $student->gender    = $request->gender;
         if ($request->hasFile('student_image')) {
             $img          = uploadImage($student->img, $request->file('student_image'), 'uploads/student_images/');
             $student->img = $img;
@@ -89,6 +91,7 @@ class StudentController extends Controller
             'name'                    => 'required|string|max:120',
             'blood_group'             => 'nullable|in:O+,O-,A+,A-,B+,B-,AB+,AB-,null',
             'contact_number'          => 'nullable|string|max:14|unique:users,phone,' . $student_id,
+            'gender'                  => 'required|in:male,female,other',
             'father_name'             => 'required|string|max:120',
             'mother_name'             => 'required|string|max:120',
             'guardian_contact_number' => 'required|string|max:14',
@@ -101,9 +104,10 @@ class StudentController extends Controller
             'academic_fee'            => 'numeric|nullable',
         ]);
 
-        $student        = User::findOrFail($student_id);
-        $student->name  = $request->name;
-        $student->phone = $request->contact_number;
+        $student         = User::findOrFail($student_id);
+        $student->name   = $request->name;
+        $student->phone  = $request->contact_number;
+        $student->gender = $request->gender;
 
         if ($request->hasFile('student_image')) {
             $img          = uploadImage($student->img, $request->file('student_image'), 'uploads/student_images/');
