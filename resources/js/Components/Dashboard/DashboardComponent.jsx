@@ -35,11 +35,11 @@ const DashboardComponent = ({ data, auth }) => {
                                 <div className="flex space-x-[24px]">
                                     <span className="flex items-center space-x-[4px] text-[10px] text-[#AFAFAF]">
                                         <div className="h-2.5 w-2.5 rounded-[100px] bg-[#9658ec]" />
-                                        <span>120 Male</span>
+                                        <span>{department?.student_male_count} Male</span>
                                     </span>
                                     <span className="flex items-center space-x-[4px] text-[10px] text-[#AFAFAF]">
                                         <div className="h-2.5 w-2.5 rounded-[100px] bg-[#9658ec]" />
-                                        <span>120 Female</span>
+                                        <span>{department?.student_female_count} Female</span>
                                     </span>
                                 </div>
                             </div>
@@ -59,11 +59,11 @@ const DashboardComponent = ({ data, auth }) => {
                                 <div className="flex space-x-[24px]">
                                     <span className="flex items-center space-x-[4px] text-[10px] text-[#AFAFAF]">
                                         <div className="h-2.5 w-2.5 rounded-[100px] bg-[#9658ec]" />
-                                        <span>120 Male</span>
+                                        <span>{department?.teacher_male_count} Male</span>
                                     </span>
                                     <span className="flex items-center space-x-[4px] text-[10px] text-[#AFAFAF]">
                                         <div className="h-2.5 w-2.5 rounded-[100px] bg-[#9658ec]" />
-                                        <span>120 Female</span>
+                                        <span>{department?.teacher_female_count} Female</span>
                                     </span>
                                 </div>
                             </div>
