@@ -146,6 +146,17 @@ const EditStudentModalFormComponent = ({
                             {...register('contact_number')}
                         />
                     </Field>
+                    <Field label={'Gender'} error={errors.gender}>
+                        <select
+                            className="rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
+                            {...register('gender', { required: 'Gender is required' })}
+                        >
+                            <option value="">Select Gender</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </Field>
                 </FieldSet>
                 <FieldSet label={"Guardian's Information"} labelClassName="text-[16px] font-bold" hr={true}>
                     <Field label={'Father Name'} error={errors.father_name}>
