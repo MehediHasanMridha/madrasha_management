@@ -47,8 +47,10 @@ class StaffController extends Controller
         if ($search) {
             $staff->where(function ($q) use ($search) {
                 $q->where('name', 'like', '%' . $search . '%')
-                    ->orWhere('email', 'like', '%' . $search . '%');
+                    ->orWhere('unique_id', 'like', '%' . $search . '%')
+                    ->orWhere('phone', 'like', '%' . $search . '%');
             });
+
         }
 
         if ($order && in_array($sortField, ['name', 'email', 'created_at'])) {
