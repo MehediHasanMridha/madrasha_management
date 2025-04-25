@@ -21,18 +21,6 @@ const SearchComponent = ({ showBtn, setShowBtn, handleSearch, search, setSearch,
                 {search && <X className="absolute top-1/2 right-3 -translate-y-1/2 cursor-pointer text-[#AFAFAF]" onClick={handleReset} />}
             </>
         </Field>
-        // <div className="flex w-full items-center space-x-4">
-        //     {showBtn && (
-        //         <div className="flex items-center space-x-4">
-        //             <StaticBtn className="w-20" onClick={handleSearch}>
-        //                 Search
-        //             </StaticBtn>
-        //             <StaticBtn className="w-20" onClick={handleReset}>
-        //                 reset
-        //             </StaticBtn>
-        //         </div>
-        //     )}
-        // </div>
     );
 };
 
