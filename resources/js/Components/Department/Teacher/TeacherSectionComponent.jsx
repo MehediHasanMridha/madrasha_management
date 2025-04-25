@@ -2,13 +2,17 @@ import ModalUI from '@/Components/UI/ModalUI';
 import StaticBtn from '@/Components/UI/StaticBtn';
 import InfiniteScrollContainer from '@/Container/Department/Teacher/InfiniteScrollContainer';
 import TeacherListTableContainer from '@/Container/Department/Teacher/TeacherListTableContainer';
+import TeacherSearchContainer from '@/Container/Department/Teacher/TeacherSearchContainer';
 import { useTeachersContext } from '@/contextApi&reducer/Department/TeacherContextApi';
 
 const TeacherSectionComponent = ({ handleClick, openModal, handleOk, handleCancel, department }) => {
     const { staffs } = useTeachersContext();
     return (
         <div className="mt-[8px] flex w-full flex-col items-end space-y-5 rounded-[8px] bg-white p-[24px] text-center">
-            <StaticBtn onClick={handleClick}>Assign Teacher</StaticBtn>
+            <div className="flex w-full items-center justify-between space-x-[24px]">
+                <TeacherSearchContainer department={department} />
+                <StaticBtn onClick={handleClick}>Assign Teacher</StaticBtn>
+            </div>
             <TeacherListTableContainer department={department} />
             <ModalUI
                 style={{ top: 80 }}
