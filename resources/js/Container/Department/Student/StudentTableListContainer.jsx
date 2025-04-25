@@ -75,6 +75,17 @@ const StudentTableListContainer = ({ department, data }) => {
             key: 'father_name',
         },
         {
+            title: 'Gender',
+            dataIndex: 'gender',
+            key: 'gender',
+            filters: [
+                { text: 'Male', value: 'male' },
+                { text: 'Female', value: 'female' },
+                { text: 'Other', value: 'other' },
+            ],
+            filterIcon: (filtered) => <FaFilter className={`text-xl ${filtered ? 'text-red-500' : ''}`} />,
+        },
+        {
             title: 'Class',
             dataIndex: 'class',
             key: 'class_id',
