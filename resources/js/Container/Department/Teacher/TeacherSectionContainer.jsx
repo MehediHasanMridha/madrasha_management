@@ -7,6 +7,7 @@ import { useState } from 'react';
 const TeacherSectionContainer = ({ department }) => {
     const [modal, setModal] = useState(false);
     const { staffs, dispatch, checkedList, checkListDispatch } = useTeachersContext();
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleClick = async () => {
         try {
@@ -23,8 +24,7 @@ const TeacherSectionContainer = ({ department }) => {
         const { data } = await axios.post(route('assign.staff.store'), { staffs: checkedList, department_id: department.id });
         checkListDispatch({ type: 'resetCheckedList' });
         setModal(false);
-        // then url hit
-        router.visit(window.location.href);
+        router.get(route('department.teachers_show', { department_slug: department.slug }), {}, { preserveState: true, preserveScroll: true });
     };
     const handleCancel = () => {
         // Handle the Cancel button click event here
@@ -38,6 +38,8 @@ const TeacherSectionContainer = ({ department }) => {
             handleOk={handleOk}
             handleCancel={handleCancel}
             handleClick={handleClick}
+            setIsLoading={setIsLoading}
+            isLoading={isLoading}
         />
     );
 };

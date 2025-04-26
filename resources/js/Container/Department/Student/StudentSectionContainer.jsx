@@ -1,10 +1,12 @@
 import StudentSectionComponent from '@/Components/Department/Student/StudentSectionComponent';
 import { StudentSectionProvider } from '@/contextApi&reducer/Department/StudentContextApi';
+import { usePage } from '@inertiajs/react';
 import { notification } from 'antd';
 import { useState } from 'react';
 
-const StudentSectionContainer = ({ department, students, districts, districtId, upazillas, setDistrictId }) => {
+const StudentSectionContainer = ({ department, districts, districtId, upazillas, setDistrictId }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const { students } = usePage().props;
     const [isLoading, setIsLoading] = useState(false);
     const [api, contextHolder] = notification.useNotification();
 
@@ -15,6 +17,7 @@ const StudentSectionContainer = ({ department, students, districts, districtId, 
                 department={department}
                 students={students}
                 setIsLoading={setIsLoading}
+                isLoading={isLoading}
                 setIsModalOpen={setIsModalOpen}
             />
         </StudentSectionProvider>

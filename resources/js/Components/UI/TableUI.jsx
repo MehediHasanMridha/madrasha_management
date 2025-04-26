@@ -3,13 +3,15 @@ import { Button, ConfigProvider, Input, Table } from 'antd';
 import { useEffect, useState } from 'react';
 import { FaFilter } from 'react-icons/fa';
 
-const TableUI = ({ dataSource, columns, deleteLoading = false, routeName, rowSelection = false, sortOrder = 'asc', ...props }) => {
+const TableUI = ({ dataSource, columns, showLoading = false, routeName, rowSelection = false, sortOrder = 'asc', ...props }) => {
     const [loading, setLoading] = useState(true);
+
     useEffect(() => {
-        setTimeout(() => {
-            setLoading(false);
-        }, 1000);
-    }, [dataSource?.meta?.total]);
+        setLoading(true);
+        const timer = setTimeout(() => setLoading(false), 1000);
+        return () => clearTimeout(timer);
+    }, [showLoading]);
+
     const handleTableChange = (pagination, filters, sorter) => {
         // router.get(
         //     route(routeName, {
@@ -147,7 +149,7 @@ const TableUI = ({ dataSource, columns, deleteLoading = false, routeName, rowSel
             columns={columns || internalColumns}
             rowKey={(record) => record?.id}
             dataSource={dataSource?.data}
-            loading={deleteLoading ? { spinning: true } : loading}
+            loading={loading}
             pagination={{
                 pageSize: dataSource?.meta?.per_page,
                 current: dataSource?.meta?.current_page,

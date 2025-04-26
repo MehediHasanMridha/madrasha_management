@@ -85,10 +85,10 @@ const LeftSide = () => {
                 <hr className="h-[0.5px] w-full bg-[#AFAFAF]" />
             </div>
             {departments?.map((department) => (
-                <Link key={department.id} href={route('department.view', department.slug)} className="w-full cursor-pointer" as="button">
+                <Link key={department.id} href={route('department.students_show', department.slug)} className="w-full cursor-pointer" as="button">
                     <SideBarUI.Item
                         collapsed={collapsed}
-                        className={`flex h-[64px] items-center space-x-[12px] px-[50px] ${route().current('department.view', department.slug) && 'bg-[#F2F2F2]'} hover:bg-[#F2F2F2]`}
+                        className={`flex h-[64px] items-center space-x-[12px] px-[50px] ${route().current('department.*', department.slug) && 'bg-[#F2F2F2]'} hover:bg-[#F2F2F2]`}
                     >
                         <SideBarUI.Icon>
                             <img src={Islamic_School} alt="Islamic_School}" className="h-[24px] w-[24px]" />

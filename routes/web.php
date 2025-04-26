@@ -14,8 +14,11 @@ Route::redirect('/', '/login');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', [DashboardController::class, "index"])->name('dashboard');
-    Route::get("/department/{department_slug}", [DepartmentController::class, "view"])->name("department.view");
-    Route::post("/department/{department_slug}/add_student", [StudentController::class, "add_student"])->name("student.add_student");
+    Route::prefix('department')->group(function () {
+        Route::get("/students/{department_slug}", [DepartmentController::class, "students_show"])->name("department.students_show");
+        Route::get("/teachers/{department_slug}", [DepartmentController::class, "teachers_show"])->name("department.teachers_show");
+    });
+    Route::post("/student/{department_slug}/add_student", [StudentController::class, "add_student"])->name("student.add_student");
     Route::post("/student/{student_id}/update", [StudentController::class, "update_student"])->name("student.update_student");
 
     // delete user

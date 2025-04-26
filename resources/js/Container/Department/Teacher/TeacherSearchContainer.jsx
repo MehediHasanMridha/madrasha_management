@@ -2,20 +2,28 @@ import SearchComponent from '@/Components/Shared/SearchComponent';
 import { router } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 
-const TeacherSearchContainer = ({ department, setLoading }) => {
+const TeacherSearchContainer = ({ department, setIsLoading }) => {
     const [showBtn, setShowBtn] = useState(false);
     const [search, setSearch] = useState('');
 
     useEffect(() => {
         if (search) {
             router.get(
-                route('department.view', {
+                route('department.teachers_show', {
                     department_slug: department.slug,
                     search: search,
-                    type: 'staff',
                 }),
                 {},
                 {
+                    onStart: () => {
+                        setIsLoading(true);
+                    },
+                    onFinish: () => {
+                        setIsLoading(false);
+                    },
+                    onError: (errors) => {
+                        setIsLoading(false);
+                    },
                     preserveState: true,
                     preserveScroll: true,
                 },
@@ -26,15 +34,23 @@ const TeacherSearchContainer = ({ department, setLoading }) => {
     const handleSearch = () => {
         // Implement search logic here
         router.get(
-            route('department.view', {
+            route('department.teachers_show', {
                 department_slug: department.slug,
                 search: search,
-                type: 'staff',
             }),
             {},
             {
                 preserveState: true,
                 preserveScroll: true,
+                onStart: () => {
+                    setIsLoading(true);
+                },
+                onFinish: () => {
+                    setIsLoading(false);
+                },
+                onError: (errors) => {
+                    setIsLoading(false);
+                },
             },
         );
     };
@@ -55,21 +71,23 @@ const TeacherSearchContainer = ({ department, setLoading }) => {
 
     const handleReset = () => {
         router.get(
-            route('department.view', {
+            route('department.teachers_show', {
                 department_slug: department.slug,
-                type: 'staff',
             }),
             {},
             {
                 preserveState: true,
                 preserveScroll: true,
-                onStart: () => {},
+                onStart: () => {
+                    setIsLoading(true);
+                },
                 onFinish: () => {
                     setSearch('');
                     setShowBtn(false);
+                    setIsLoading(false);
                 },
                 onError: (errors) => {
-                    setLoading(false);
+                    setIsLoading(false);
                 },
             },
         );

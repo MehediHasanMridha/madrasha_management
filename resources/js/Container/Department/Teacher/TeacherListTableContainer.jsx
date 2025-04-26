@@ -4,21 +4,15 @@ import Icons from '@/icons';
 import { getAvatarImage } from '@/lib/avatarImageUrlUtils';
 import { router, usePage } from '@inertiajs/react';
 import { Avatar } from 'antd';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
-const TeacherListTableContainer = ({ department }) => {
-    const { staff } = usePage().props;
-    const [loading, setLoading] = useState(true);
+const TeacherListTableContainer = ({ department, isLoading, setIsLoading }) => {
+    const { staffs } = usePage().props;
     const [open, setOpen] = useState({
         id: null,
         open: false,
     });
     const [confirmLoading, setConfirmLoading] = useState(false);
-
-    useEffect(() => {
-        const timer = setTimeout(() => setLoading(false), 1000);
-        return () => clearTimeout(timer); // Cleanup the timer on component unmount
-    }, []);
 
     const handleConfirm = (id) => {
         setOpen({
@@ -114,13 +108,12 @@ const TeacherListTableContainer = ({ department }) => {
 
     const handleTableChange = (pagination, filters, sorter) => {
         router.get(
-            route('department.view', {
+            route('department.teachers_show', {
                 department_slug: department.slug,
                 page: pagination.current,
                 sort_field: sorter.field,
                 order: sorter.order,
                 per_page: pagination.pageSize,
-                type: 'staff',
                 filters: {
                     ...filters,
                 },
@@ -128,22 +121,22 @@ const TeacherListTableContainer = ({ department }) => {
             {},
             {
                 onStart: () => {
-                    setLoading(true);
+                    setIsLoading(true);
                 },
                 preserveState: true,
                 preserveScroll: true,
                 onFinish: () => {
-                    setLoading(false);
+                    setIsLoading(false);
                 },
                 onError: (errors) => {
                     console.log('🚀 ~ handleTableChange ~ errors:', errors);
-                    setLoading(false);
+                    setIsLoading(false);
                 },
             },
         );
     };
 
-    return <TableUI dataSource={staff} className="w-full" columns={Columns} onChange={handleTableChange} loading={loading} />;
+    return <TableUI dataSource={staffs} className="w-full" columns={Columns} onChange={handleTableChange} showLoading={isLoading} />;
 };
 
 export default TeacherListTableContainer;
