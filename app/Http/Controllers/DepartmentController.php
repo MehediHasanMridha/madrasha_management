@@ -62,7 +62,7 @@ class DepartmentController extends Controller
         ]);
     }
 
-    public function view($department_slug)
+    public function students_show($department_slug)
     {
         try {
             $request   = request();
@@ -71,7 +71,6 @@ class DepartmentController extends Controller
             $sortField = $request->input('s_sort_field', 'created_at');
             $filters   = $request->input('filters', []);
             $search    = $request->input('search', '');
-            $type      = $request->input('type', '');
             $order     = match ($request->input('s_order', 'undefined')) {
                 'ascend' => 'asc',
                 'descend' => 'desc',
@@ -91,52 +90,61 @@ class DepartmentController extends Controller
             }
 
             $students = $studentsQuery->paginate($per_page, ['*'], 'page', $page)->withQueryString();
-            $staff    = $type === 'staff' ? $this->staffDataShow($department_slug) : null;
 
-            return Inertia::render('Department/Dashboard', [
+            return Inertia::render('Department/Students', [
                 'department' => $department,
                 'students'   => Inertia::defer(fn() => showStudentData::collection(
                     $students ?? [],
-                )),
-                'staff'      => Inertia::defer(fn() => showStaffData::collection(
-                    $staff ?? [],
                 )),
             ]);
 
         } catch (Exception $th) {
             return back()->with('error', $th->getMessage());
         }
+
     }
-
-    private function staffDataShow($department_slug)
+    public function teachers_show($department_slug)
     {
-        $request   = request();
-        $page      = $request->input('page', 1);
-        $per_page  = $request->input('per_page', 10);
-        $sortField = $request->input('sort_field', 'created_at');
-        $filters   = $request->input('filters', []);
-        $search    = $request->input('search', '');
-        $order     = match ($request->input('order', null)) {
-            'ascend' => 'asc',
-            'descend' => 'desc',
-            default => null,
-        };
+        try {
+            $request   = request();
+            $page      = $request->input('page', 1);
+            $per_page  = $request->input('per_page', 10);
+            $sortField = $request->input('sort_field', 'created_at');
+            $filters   = $request->input('filters', []);
+            $search    = $request->input('search', '');
+            $order     = match ($request->input('order', null)) {
+                'ascend' => 'asc',
+                'descend' => 'desc',
+                default => null,
+            };
 
-        $department = Department::with('classes')->where('slug', $department_slug)->firstOrFail();
+            $department = Department::with('classes')->where('slug', $department_slug)->firstOrFail();
 
-        $staffQuery = User::query()
-            ->whereHas('roles', fn($q) => $q->where('name', 'staff'))
-            ->whereHas('classAssign', fn($q) => $q->where('dept_id', $department->id));
+            $staffQuery = User::query()
+                ->whereHas('roles', fn($q) => $q->where('name', 'staff'))
+                ->whereHas('classAssign', fn($q) => $q->where('dept_id', $department->id));
 
-        $this->applyFilters($staffQuery, $filters);
-        $this->applySearch($staffQuery, $search);
-        if ($order && in_array($sortField, ['name', 'email', 'created_at'])) {
-            $staffQuery->orderBy($sortField, $order);
-        } else {
-            $staffQuery->latest($sortField);
+            $this->applyFilters($staffQuery, $filters);
+            $this->applySearch($staffQuery, $search);
+            if ($order && in_array($sortField, ['name', 'email', 'created_at'])) {
+                $staffQuery->orderBy($sortField, $order);
+            } else {
+                $staffQuery->latest($sortField);
+            }
+
+            $staffs = $staffQuery->paginate($per_page, ['*'], 'page', $page)->withQueryString();
+
+            return Inertia::render('Department/Teachers', [
+                'department' => $department,
+                'staffs'     => Inertia::defer(fn() => showStaffData::collection(
+                    $staffs ?? [],
+                )),
+            ]);
+
+        } catch (Exception $th) {
+            return back()->with('error', $th->getMessage());
         }
 
-        return $staffQuery->paginate($per_page, ['*'], 'page', $page)->withQueryString();
     }
 
     private function applyFilters($query, $filters)

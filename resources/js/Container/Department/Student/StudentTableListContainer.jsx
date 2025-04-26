@@ -132,7 +132,7 @@ const StudentTableListContainer = ({ department, data, setIsLoading, isLoading }
             className="w-full"
             onChange={(pagination, filters, sorter) => {
                 router.get(
-                    route('department.view', {
+                    route('department.students_show', {
                         department_slug: department.slug,
                         s_page: pagination.current,
                         s_per_page: pagination.pageSize,

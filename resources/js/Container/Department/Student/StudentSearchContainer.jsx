@@ -9,7 +9,7 @@ const StudentSearchContainer = ({ department, setIsLoading }) => {
     useEffect(() => {
         if (search) {
             router.get(
-                route('department.view', {
+                route('department.students_show', {
                     department_slug: department.slug,
                     search: search,
                 }),
@@ -34,7 +34,7 @@ const StudentSearchContainer = ({ department, setIsLoading }) => {
     const handleSearch = () => {
         // Implement search logic here
         router.get(
-            route('department.view', {
+            route('department.students_show', {
                 department_slug: department.slug,
                 search: search,
             }),
@@ -71,7 +71,7 @@ const StudentSearchContainer = ({ department, setIsLoading }) => {
 
     const handleReset = () => {
         router.get(
-            route('department.view', {
+            route('department.students_show', {
                 department_slug: department.slug,
             }),
             {},
