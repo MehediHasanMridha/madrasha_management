@@ -2,7 +2,7 @@ import SearchComponent from '@/Components/Shared/SearchComponent';
 import { router } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 
-const StudentSearchContainer = ({ department, setLoading }) => {
+const StudentSearchContainer = ({ department, setIsLoading }) => {
     const [showBtn, setShowBtn] = useState(false);
     const [search, setSearch] = useState('');
 
@@ -17,6 +17,15 @@ const StudentSearchContainer = ({ department, setLoading }) => {
                 {
                     preserveState: true,
                     preserveScroll: true,
+                    onStart: () => {
+                        setIsLoading(true);
+                    },
+                    onFinish: () => {
+                        setIsLoading(false);
+                    },
+                    onError: (errors) => {
+                        setIsLoading(false);
+                    },
                 },
             );
         }
@@ -33,6 +42,15 @@ const StudentSearchContainer = ({ department, setLoading }) => {
             {
                 preserveState: true,
                 preserveScroll: true,
+                onStart: () => {
+                    setIsLoading(true);
+                },
+                onFinish: () => {
+                    setIsLoading(false);
+                },
+                onError: (errors) => {
+                    setIsLoading(false);
+                },
             },
         );
     };
@@ -60,13 +78,15 @@ const StudentSearchContainer = ({ department, setLoading }) => {
             {
                 preserveState: true,
                 preserveScroll: true,
-                onStart: () => {},
+                onStart: () => {
+                    setIsLoading(true);
+                },
                 onFinish: () => {
                     setSearch('');
                     setShowBtn(false);
                 },
                 onError: (errors) => {
-                    setLoading(false);
+                    setIsLoading(false);
                 },
             },
         );

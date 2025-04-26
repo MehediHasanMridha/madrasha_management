@@ -10,7 +10,7 @@ import { Head, router, WhenVisible } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import { FaUserGroup } from 'react-icons/fa6';
 
-const Dashboard = ({ department, students }) => {
+const Dashboard = ({ department }) => {
     const [tab, setTab] = useState(() => (getUrlParams() === 'staff' ? 'staff' : 'student'));
     const { data: districts } = useDistricts();
     const [districtId, setDistrictId] = useState(null);
@@ -28,10 +28,9 @@ const Dashboard = ({ department, students }) => {
     switch (tab) {
         case 'student':
             content = (
-                <WhenVisible data={'student'} fallback={<div>Loading...</div>}>
+                <WhenVisible data={'students'} fallback={<div>Loading...</div>}>
                     <StudentSectionContainer
                         department={department}
-                        students={students}
                         districts={districts}
                         districtId={districtId}
                         upazillas={upazillas}
