@@ -2,7 +2,7 @@ import SearchComponent from '@/Components/Shared/SearchComponent';
 import { router } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 
-const StaffSearchContainer = () => {
+const StaffSearchContainer = ({ setIsLoading }) => {
     const [showBtn, setShowBtn] = useState(false);
     const [search, setSearch] = useState('');
 
@@ -16,6 +16,15 @@ const StaffSearchContainer = () => {
                 {
                     preserveState: true,
                     preserveScroll: true,
+                    onStart: () => {
+                        setIsLoading(true);
+                    },
+                    onFinish: () => {
+                        setIsLoading(false);
+                    },
+                    onError: (errors) => {
+                        setIsLoading(false);
+                    },
                 },
             );
         }
@@ -31,6 +40,15 @@ const StaffSearchContainer = () => {
             {
                 preserveState: true,
                 preserveScroll: true,
+                onStart: () => {
+                    setIsLoading(true);
+                },
+                onFinish: () => {
+                    setIsLoading(false);
+                },
+                onError: (errors) => {
+                    setIsLoading(false);
+                },
             },
         );
     };
@@ -56,13 +74,17 @@ const StaffSearchContainer = () => {
             {
                 preserveState: true,
                 preserveScroll: true,
-                onStart: () => {},
+                onStart: () => {
+                    setIsLoading(true);
+                },
                 onFinish: () => {
                     setSearch('');
                     setShowBtn(false);
+                    setIsLoading(false);
                 },
                 onError: (errors) => {
                     setLoading(false);
+                    setIsLoading(false);
                 },
             },
         );

@@ -5,21 +5,15 @@ import { getAvatarImage } from '@/lib/avatarImageUrlUtils';
 import { useBoundStore } from '@/stores';
 import { router } from '@inertiajs/react';
 import { Avatar } from 'antd';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
-const StaffTableListContainer = ({ data, setIsLoading }) => {
+const StaffTableListContainer = ({ data, setIsLoading, isLoading }) => {
     const { setModal, setPassData } = useBoundStore((state) => state);
-    const [loading, setLoading] = useState(true);
     const [open, setOpen] = useState({
         id: null,
         open: false,
     });
     const [confirmLoading, setConfirmLoading] = useState(false);
-
-    useEffect(() => {
-        const timer = setTimeout(() => setLoading(false), 1000);
-        return () => clearTimeout(timer);
-    }, []);
 
     const handleConfirm = (id) => {
         setOpen({
@@ -133,19 +127,19 @@ const StaffTableListContainer = ({ data, setIsLoading }) => {
                         preserveState: true,
                         preserveScroll: true,
                         onStart: () => {
-                            setLoading(true);
+                            setIsLoading(true);
                         },
                         onFinish: () => {
-                            setLoading(false);
+                            setIsLoading(false);
                         },
                         onError: (errors) => {
                             console.log('Error in table change:', errors);
-                            setLoading(false);
+                            setIsLoading(false);
                         },
                     },
                 );
             }}
-            loading={loading}
+            showLoading={isLoading}
         />
     );
 };
