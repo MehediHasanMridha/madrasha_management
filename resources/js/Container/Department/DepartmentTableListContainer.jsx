@@ -126,6 +126,13 @@ const DepartmentTableListContainer = ({ data }) => {
                 );
             }}
             loading={loading}
+            pagination={{
+                pageSize: data?.per_page,
+                showSizeChanger: true,
+                total: data?.total,
+                current: data?.current_page,
+                pageSizeOptions: [5, 10, 20, 50, 100],
+            }}
         />
     );
 };
