@@ -36,7 +36,7 @@ class ClassController extends Controller
             $classes->orderBy($sortField, 'desc');
         }
 
-        $classes     = $classes->paginate($per_page);
+        $classes     = $classes->paginate($per_page, ['*'], 'page', $page)->withQueryString();
         $departments = Department::all();
 
         return Inertia::render('Class/index', [
