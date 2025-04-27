@@ -128,6 +128,12 @@ const ClassListTableContainer = ({ classes, departments }) => {
                 );
             }}
             loading={loading}
+            pagination={{
+                pageSize: classes?.per_page,
+                current: classes?.current_page,
+                showSizeChanger: true,
+                total: classes?.total,
+            }}
         />
     );
 };
