@@ -3,7 +3,7 @@ import SettingDropdownContainer from '@/Container/Shared/SettingDropdownContaine
 import { useDistricts } from '@/hooks/api/useDistricts';
 import { useUpazillas } from '@/hooks/api/useUpazilla';
 import AuthenticatedLayout from '@/layouts/AuthenticatedLayout';
-import { Head, router, WhenVisible } from '@inertiajs/react';
+import { Head, Link, WhenVisible } from '@inertiajs/react';
 import { useState } from 'react';
 import { FaUserGroup } from 'react-icons/fa6';
 
@@ -20,24 +20,16 @@ const Students = ({ department }) => {
                         <FaUserGroup className="inline-flex" size={24} />
                         <span className="text-[16px]">Students</span>
                     </span>
-                    <span
+                    <Link
+                        href={route('department.teachers_show', { department_slug: department.slug })}
+                        as="button"
+                        preserveState
+                        preserveScroll
                         className="flex w-fit cursor-pointer items-center space-x-[8px] text-gray-500"
-                        onClick={() => {
-                            router.get(
-                                route('department.teachers_show', {
-                                    department_slug: department.slug,
-                                }),
-                                {},
-                                {
-                                    preserveState: true,
-                                    preserveScroll: true,
-                                },
-                            );
-                        }}
                     >
                         <FaUserGroup className="inline-flex" size={24} />
                         <span className="text-[16px]">Teachers</span>
-                    </span>
+                    </Link>
                 </div>
                 <SettingDropdownContainer />
             </div>
