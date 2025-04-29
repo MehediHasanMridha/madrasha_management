@@ -16,7 +16,8 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->enum('fee_type', ['tuition', 'exam', 'other'])->default('tuition'); // tuition, exam, other
             $table->decimal('amount', 8, 2)->default(0.00);
-            $table->date('date')->nullable();
+            //set default current date
+            $table->date('date')->default(now());
             $table->timestamps();
         });
     }

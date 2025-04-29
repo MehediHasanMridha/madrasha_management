@@ -5,6 +5,7 @@ use App\Models\ExpenseLog;
 use App\Models\FeeType;
 use App\Models\IncomeLog;
 use App\Models\PaymentMethod;
+use App\Models\StudentDiscount;
 use App\Models\StudentDue;
 use App\Models\Transaction;
 use App\Models\User;
@@ -196,6 +197,14 @@ class FinanceController extends Controller
                 $transaction->amount         = $total_fee;
                 $transaction->note           = $request->details ?? null;
                 $transaction->save();
+
+                if ($request->discount) {
+                    $discount          = new StudentDiscount();
+                    $discount->user_id = $student->id;
+                    $discount->amount  = $request->discount;
+                    $discount->save();
+                }
+
                 $academic_divider  = ($request->academic_fee / $student->academics->academic_fee) | 0;
                 $academic_division = $request->academic_fee % $student->academics->academic_fee | 0;
                 $boarding_divider  = ($request->boarding_fee / $student->academics->boarding_fee) | 0;
