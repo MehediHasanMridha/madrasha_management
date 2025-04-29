@@ -188,7 +188,6 @@ class FinanceController extends Controller
 // convert month to 2025-04
 
             if ($request->type == 'monthly_fee') {
-                sleep(4);
                 $academic_divider  = ($request->academic_fee / $student->academics->academic_fee) | 0;
                 $academic_division = $request->academic_fee % $student->academics->academic_fee | 0;
                 $boarding_divider  = ($request->boarding_fee / $student->academics->boarding_fee) | 0;
