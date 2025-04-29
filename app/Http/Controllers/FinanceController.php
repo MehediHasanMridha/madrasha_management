@@ -6,6 +6,7 @@ use App\Models\FeeType;
 use App\Models\IncomeLog;
 use App\Models\PaymentMethod;
 use App\Models\StudentDue;
+use App\Models\Transaction;
 use App\Models\User;
 use App\Models\VoucherType;
 use Illuminate\Http\Request;
@@ -188,6 +189,13 @@ class FinanceController extends Controller
 // convert month to 2025-04
 
             if ($request->type == 'monthly_fee') {
+                $total_fee                   = $request->academic_fee + $request->boarding_fee;
+                $transaction                 = new Transaction();
+                $transaction->transaction_id = 'TRN-' . str_pad(mt_rand(1, 999999999), 9, '0', STR_PAD_LEFT);
+                $transaction->user_id        = $student->id;
+                $transaction->amount         = $total_fee;
+                $transaction->note           = $request->details ?? null;
+                $transaction->save();
                 $academic_divider  = ($request->academic_fee / $student->academics->academic_fee) | 0;
                 $academic_division = $request->academic_fee % $student->academics->academic_fee | 0;
                 $boarding_divider  = ($request->boarding_fee / $student->academics->boarding_fee) | 0;

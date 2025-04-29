@@ -2,10 +2,10 @@ import StaticBtn from '@/Components/UI/StaticBtn';
 import { getAvatarImage } from '@/lib/avatarImageUrlUtils';
 import { cn } from '@/lib/utils';
 import { usePage } from '@inertiajs/react';
-import { useRef } from 'react';
+import { useCallback, useRef } from 'react';
 import { useReactToPrint } from 'react-to-print';
 
-const ModalStepFiveComponent = ({ data, loading, setStep, fee, setFee, submitData, setSelectedRows, selectedRows, setLoading }) => {
+const ModalStepFiveComponent = ({ data, loading, setStep, fee, setFee, submitData, setSelectedRows, selectedRows, setLoading, comments }) => {
     const academic_divider = (fee?.academic_fee / data?.academic_fee) | 0;
     const academic_division = fee?.academic_fee % data?.academic_fee | 0;
     const boarding_divider = (fee?.boarding_fee / data?.boarding_fee) | 0;
@@ -13,10 +13,10 @@ const ModalStepFiveComponent = ({ data, loading, setStep, fee, setFee, submitDat
     const { user } = usePage().props.auth;
     const printComponentRef = useRef(null);
 
-    const handleBeforePrint = () => {
+    const handleBeforePrint = useCallback(() => {
         setLoading(true);
         return Promise.resolve();
-    };
+    }, []);
 
     const handleAfterPrint = () => {
         setStep(0);
@@ -173,7 +173,7 @@ const ModalStepFiveComponent = ({ data, loading, setStep, fee, setFee, submitDat
                 {/* Comment Section */}
                 <div className="space-y-2 rounded-lg bg-[#F2F2F2] p-3">
                     <p className="text-sm text-[#AFAFAF]">Comment</p>
-                    <p className="text-base text-[#4A4A4A]">Ei mashe 8 din khay nai tai 800 tk discount dewa holo</p>
+                    <p className="text-base text-[#4A4A4A]">{comments || 'N/A'}</p>
                 </div>
 
                 {/* Receipt Attribution Section */}

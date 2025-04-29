@@ -4,11 +4,21 @@ import StaticBtn from '@/Components/UI/StaticBtn';
 import { getAvatarImage } from '@/lib/avatarImageUrlUtils';
 import { cn } from '@/lib/utils';
 import { X } from 'lucide-react';
-import { useState } from 'react';
 
-const ModalStepFourComponent = ({ data, loading, setStep, year, setYear, fee, setFee, submitData, setSelectedRows, selectedRows }) => {
-    const [comments, setComments] = useState('');
-
+const ModalStepFourComponent = ({
+    data,
+    loading,
+    setStep,
+    year,
+    setYear,
+    fee,
+    setFee,
+    submitData,
+    setSelectedRows,
+    selectedRows,
+    comments,
+    setComments,
+}) => {
     const monthColor = ['bg-red-500', 'bg-green-500', 'bg-blue-500', ' bg-yellow-500', ' bg-purple-500', ' bg-pink-500'];
 
     // Calculate totals when fees change
@@ -132,7 +142,7 @@ const ModalStepFourComponent = ({ data, loading, setStep, year, setYear, fee, se
                             value={comments}
                             onChange={(e) => setComments(e.target.value.slice(0, 200))}
                         />
-                        <div className="absolute right-3 bottom-2 text-sm text-[#AFAFAF]">{comments.length}/200</div>
+                        <div className="absolute right-3 bottom-2 text-sm text-[#AFAFAF]">{comments?.length}/200</div>
                     </div>
                 </div>
 

@@ -26,7 +26,7 @@ const AddMoneyContainer = ({ modal, setModal }) => {
     const [selectedRows, setSelectedRows] = useState([]);
     const [year, setYear] = useState(new Date().getFullYear().toString());
     const [type, setType] = useState();
-
+    const [comments, setComments] = useState(null);
     let content = null;
 
     useEffect(() => {
@@ -62,6 +62,7 @@ const AddMoneyContainer = ({ modal, setModal }) => {
                 type: type,
                 monthlyInfo: selectedRows,
                 year,
+                details: comments,
                 ...fee,
             },
             {
@@ -155,6 +156,8 @@ const AddMoneyContainer = ({ modal, setModal }) => {
                     submitData={submitData}
                     setSelectedRows={setSelectedRows}
                     selectedRows={selectedRows}
+                    comments={comments}
+                    setComments={setComments}
                 />
             );
             break;
@@ -170,6 +173,7 @@ const AddMoneyContainer = ({ modal, setModal }) => {
                     setSelectedRows={setSelectedRows}
                     selectedRows={selectedRows}
                     setLoading={setLoading}
+                    comments={comments}
                 />
             );
             break;
