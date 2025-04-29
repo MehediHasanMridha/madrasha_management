@@ -53,7 +53,7 @@ const LeftSide = () => {
                     <SideBarUI.Text collapsed={collapsed}>Dashboard</SideBarUI.Text>
                 </SideBarUI.Item>
             </Link>
-            <Link href={route('finance.summary')} as="button" className="w-full cursor-pointer">
+            <Link href={route('finance.summary')} as="button" className="w-full cursor-pointer" preserveState preserveScroll>
                 <SideBarUI.Item
                     collapsed={collapsed}
                     className={`flex h-[64px] items-center space-x-[12px] px-[50px] hover:bg-[#F2F2F2] ${

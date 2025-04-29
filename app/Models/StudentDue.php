@@ -15,4 +15,13 @@ class StudentDue extends Model
         'paid_amount',
         'due_amount',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+    public function feeType()
+    {
+        return $this->belongsTo(FeeType::class);
+    }
 }

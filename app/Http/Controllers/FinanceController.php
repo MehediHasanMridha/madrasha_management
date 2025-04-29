@@ -9,6 +9,7 @@ use App\Models\StudentDue;
 use App\Models\User;
 use App\Models\VoucherType;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class FinanceController extends Controller
@@ -121,9 +122,23 @@ class FinanceController extends Controller
             ]);
 
         }
+        $year = request()->input('year') ?? date('Y');
         // find user by id
-        $user = User::whereHas('roles', fn($q) => $q->where('name', 'student'))->where('unique_id', $user_id)->firstOrFail();
+        $user = User::with([
+            'incomeLogs'  =>
+            function ($q) use ($year) {
+                $q->where('payment_period', 'like', $year . '%')->with('feeType');
+            },
+            'studentDues' =>
+            function ($q) use ($year) {
+                $q->where('due_period', 'like', $year . '%')->with('feeType');
+            },
+        ])
+            ->whereHas('roles', fn($q) => $q->where('name', 'student'))
+            ->where('unique_id', $user_id)
+            ->firstOrFail();
 
+        // return $user;
         return response()->json([
             'id'           => $user->id,
             'name'         => $user->name,
@@ -131,82 +146,127 @@ class FinanceController extends Controller
             'phone'        => $user->phone,
             'image'        => $user->img,
             'unique_id'    => $user->unique_id,
-            'boarding_fee' => getStudentFee($user->id, 'boarding'),
-            'academic_fee' => getStudentFee($user->id, 'academic'),
+            'boarding_fee' => round(getStudentFee($user->id, 'boarding'), 2),
+            'academic_fee' => round(getStudentFee($user->id, 'academic'), 2),
+            'income_logs'  => $user->incomeLogs->groupBy(fn($item) => date('F', strtotime($item->payment_period)))
+                ->map(fn($group, $month) => [
+                    'month' => $month,
+                    'fee'   => $group->map(fn($item) => [
+                        'amount' => round($item->amount, 2),
+                        'type'   => $item->feeType->slug ?? 'Unknown',
+                    ])->values(),
+                ])->values(),
+            'dues'         => $user->studentDues->groupBy(fn($item) => date('F', strtotime($item->due_period)))
+                ->map(fn($group, $month) => [
+                    'month' => $month,
+                    'fee'   => $group->map(fn($item) => [
+                        'due_amount' => round($item->due_amount, 2),
+                        'type'       => $item->feeType->slug ?? 'Unknown',
+                    ])->values(),
+                ])->values(),
         ]);
     }
 
     public function add_money(Request $request)
     {
-        // dd($request->all());
-        // Validate the request data
-        $request->validate([
-            'student_id' => 'required|exists:users,unique_id',
-            'month'      => 'required|in:January,February,March,April,May,June,July,August,September,October,November,December', // 'January',
-            'type'       => 'required|in:monthly_fee,exam_fee,others_fee',
-            'note'       => 'nullable|string|max:255',
-        ]);
 
-        // Find the student by unique_id
-        $student = User::where('unique_id', $request->student_id)->first();
+        try {
+            // Validate the request data
+            $request->validate([
+                'student_id' => 'required|exists:users,unique_id',
+                'type'       => 'required|in:monthly_fee,exam_fee,others_fee',
+                'note'       => 'nullable|string|max:255',
+            ]);
 
-        if (! $student) {
-            return response()->json(['error' => 'Student not found'], 404);
-        }
+// Find the student by unique_id
+            $student = User::with('academics')->where('unique_id', $request->student_id)->first();
 
-        // convert month to 2025-04
-        $month = date('Y-m', strtotime($request->month));
-
-        if ($request->type == 'monthly_fee') {
-            $total_fee = $request->boarding_fee + $request->academic_fee;
-
-            if ($request->boarding_fee > 0) {
-                IncomeLog::create([
-                    'user_id'           => $student->id,
-                    'month'             => $month,
-                    'amount'            => $request->boarding_fee,
-                    'fee_type_id'       => FeeType::where('name', 'like', '%boarding%')->first()->id, // get from fee_types table
-                    'payment_method_id' => PaymentMethod::where('slug', 'cash')->first()->id,         // get from payment_methods table
-                    'status'            => 'paid',
-                    'payment_period'    => $month,
-                ]);
+            if (! $student) {
+                return response()->json(['error' => 'Student not found'], 404);
             }
 
-            if ($request->academic_fee > 0) {
-                IncomeLog::create([
-                    'user_id'           => $student->id,
-                    'month'             => $month,
-                    'amount'            => $request->academic_fee,
-                    'fee_type_id'       => FeeType::where('name', 'like', '%academic%')->first()->id, // get from fee_types table
-                    'payment_method_id' => PaymentMethod::where('slug', 'cash')->first()->id,         // get from payment_methods table
-                    'status'            => 'paid',
-                    'payment_period'    => $month,
-                ]);
+// convert month to 2025-04
+
+            if ($request->type == 'monthly_fee') {
+                sleep(4);
+                $academic_divider  = ($request->academic_fee / $student->academics->academic_fee) | 0;
+                $academic_division = $request->academic_fee % $student->academics->academic_fee | 0;
+                $boarding_divider  = ($request->boarding_fee / $student->academics->boarding_fee) | 0;
+                $boarding_division = $request->boarding_fee % $student->academics->boarding_fee | 0;
+                // dd($academic_divider, $academic_division, $boarding_divider, $boarding_division);
+                $year        = $request->year;
+                $monthlyInfo = collect($request->monthlyInfo);
+                $monthlyInfo->map(function ($item, $key) use ($academic_divider, $academic_division, $boarding_divider, $boarding_division, $student, $year) {
+                    $month        = $year . '-' . $item['month'];
+                    $month        = date('Y-m', strtotime($month));
+                    $academic_fee = $key < $academic_divider ? $item['academic_fee'] : $academic_division;
+                    $boarding_fee = $key < $boarding_divider ? $item['boarding_fee'] : $boarding_division;
+                    if ($academic_fee === $item['academic_fee']) {
+                        IncomeLog::create([
+                            'user_id'           => $student->id,
+                            'amount'            => $academic_fee,
+                            'fee_type_id'       => FeeType::where('name', 'like', '%academic%')->first()->id, // get from fee_types table
+                            'payment_method_id' => PaymentMethod::where('slug', 'cash')->first()->id,         // get from payment_methods table
+                            'status'            => 'paid',
+                            'payment_period'    => $month,
+                            'receiver_id'       => Auth::user()->id,
+                        ]);
+                    } else {
+                        IncomeLog::create([
+                            'user_id'           => $student->id,
+                            'amount'            => $academic_fee,
+                            'fee_type_id'       => FeeType::where('name', 'like', '%academic%')->first()->id, // get from fee_types table
+                            'payment_method_id' => PaymentMethod::where('slug', 'cash')->first()->id,         // get from payment_methods table
+                            'status'            => 'paid',
+                            'payment_period'    => $month,
+                            'receiver_id'       => Auth::user()->id,
+                        ]);
+
+                        StudentDue::create([
+                            'user_id'         => $student->id,
+                            'fee_type_id'     => FeeType::where('name', 'like', '%academic%')->first()->id, // get from fee_types table
+                            'paid_amount'     => $academic_fee,
+                            'due_period'      => $month,
+                            'expected_amount' => $item['academic_fee'],
+                        ]);
+                    }
+
+                    if ($boarding_fee === $item['boarding_fee']) {
+                        IncomeLog::create([
+                            'user_id'           => $student->id,
+                            'amount'            => $boarding_fee,
+                            'fee_type_id'       => FeeType::where('name', 'like', '%boarding%')->first()->id, // get from fee_types table
+                            'payment_method_id' => PaymentMethod::where('slug', 'cash')->first()->id,         // get from payment_methods table
+                            'status'            => 'paid',
+                            'payment_period'    => $month,
+                            'receiver_id'       => Auth::user()->id,
+                        ]);
+                    } else {
+                        IncomeLog::create([
+                            'user_id'           => $student->id,
+                            'amount'            => $boarding_fee,
+                            'fee_type_id'       => FeeType::where('name', 'like', '%boarding%')->first()->id, // get from fee_types table
+                            'payment_method_id' => PaymentMethod::where('slug', 'cash')->first()->id,         // get from payment_methods table
+                            'status'            => 'paid',
+                            'payment_period'    => $month,
+                            'receiver_id'       => Auth::user()->id,
+                        ]);
+                        StudentDue::create([
+                            'user_id'         => $student->id,
+                            'fee_type_id'     => FeeType::where('name', 'like', '%boarding%')->first()->id, // get from fee_types table
+                            'paid_amount'     => $boarding_fee,
+                            'due_period'      => $month,
+                            'expected_amount' => $item['boarding_fee'],
+                        ]);
+                    }
+                });
+
+                return to_route('finance.earnings')->with('success', 'Money added successfully');
+
             }
 
-            if ($request->academic_due > 0) {
-                StudentDue::create([
-                    'user_id'         => $student->id,
-                    'fee_type_id'     => FeeType::where('name', 'like', '%academic%')->first()->id, // get from fee_types table
-                    'paid_amount'     => $request->academic_fee,
-                    'due_period'      => $month,
-                    'expected_amount' => $request->academic_fee + $request->academic_due,
-                ]);
-            }
-
-            if ($request->boarding_due > 0) {
-                StudentDue::create([
-                    'user_id'         => $student->id,
-                    'fee_type_id'     => FeeType::where('name', 'like', '%boarding%')->first()->id, // get from fee_types table
-                    'paid_amount'     => $request->boarding_fee,
-                    'due_period'      => $month,
-                    'expected_amount' => $request->boarding_fee + $request->boarding_due,
-                ]);
-            }
-
-            // return response
-            return to_route('finance.earnings')->with('success', 'Money added successfully');
-
+        } catch (\Throwable $th) {
+            return redirect()->back()->with('error', "You have already added this month fee");
         }
 
     }

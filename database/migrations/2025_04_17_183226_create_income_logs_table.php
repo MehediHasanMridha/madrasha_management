@@ -15,13 +15,14 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete()->nullable();
             $table->enum('source_type', ['student', 'donation', 'sponsor', 'other'])->default('student'); // student, donation, sale, sponsor, etc.
-            $table->string('source_details')->nullable();
+            $table->text('source_details')->nullable();
             $table->decimal('amount', 10, 2);
             $table->foreignId('fee_type_id')->constrained()->nullable();
             $table->foreignId('payment_method_id')->constrained()->nullable();
             $table->string('payment_period')->nullable(); // e.g. 2025-04
             $table->enum('status', ['paid', 'pending', 'failed'])->default('paid');
-            $table->text('remarks')->nullable();
+            $table->foreignId('receiver_id')->constrained('users')->nullable();
+            $table->unique(['user_id', 'fee_type_id', 'payment_period', 'source_type'], 'unique_income_log'); // to avoid duplicate entries
             $table->timestamps();
         });
 

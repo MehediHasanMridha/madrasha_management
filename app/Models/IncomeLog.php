@@ -14,7 +14,7 @@ class IncomeLog extends Model
         'payment_method_id',
         'payment_period',
         'status',
-        'remarks',
+        'receiver_id',
     ];
 
     public function user()

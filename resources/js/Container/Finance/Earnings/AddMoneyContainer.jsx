@@ -1,3 +1,6 @@
+import FinalModalStepComponent from '@/Components/Finance/Earnings/FinalModalStepComponent';
+import ModalStepFiveComponent from '@/Components/Finance/Earnings/ModalStepFiveComponent';
+import ModalStepFourComponent from '@/Components/Finance/Earnings/ModalStepFourComponent';
 import ModalStepOneComponent from '@/Components/Finance/Earnings/ModalStepOneComponent';
 import ModalStepThreeComponent from '@/Components/Finance/Earnings/ModalStepThreeComponent';
 import ModalStepTwoComponent from '@/Components/Finance/Earnings/ModalStepTwoComponent';
@@ -5,7 +8,7 @@ import ModalComponent from '@/Components/Finance/ModalComponent';
 import { router } from '@inertiajs/react';
 import { notification } from 'antd';
 import axios from 'axios';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const AddMoneyContainer = ({ modal, setModal }) => {
     const [step, setStep] = useState(1);
@@ -17,18 +20,29 @@ const AddMoneyContainer = ({ modal, setModal }) => {
         academic_fee: 0,
         boarding_due: 0,
         academic_due: 0,
+        total: 0,
+        discount: 0,
     });
-    const [month, setMonth] = useState('January');
+    const [selectedRows, setSelectedRows] = useState([]);
+    const [year, setYear] = useState(new Date().getFullYear().toString());
     const [type, setType] = useState();
 
     let content = null;
 
+    useEffect(() => {
+        setFee({
+            ...fee,
+            academic_due: selectedRows.reduce((acc, curr) => acc + curr?.academic_fee, 0) - fee.academic_fee,
+            boarding_due: selectedRows.reduce((acc, curr) => acc + curr?.boarding_fee, 0) - fee.boarding_fee,
+        });
+    }, [fee?.academic_fee, fee.boarding_fee, selectedRows]);
+
     const [api, contextHolder] = notification.useNotification();
 
-    const getData = async () => {
+    const getData = async (data) => {
         try {
             setLoading(true);
-            const { data: info } = await axios.get(route('finance.get_user_data', { user_id: studentId }));
+            const { data: info } = await axios.get(route('finance.get_user_data', { user_id: studentId, year: data || year }));
             if (info) {
                 setData(info);
             }
@@ -45,34 +59,32 @@ const AddMoneyContainer = ({ modal, setModal }) => {
             route('finance.add_money'),
             {
                 student_id: studentId,
-                month: month,
-                boarding_fee: fee.boarding_fee,
-                academic_fee: fee.academic_fee,
-                boarding_due: fee.boarding_due,
-                academic_due: fee.academic_due,
                 type: type,
+                monthlyInfo: selectedRows,
+                year,
+                ...fee,
             },
             {
                 onStart: () => {
                     setLoading(true);
                 },
                 onSuccess: (response) => {
-                    setLoading(false);
-                    setStep(1);
-                    setStudentId('');
-                    setFee({
-                        boarding_fee: 0,
-                        academic_fee: 0,
-                        boarding_due: 0,
-                        academic_due: 0,
-                    });
-                    setData(null);
-                    setModal(false);
-                    api.success({
-                        message: 'Success',
-                        description: response.props.flash.success,
-                        placement: 'bottomRight',
-                    });
+                    // Move to final confirmation step instead of resetting
+                    // setLoading(false);
+                    if (response.props.flash.success) {
+                        api.success({
+                            message: 'Success',
+                            description: response.props.flash.success,
+                            placement: 'bottomRight',
+                        });
+                    }
+                    if (response.props.flash.error) {
+                        api.error({
+                            message: 'Success',
+                            description: response.props.flash.error,
+                            placement: 'bottomRight',
+                        });
+                    }
                 },
                 onError: (error) => {
                     console.error('Error submitting data:', error);
@@ -84,13 +96,31 @@ const AddMoneyContainer = ({ modal, setModal }) => {
         );
     };
 
+    const handleClose = () => {
+        setStep(1);
+        setFee({
+            boarding_fee: 0,
+            academic_fee: 0,
+            boarding_due: 0,
+            academic_due: 0,
+            total: 0,
+            discount: 0,
+        });
+        setSelectedRows([]);
+        setData(null);
+        setType(null);
+        setStudentId('');
+        // setModal(false);
+    };
+
     switch (step) {
         case 1:
             content = <ModalStepOneComponent setStep={setStep} setType={setType} />;
-
             break;
         case 2:
-            content = <ModalStepTwoComponent studentId={studentId} setStudentId={setStudentId} setStep={setStep} getData={getData} />;
+            content = (
+                <ModalStepTwoComponent loading={loading} studentId={studentId} setStudentId={setStudentId} setStep={setStep} getData={getData} />
+            );
             break;
         case 3:
             content = (
@@ -98,17 +128,63 @@ const AddMoneyContainer = ({ modal, setModal }) => {
                     data={data}
                     loading={loading}
                     setStep={setStep}
-                    month={month}
-                    setMonth={setMonth}
+                    year={year}
+                    setYear={setYear}
+                    fee={fee}
+                    setFee={setFee}
+                    type={type}
+                    setType={setType}
+                    setSelectedRows={setSelectedRows}
+                    selectedRows={selectedRows}
+                    getData={getData}
+                />
+            );
+            break;
+        case 4:
+            content = (
+                <ModalStepFourComponent
+                    data={data}
+                    loading={loading}
+                    setStep={setStep}
+                    year={year}
+                    setYear={setYear}
                     fee={fee}
                     setFee={setFee}
                     type={type}
                     setType={setType}
                     submitData={submitData}
+                    setSelectedRows={setSelectedRows}
+                    selectedRows={selectedRows}
                 />
             );
             break;
-
+        case 5:
+            content = (
+                <ModalStepFiveComponent
+                    data={data}
+                    loading={loading}
+                    setStep={setStep}
+                    fee={fee}
+                    setFee={setFee}
+                    submitData={submitData}
+                    setSelectedRows={setSelectedRows}
+                    selectedRows={selectedRows}
+                    setLoading={setLoading}
+                />
+            );
+            break;
+        case 0:
+            content = (
+                <FinalModalStepComponent
+                    data={data}
+                    loading={loading}
+                    fee={fee}
+                    selectedRows={selectedRows}
+                    handleClose={handleClose}
+                    setModal={setModal}
+                />
+            );
+            break;
         default:
             break;
     }
