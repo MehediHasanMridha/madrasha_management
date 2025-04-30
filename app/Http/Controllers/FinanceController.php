@@ -10,6 +10,7 @@ use App\Models\StudentDue;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Models\VoucherType;
+use function Pest\Laravel\get;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -177,7 +178,6 @@ class FinanceController extends Controller
 
             // Find the student by unique_id
             $student = User::with('academics')->where('unique_id', $request->student_id)->first();
-
             if (! $student) {
                 return response()->json(['error' => 'Student not found'], 404);
             }
@@ -199,9 +199,8 @@ class FinanceController extends Controller
                     $discount->amount  = $request->discount;
                     $discount->save();
                 }
-                $academic_fee_base = $student->academics->academic_fee;
-                $boarding_fee_base = $student->academics->boarding_fee;
-
+                $academic_fee_base = getStudentFee($student->id, 'academic');
+                $boarding_fee_base = getStudentFee($student->id, 'boarding');
                 $academic_divider  = ($academic_fee_base > 0) ? intval($request->academic_fee / $academic_fee_base) : 0;
                 $academic_division = ($academic_fee_base > 0) ? ($request->academic_fee % $academic_fee_base) : 0;
 
@@ -211,7 +210,7 @@ class FinanceController extends Controller
                 $year = $request->year;
 
                 $monthlyInfo = collect($request->monthlyInfo);
-                $monthlyInfo->map(function ($item, $key) use ($student, $request, $academic_divider, $academic_division, $boarding_divider, $boarding_division, $year) {
+                $monthlyInfo->map(function ($item, $key) use ($student, $academic_divider, $academic_division, $boarding_divider, $boarding_division, $year) {
                     $month        = $year . '-' . $item['month'];
                     $month        = date('Y-m', strtotime($month));
                     $academic_fee = $key < $academic_divider ? $item['academic_fee'] : ($key === $academic_divider ? $academic_division : 0);
@@ -239,7 +238,7 @@ class FinanceController extends Controller
 
                         StudentDue::create([
                             'income_log_id' => $incomeLog->id,
-                            'due_amount'    => $student->academics->academic_fee - $academic_fee,
+                            'due_amount'    => $item['academic_fee'] - $academic_fee,
                         ]);
                     }
 
@@ -265,7 +264,7 @@ class FinanceController extends Controller
                         ]);
                         StudentDue::create([
                             'income_log_id' => $incomeLog->id,
-                            'due_amount'    => $student->academics->boarding_fee - $boarding_fee,
+                            'due_amount'    => $item['boarding_fee'] - $boarding_fee,
                         ]);
                     }
                 });
@@ -281,7 +280,6 @@ class FinanceController extends Controller
     }
     public function add_voucher(Request $request)
     {
-        // dd($request->all());
         // Validate the request data
         $request->validate([
             'staff_id' => 'required|exists:users,unique_id',
