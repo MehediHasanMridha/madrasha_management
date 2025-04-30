@@ -1,5 +1,4 @@
 import TableUI from '@/Components/UI/TableUI';
-import TagUI from '@/Components/UI/TagUI';
 import { cn } from '@/lib/utils';
 
 const StudentMonthlyFeeListTableContainer = ({ data, setFee, setSelectedRows, selectedRows, fee }) => {
@@ -78,13 +77,23 @@ const StudentMonthlyFeeListTableContainer = ({ data, setFee, setSelectedRows, se
             align: 'center',
             render: (text, record) => {
                 if (record?.status === 'Due') {
-                    return <span className="text-[14px] font-semibold text-blue-500">Pay Due</span>;
+                    return (
+                        <span className="cursor-pointer border-b-[1px] border-blue-500 text-[14px] font-semibold text-blue-500 hover:font-bold">
+                            Pay Due
+                        </span>
+                    );
                 }
                 if (record?.status === 'Paid') {
-                    return <TagUI color="#87d068">Paid</TagUI>;
+                    return (
+                        <div className="flex w-full items-center justify-center">
+                            <span className="w-[56px] rounded-full border-[0.5px] border-[#00A606] bg-[#E4FFE5] text-[14px] font-semibold text-[#00A606]">
+                                Paid
+                            </span>
+                        </div>
+                    );
                 }
                 if (record?.status === 'Unpaid') {
-                    return <TagUI color="#f50">Unpaid</TagUI>;
+                    return <span className="font-semibold text-black">Unpaid</span>;
                 }
             },
         },

@@ -51,8 +51,8 @@ const ModalStepFiveComponent = ({ data, loading, setStep, fee, setFee, submitDat
                         </span>
                     </div>
                 </div>
-                <div className="rounded-2xl border border-[#AFAFAF]">
-                    <table className="w-full border-collapse overflow-hidden rounded-2xl">
+                <div className="rounded-lg border border-[#AFAFAF]">
+                    <table className="w-full border-collapse overflow-hidden rounded-lg">
                         <thead>
                             <tr className="bg-[#F2F2F2]">
                                 <th className="w-[56px] border-r border-[#AFAFAF] p-3 text-left text-sm font-normal text-[#131313]">S/N</th>
@@ -63,56 +63,31 @@ const ModalStepFiveComponent = ({ data, loading, setStep, fee, setFee, submitDat
                             </tr>
                         </thead>
                         <tbody>
-                            {selectedRows.map((row, index) => (
-                                <tr key={index} className="border-b border-[#AFAFAF]">
-                                    <td className="border-r border-[#AFAFAF] p-3 text-sm text-[#4A4A4A]">{index + 1}</td>
-                                    <td className="border-r border-[#AFAFAF] p-3 text-sm text-[#4A4A4A]">{row?.month}</td>
-                                    <td className="border-r border-[#AFAFAF] p-3 text-right text-sm text-[#4A4A4A]">
-                                        {index < boarding_divider
-                                            ? Number(row?.boarding_fee).toLocaleString('en-US', {
-                                                  style: 'currency',
-                                                  currency: 'BDT',
-                                                  minimumFractionDigits: 0,
-                                                  maximumFractionDigits: 0,
-                                              })
-                                            : boarding_division.toLocaleString('en-US', {
-                                                  style: 'currency',
-                                                  currency: 'BDT',
-                                                  minimumFractionDigits: 0,
-                                                  maximumFractionDigits: 0,
-                                              })}
-                                    </td>
-                                    <td className="border-r border-[#AFAFAF] p-3 text-right text-sm text-[#4A4A4A]">
-                                        {index < academic_divider
-                                            ? Number(row?.academic_fee).toLocaleString('en-US', {
-                                                  style: 'currency',
-                                                  currency: 'BDT',
-                                                  minimumFractionDigits: 0,
-                                                  maximumFractionDigits: 0,
-                                              })
-                                            : academic_division.toLocaleString('en-US', {
-                                                  style: 'currency',
-                                                  currency: 'BDT',
-                                                  minimumFractionDigits: 0,
-                                              })}
-                                    </td>
-                                    <td className="p-3 text-right text-sm text-[#4A4A4A]">
-                                        {index < boarding_divider && index < academic_divider
-                                            ? Number(row?.due).toLocaleString('en-US', {
-                                                  style: 'currency',
-                                                  currency: 'BDT',
-                                                  minimumFractionDigits: 0,
-                                                  maximumFractionDigits: 0,
-                                              })
-                                            : Number(fee?.academic_due + fee?.boarding_due).toLocaleString('en-US', {
-                                                  style: 'currency',
-                                                  currency: 'BDT',
-                                                  minimumFractionDigits: 0,
-                                                  maximumFractionDigits: 0,
-                                              })}
-                                    </td>
-                                </tr>
-                            ))}
+                            {selectedRows.map((row, index) => {
+                                const boarding_fee =
+                                    index < boarding_divider ? row?.boarding_fee : index === boarding_divider ? boarding_division : 0;
+                                const academic_fee =
+                                    index < academic_divider ? row?.academic_fee : index === academic_divider ? academic_division : 0;
+                                return (
+                                    <tr key={index} className="border-b border-[#AFAFAF]">
+                                        <td className="border-r border-[#AFAFAF] p-3 text-sm text-[#4A4A4A]">{index + 1}</td>
+                                        <td className="border-r border-[#AFAFAF] p-3 text-sm text-[#4A4A4A]">{row?.month}</td>
+                                        <td className="border-r border-[#AFAFAF] p-3 text-right text-sm text-[#4A4A4A]">
+                                            {boarding_fee.toLocaleString('en-US', { style: 'currency', currency: 'BDT', minimumFractionDigits: 0 })}
+                                        </td>
+                                        <td className="border-r border-[#AFAFAF] p-3 text-right text-sm text-[#4A4A4A]">
+                                            {academic_fee.toLocaleString('en-US', { style: 'currency', currency: 'BDT', minimumFractionDigits: 0 })}
+                                        </td>
+                                        <td className="p-3 text-right text-sm text-[#4A4A4A]">
+                                            {Number(data?.academic_fee - academic_fee + data?.boarding_fee - boarding_fee).toLocaleString('en-US', {
+                                                style: 'currency',
+                                                currency: 'BDT',
+                                                minimumFractionDigits: 0,
+                                            })}
+                                        </td>
+                                    </tr>
+                                );
+                            })}
                         </tbody>
                     </table>
                 </div>

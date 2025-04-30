@@ -209,8 +209,8 @@ class FinanceController extends Controller
                 $monthlyInfo->map(function ($item, $key) use ($student, $request, $academic_divider, $academic_division, $boarding_divider, $boarding_division, $year) {
                     $month        = $year . '-' . $item['month'];
                     $month        = date('Y-m', strtotime($month));
-                    $academic_fee = $key < $academic_divider ? $item['academic_fee'] : $academic_division;
-                    $boarding_fee = $key < $boarding_divider ? $item['boarding_fee'] : $boarding_division;
+                    $academic_fee = $key < $academic_divider ? $item['academic_fee'] : ($key === $academic_divider ? $academic_division : 0);
+                    $boarding_fee = $key < $boarding_divider ? $item['boarding_fee'] : ($key === $boarding_divider ? $boarding_division : 0);
                     if ($academic_fee === $item['academic_fee']) {
                         IncomeLog::create([
                             'user_id'           => $student->id,
@@ -234,7 +234,7 @@ class FinanceController extends Controller
 
                         StudentDue::create([
                             'income_log_id' => $incomeLog->id,
-                            'due_amount'    => $request->academic_due,
+                            'due_amount'    => $student->academics->academic_fee - $academic_fee,
                         ]);
                     }
 
@@ -260,7 +260,7 @@ class FinanceController extends Controller
                         ]);
                         StudentDue::create([
                             'income_log_id' => $incomeLog->id,
-                            'due_amount'    => $request->boarding_due,
+                            'due_amount'    => $student->academics->boarding_fee - $boarding_fee,
                         ]);
                     }
                 });

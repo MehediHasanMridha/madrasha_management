@@ -57,17 +57,11 @@ const ModalStepFourComponent = ({
                 </div>
                 <div className="">
                     <span className="text-sm text-[#4A4A4A]">
-                        Total Boarding fee:{' '}
-                        <span className="font-semibold text-[#131313]">
-                            {formatCurrency(selectedRows?.reduce((acc, curr) => acc + curr?.boarding_fee, 0))}
-                        </span>
+                        Boarding fee/month: <span className="font-semibold text-[#131313]">{formatCurrency(data?.boarding_fee)}</span>
                     </span>
                     <br />
                     <span className="text-sm text-[#4A4A4A]">
-                        Total Academic fee:{' '}
-                        <span className="font-semibold text-[#131313]">
-                            {formatCurrency(selectedRows?.reduce((acc, curr) => acc + curr?.academic_fee, 0))}
-                        </span>
+                        Academic fee/month: <span className="font-semibold text-[#131313]">{formatCurrency(data?.academic_fee)}</span>
                     </span>
                 </div>
             </div>
@@ -100,7 +94,8 @@ const ModalStepFourComponent = ({
                         <input
                             type="text"
                             className="w-full text-right text-[#131313] focus:outline-none"
-                            value={fee.boarding_fee}
+                            value={fee?.boarding_fee === 0 ? '' : fee?.boarding_fee}
+                            placeholder={selectedRows?.reduce((acc, curr) => acc + curr?.boarding_fee, 0)}
                             onChange={(e) => setFee({ ...fee, boarding_fee: Number(e.target.value) })}
                         />
                     </Field>
@@ -113,7 +108,8 @@ const ModalStepFourComponent = ({
                         <input
                             type="text"
                             className="w-full text-right text-[#131313] focus:outline-none"
-                            value={Number(fee?.academic_fee)}
+                            value={fee?.academic_fee === 0 ? '' : fee?.academic_fee}
+                            placeholder={selectedRows?.reduce((acc, curr) => acc + curr?.academic_fee, 0)}
                             onChange={(e) => setFee({ ...fee, academic_fee: Number(e.target.value) })}
                         />
                     </Field>
@@ -126,7 +122,8 @@ const ModalStepFourComponent = ({
                         <input
                             type="text"
                             className="w-full text-right text-[#131313] focus:outline-none"
-                            value={fee.discount}
+                            value={fee.discount === 0 ? '' : fee.discount}
+                            placeholder="0"
                             onChange={(e) => setFee({ ...fee, discount: Number(e.target.value) })}
                         />
                     </Field>
@@ -137,7 +134,7 @@ const ModalStepFourComponent = ({
                     <div className="w-40 text-lg text-[#4A4A4A]">Comments</div>
                     <div className="relative h-[78px] flex-1 rounded-lg border border-[#AFAFAF] p-3">
                         <textarea
-                            className="w-full resize-none text-right text-[#131313] focus:outline-none"
+                            className="w-full resize-none text-[#131313] focus:outline-none"
                             placeholder="Add text"
                             value={comments}
                             onChange={(e) => setComments(e.target.value.slice(0, 200))}
@@ -169,9 +166,9 @@ const ModalStepFourComponent = ({
                 </div>
                 <div className="my-2 border-t border-[#AFAFAF]"></div>
                 <div className="flex items-center justify-between">
-                    <span className="text-base font-semibold text-green-800">Paid :</span>
+                    <span className="text-base font-semibold text-[#00A606]">Paid :</span>
                     <div className="px-3">
-                        <span className="text-base font-semibold text-green-800">
+                        <span className="text-base font-semibold text-[#00A606]">
                             {formatCurrency(fee?.boarding_fee + fee?.academic_fee - fee.discount)}
                         </span>
                     </div>
