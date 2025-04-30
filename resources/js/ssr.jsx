@@ -1,4 +1,5 @@
 /* prettier-ignore */
+import '@ant-design/v5-patch-for-react-19';
 import { createInertiaApp } from '@inertiajs/react';
 import createServer from '@inertiajs/react/server';
 import ReactDOMServer from 'react-dom/server';

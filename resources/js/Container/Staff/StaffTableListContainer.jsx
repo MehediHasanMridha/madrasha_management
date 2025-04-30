@@ -111,7 +111,7 @@ const StaffTableListContainer = ({ data, setIsLoading, isLoading }) => {
     return (
         <TableUI
             columns={columns}
-            dataSource={data}
+            data={data}
             className="w-full"
             onChange={(pagination, filters, sorter) => {
                 router.get(

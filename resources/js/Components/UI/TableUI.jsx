@@ -3,7 +3,7 @@ import { Button, ConfigProvider, Input, Table } from 'antd';
 import { useEffect, useState } from 'react';
 import { FaFilter } from 'react-icons/fa';
 
-const TableUI = ({ dataSource, columns, showLoading = false, routeName, rowSelection = false, sortOrder = 'asc', ...props }) => {
+const TableUI = ({ data, columns, showLoading = false, routeName, showRowSelection, sortOrder = 'asc', ...props }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -112,7 +112,6 @@ const TableUI = ({ dataSource, columns, showLoading = false, routeName, rowSelec
             ],
             filteredValue: ['Jim'],
             filterIcon: (filtered) => {
-                console.log('🚀 ~ filtered:', filtered);
                 return <FaFilter className={`text-xl ${filtered ? 'text-red-500' : ''}`} />;
             },
         },
@@ -137,24 +136,28 @@ const TableUI = ({ dataSource, columns, showLoading = false, routeName, rowSelec
     return (
         <Table
             rowSelection={
-                rowSelection && {
+                showRowSelection && {
                     type: 'checkbox',
                     onChange: (selectedRowKeys, selectedRows, info) => {
                         console.log('🚀 ~ TableUI ~ selectedRowKeys:', selectedRowKeys);
                         console.log('🚀 ~ TableUI ~ selectedRows:', selectedRows);
                         console.log('🚀 ~ TableUI ~ info:', info);
                     },
+                    getCheckboxProps: (record) => ({
+                        disabled: record.name === 'Disabled User',
+                        name: record.name,
+                    }),
                 }
             }
             columns={columns || internalColumns}
             rowKey={(record) => record?.id}
-            dataSource={dataSource?.data}
+            dataSource={data?.data}
             loading={loading}
             pagination={{
-                pageSize: dataSource?.meta?.per_page,
-                current: dataSource?.meta?.current_page,
+                pageSize: data?.meta?.per_page,
+                current: data?.meta?.current_page,
                 showSizeChanger: true,
-                total: dataSource?.meta?.total,
+                total: data?.meta?.total,
             }}
             bordered
             onChange={handleTableChange}

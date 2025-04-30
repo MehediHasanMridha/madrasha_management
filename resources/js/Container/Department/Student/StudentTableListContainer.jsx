@@ -127,7 +127,7 @@ const StudentTableListContainer = ({ department, data, setIsLoading, isLoading }
     ];
     return (
         <TableUI
-            dataSource={data}
+            data={data}
             columns={columns}
             className="w-full"
             onChange={(pagination, filters, sorter) => {

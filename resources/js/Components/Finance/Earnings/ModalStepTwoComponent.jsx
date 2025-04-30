@@ -1,7 +1,8 @@
 import Field from '@/Components/UI/Field';
 import StaticBtn from '@/Components/UI/StaticBtn';
+import { cn } from '@/lib/utils';
 
-const ModalStepTwoComponent = ({ studentId, setStudentId, setStep, getData }) => {
+const ModalStepTwoComponent = ({ studentId, setStudentId, setStep, getData, loading }) => {
     return (
         <div className="h-[500px] space-y-4">
             <div className="flex h-[400px] flex-col items-center justify-center">
@@ -16,22 +17,27 @@ const ModalStepTwoComponent = ({ studentId, setStudentId, setStep, getData }) =>
                     />
                 </Field>
             </div>
-            <div className="flex justify-between">
-                <StaticBtn className="bg-[#F2F2F2] text-[#4A4A4A] hover:bg-[#48adff] hover:text-white" onClick={() => setStep(1)}>
+            <div className="mt-5 flex w-full gap-[18px]">
+                <StaticBtn
+                    onClick={() => setStep((prev) => prev - 1)}
+                    className="flex h-14 flex-1 cursor-pointer items-center justify-center rounded-lg bg-[#F2F2F2] text-[#4A4A4A] hover:bg-[#0267FF] hover:text-white"
+                    disabled={loading}
+                >
                     Back
                 </StaticBtn>
-                {studentId ? (
-                    <StaticBtn
-                        onClick={() => {
-                            setStep(3);
-                            getData();
-                        }}
-                    >
-                        Next
-                    </StaticBtn>
-                ) : (
-                    <></>
-                )}
+                <StaticBtn
+                    onClick={() => {
+                        if (!studentId) return;
+                        setStep((prev) => prev + 1);
+                        getData();
+                    }}
+                    className={cn(
+                        'flex h-14 flex-1 cursor-pointer items-center justify-center rounded-lg bg-[#0267FF] text-white',
+                        !studentId && 'cursor-not-allowed opacity-50',
+                    )}
+                >
+                    {loading ? 'Processing...' : 'Next'}
+                </StaticBtn>
             </div>
         </div>
     );

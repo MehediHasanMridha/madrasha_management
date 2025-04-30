@@ -1,19 +1,17 @@
 import StaticBtn from '@/Components/UI/StaticBtn';
 import AddMoneyContainer from '@/Container/Finance/Earnings/AddMoneyContainer';
-import TabBarContainer from '@/Container/Finance/TabBarContainer';
+import FinanceTabBarComponent from '../FinanceTabBarComponent';
 
-const EarningComponent = ({ activeTab, setActiveTab, modal, setModal }) => {
+const EarningComponent = ({ modal, setModal }) => {
     return (
         <>
             <div className="py-6">
-                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <TabBarContainer activeTab={activeTab} setActiveTab={setActiveTab} />
-                    <div className="flex justify-between rounded-lg bg-white p-6 shadow-md">
-                        <p className="text-gray-600">Earnings management page is under development.</p>
-                        <StaticBtn onClick={() => setModal(true)} className="hover:bg-[#48adff]">
-                            Add Money
-                        </StaticBtn>
-                    </div>
+                <FinanceTabBarComponent tab="earnings" />
+                <div className="flex justify-between rounded-lg bg-white p-6">
+                    <p className="text-gray-600">Earnings management page is under development.</p>
+                    <StaticBtn onClick={() => setModal(true)} className="hover:bg-[#48adff]">
+                        Add Money
+                    </StaticBtn>
                 </div>
             </div>
             <AddMoneyContainer modal={modal} setModal={setModal} />

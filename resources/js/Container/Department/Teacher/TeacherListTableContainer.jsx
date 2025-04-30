@@ -136,7 +136,7 @@ const TeacherListTableContainer = ({ department, isLoading, setIsLoading }) => {
         );
     };
 
-    return <TableUI dataSource={staffs} className="w-full" columns={Columns} onChange={handleTableChange} showLoading={isLoading} />;
+    return <TableUI data={staffs} className="w-full" columns={Columns} onChange={handleTableChange} showLoading={isLoading} />;
 };
 
 export default TeacherListTableContainer;
