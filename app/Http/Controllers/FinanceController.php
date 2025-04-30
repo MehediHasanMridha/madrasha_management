@@ -175,14 +175,14 @@ class FinanceController extends Controller
                 'note'       => 'nullable|string|max:255',
             ]);
 
-// Find the student by unique_id
+            // Find the student by unique_id
             $student = User::with('academics')->where('unique_id', $request->student_id)->first();
 
             if (! $student) {
                 return response()->json(['error' => 'Student not found'], 404);
             }
 
-// convert month to 2025-04
+            // convert month to 2025-04
 
             if ($request->type == 'monthly_fee') {
                 $total_fee                   = $request->academic_fee + $request->boarding_fee;
@@ -199,11 +199,16 @@ class FinanceController extends Controller
                     $discount->amount  = $request->discount;
                     $discount->save();
                 }
-                $academic_divider  = ($request->academic_fee / $student->academics->academic_fee) | 0;
-                $academic_division = $request->academic_fee % $student->academics->academic_fee | 0;
-                $boarding_divider  = ($request->boarding_fee / $student->academics->boarding_fee) | 0;
-                $boarding_division = $request->boarding_fee % $student->academics->boarding_fee | 0;
-                $year              = $request->year;
+                $academic_fee_base = $student->academics->academic_fee;
+                $boarding_fee_base = $student->academics->boarding_fee;
+
+                $academic_divider  = ($academic_fee_base > 0) ? intval($request->academic_fee / $academic_fee_base) : 0;
+                $academic_division = ($academic_fee_base > 0) ? ($request->academic_fee % $academic_fee_base) : 0;
+
+                $boarding_divider  = ($boarding_fee_base > 0) ? intval($request->boarding_fee / $boarding_fee_base) : 0;
+                $boarding_division = ($boarding_fee_base > 0) ? ($request->boarding_fee % $boarding_fee_base) : 0;
+
+                $year = $request->year;
 
                 $monthlyInfo = collect($request->monthlyInfo);
                 $monthlyInfo->map(function ($item, $key) use ($student, $request, $academic_divider, $academic_division, $boarding_divider, $boarding_division, $year) {
