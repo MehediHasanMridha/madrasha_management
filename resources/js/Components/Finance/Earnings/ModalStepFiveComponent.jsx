@@ -2,8 +2,6 @@ import StaticBtn from '@/Components/UI/StaticBtn';
 import { getAvatarImage } from '@/lib/avatarImageUrlUtils';
 import { cn } from '@/lib/utils';
 import { usePage } from '@inertiajs/react';
-import { useCallback, useRef } from 'react';
-import { useReactToPrint } from 'react-to-print';
 
 const ModalStepFiveComponent = ({ data, loading, setStep, fee, setFee, submitData, setSelectedRows, selectedRows, setLoading, comments }) => {
     const academic_divider = (fee?.academic_fee / data?.academic_fee) | 0;
@@ -11,27 +9,10 @@ const ModalStepFiveComponent = ({ data, loading, setStep, fee, setFee, submitDat
     const boarding_divider = (fee?.boarding_fee / data?.boarding_fee) | 0;
     const boarding_division = fee?.boarding_fee % data?.boarding_fee | 0;
     const { user } = usePage().props.auth;
-    const printComponentRef = useRef(null);
 
-    const handleBeforePrint = useCallback(() => {
-        setLoading(true);
-        return Promise.resolve();
-    }, []);
-
-    const handleAfterPrint = () => {
-        setStep(0);
-        submitData();
-    };
-
-    const printFn = useReactToPrint({
-        contentRef: printComponentRef,
-        documentTitle: 'AwesomeFileName',
-        onAfterPrint: handleAfterPrint,
-        onBeforePrint: handleBeforePrint,
-    });
     return (
         <>
-            <div ref={printComponentRef} className="space-y-4">
+            <div className="space-y-4">
                 <div className="flex items-center justify-between rounded-[8px] bg-[#F2F2F2] p-[12px]">
                     <div className="flex items-center space-x-4">
                         <img
@@ -172,7 +153,7 @@ const ModalStepFiveComponent = ({ data, loading, setStep, fee, setFee, submitDat
                     Back
                 </StaticBtn>
                 <StaticBtn
-                    onClick={printFn}
+                    onClick={submitData}
                     className={cn(
                         'flex h-14 flex-1 cursor-pointer items-center justify-center rounded-lg bg-[#0267FF] text-white',
                         selectedRows.length === 0 && 'cursor-not-allowed opacity-50',

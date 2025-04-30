@@ -71,8 +71,9 @@ const AddMoneyContainer = ({ modal, setModal }) => {
                 },
                 onSuccess: (response) => {
                     // Move to final confirmation step instead of resetting
-                    // setLoading(false);
+                    setLoading(false);
                     if (response.props.flash.success) {
+                        setStep(0);
                         api.success({
                             message: 'Success',
                             description: response.props.flash.success,
@@ -186,6 +187,8 @@ const AddMoneyContainer = ({ modal, setModal }) => {
                     selectedRows={selectedRows}
                     handleClose={handleClose}
                     setModal={setModal}
+                    setStep={setStep}
+                    setLoading={setLoading}
                 />
             );
             break;
