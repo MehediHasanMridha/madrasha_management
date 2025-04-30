@@ -12,8 +12,8 @@ const StudentMonthlyFeeListTableContainer = ({ data, setFee, setSelectedRows, se
                 <span
                     className={cn(
                         'text-[14px] font-semibold text-black',
-                        record?.status === 'Paid' && 'text-green-500',
-                        record?.status === 'Due' && 'text-green-500',
+                        record?.status === 'Paid' && 'text-[#00A606]',
+                        record?.status === 'Due' && 'text-[#00A606]',
                     )}
                 >
                     {text}
@@ -29,8 +29,8 @@ const StudentMonthlyFeeListTableContainer = ({ data, setFee, setSelectedRows, se
                 <span
                     className={cn(
                         'text-[14px] font-semibold text-black',
-                        record?.status === 'Paid' && 'text-green-500',
-                        record?.status === 'Due' && 'text-green-500',
+                        record?.status === 'Paid' && 'text-[#00A606]',
+                        record?.status === 'Due' && 'text-[#00A606]',
                     )}
                 >
                     {text.toLocaleString('en-US')}
@@ -46,8 +46,8 @@ const StudentMonthlyFeeListTableContainer = ({ data, setFee, setSelectedRows, se
                 <span
                     className={cn(
                         'text-[14px] font-semibold text-black',
-                        record?.status === 'Paid' && 'text-green-500',
-                        record?.status === 'Due' && 'text-green-500',
+                        record?.status === 'Paid' && 'text-[#00A606]',
+                        record?.status === 'Due' && 'text-[#00A606]',
                     )}
                 >
                     {text.toLocaleString('en-US')}
@@ -64,7 +64,7 @@ const StudentMonthlyFeeListTableContainer = ({ data, setFee, setSelectedRows, se
                     className={cn(
                         'text-[14px] font-semibold',
                         record?.status === 'Due' ? 'text-red-500' : 'text-black',
-                        record?.status === 'Paid' && 'text-green-500',
+                        record?.status === 'Paid' && 'text-[#00A606]',
                     )}
                 >
                     {text.toLocaleString('en-US')}
