@@ -127,20 +127,17 @@ class FinanceController extends Controller
         $year = request()->input('year') ?? date('Y');
         // find user by id
         $user = User::with([
-            'incomeLogs'  =>
+            'incomeLogs' =>
             function ($q) use ($year) {
-                $q->where('payment_period', 'like', $year . '%')->with('feeType');
+                $q->where('payment_period', 'like', $year . '%')
+                    ->with(['feeType', 'studentDue' => function ($q) {
+                        $q->select('income_log_id', 'due_amount');
+                    }]);
             },
-            'studentDues' =>
-            function ($q) use ($year) {
-                $q->where('due_period', 'like', $year . '%')->with('feeType');
-            },
-        ])
-            ->whereHas('roles', fn($q) => $q->where('name', 'student'))
+        ])->whereHas('roles', fn($q) => $q->where('name', 'student'))
             ->where('unique_id', $user_id)
             ->firstOrFail();
 
-        // return $user;
         return response()->json([
             'id'           => $user->id,
             'name'         => $user->name,
@@ -150,22 +147,20 @@ class FinanceController extends Controller
             'unique_id'    => $user->unique_id,
             'boarding_fee' => round(getStudentFee($user->id, 'boarding'), 2),
             'academic_fee' => round(getStudentFee($user->id, 'academic'), 2),
-            'income_logs'  => $user->incomeLogs->groupBy(fn($item) => date('F', strtotime($item->payment_period)))
-                ->map(fn($group, $month) => [
+            'income_logs'  => $user->incomeLogs->map(function ($item) {
+                return [
+                    'amount' => round($item->amount, 2),
+                    'type'   => $item->feeType->slug ?? 'Unknown',
+                    'due'    => $item->studentDue ? round($item->studentDue->due_amount, 2) : 0,
+                    'month'  => date('F', strtotime($item->payment_period)),
+                ];
+            })->groupBy('month')->map(function ($group, $month) {
+                return [
                     'month' => $month,
-                    'fee'   => $group->map(fn($item) => [
-                        'amount' => round($item->amount, 2),
-                        'type'   => $item->feeType->slug ?? 'Unknown',
-                    ])->values(),
-                ])->values(),
-            'dues'         => $user->studentDues->groupBy(fn($item) => date('F', strtotime($item->due_period)))
-                ->map(fn($group, $month) => [
-                    'month' => $month,
-                    'fee'   => $group->map(fn($item) => [
-                        'due_amount' => round($item->due_amount, 2),
-                        'type'       => $item->feeType->slug ?? 'Unknown',
-                    ])->values(),
-                ])->values(),
+                    'fees'  => $group,
+                ];
+            })->values(),
+
         ]);
     }
 
@@ -204,15 +199,14 @@ class FinanceController extends Controller
                     $discount->amount  = $request->discount;
                     $discount->save();
                 }
-
                 $academic_divider  = ($request->academic_fee / $student->academics->academic_fee) | 0;
                 $academic_division = $request->academic_fee % $student->academics->academic_fee | 0;
                 $boarding_divider  = ($request->boarding_fee / $student->academics->boarding_fee) | 0;
                 $boarding_division = $request->boarding_fee % $student->academics->boarding_fee | 0;
-                // dd($academic_divider, $academic_division, $boarding_divider, $boarding_division);
-                $year        = $request->year;
+                $year              = $request->year;
+
                 $monthlyInfo = collect($request->monthlyInfo);
-                $monthlyInfo->map(function ($item, $key) use ($academic_divider, $academic_division, $boarding_divider, $boarding_division, $student, $year) {
+                $monthlyInfo->map(function ($item, $key) use ($student, $request, $academic_divider, $academic_division, $boarding_divider, $boarding_division, $year) {
                     $month        = $year . '-' . $item['month'];
                     $month        = date('Y-m', strtotime($month));
                     $academic_fee = $key < $academic_divider ? $item['academic_fee'] : $academic_division;
@@ -228,7 +222,7 @@ class FinanceController extends Controller
                             'receiver_id'       => Auth::user()->id,
                         ]);
                     } else {
-                        IncomeLog::create([
+                        $incomeLog = IncomeLog::create([
                             'user_id'           => $student->id,
                             'amount'            => $academic_fee,
                             'fee_type_id'       => FeeType::where('name', 'like', '%academic%')->first()->id, // get from fee_types table
@@ -239,11 +233,8 @@ class FinanceController extends Controller
                         ]);
 
                         StudentDue::create([
-                            'user_id'         => $student->id,
-                            'fee_type_id'     => FeeType::where('name', 'like', '%academic%')->first()->id, // get from fee_types table
-                            'paid_amount'     => $academic_fee,
-                            'due_period'      => $month,
-                            'expected_amount' => $item['academic_fee'],
+                            'income_log_id' => $incomeLog->id,
+                            'due_amount'    => $request->academic_due,
                         ]);
                     }
 
@@ -258,7 +249,7 @@ class FinanceController extends Controller
                             'receiver_id'       => Auth::user()->id,
                         ]);
                     } else {
-                        IncomeLog::create([
+                        $incomeLog = IncomeLog::create([
                             'user_id'           => $student->id,
                             'amount'            => $boarding_fee,
                             'fee_type_id'       => FeeType::where('name', 'like', '%boarding%')->first()->id, // get from fee_types table
@@ -268,11 +259,8 @@ class FinanceController extends Controller
                             'receiver_id'       => Auth::user()->id,
                         ]);
                         StudentDue::create([
-                            'user_id'         => $student->id,
-                            'fee_type_id'     => FeeType::where('name', 'like', '%boarding%')->first()->id, // get from fee_types table
-                            'paid_amount'     => $boarding_fee,
-                            'due_period'      => $month,
-                            'expected_amount' => $item['boarding_fee'],
+                            'income_log_id' => $incomeLog->id,
+                            'due_amount'    => $request->boarding_due,
                         ]);
                     }
                 });

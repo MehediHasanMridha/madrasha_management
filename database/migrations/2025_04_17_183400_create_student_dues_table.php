@@ -13,13 +13,8 @@ return new class extends Migration
     {
         Schema::create('student_dues', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();                   // ছাত্র
-            $table->foreignId('fee_type_id')->constrained()->cascadeOnDelete();               // academic, boarding etc.
-            $table->string('due_period', 20);                                                 // eg: '2025-04'
-            $table->decimal('expected_amount', 10, 2);                                        // মোট কত টাকা expected
-            $table->decimal('paid_amount', 10, 2)->default(0);                                // এখন পর্যন্ত কত দিয়েছে
-            $table->decimal('due_amount', 10, 2)->virtualAs('expected_amount - paid_amount'); // অটোম্যাটিক হিসেব
-            $table->unique(['user_id', 'fee_type_id', 'due_period']);                         // যেন ডুপ্লিকেট না হয়
+            $table->foreignId('income_log_id')->constrained()->cascadeOnDelete(); // ছাত্র
+            $table->decimal('due_amount', 10, 2);                                 //virtualAs('expected_amount - paid_amount'); // অটোম্যাটিক হিসেব
             $table->timestamps();
         });
 

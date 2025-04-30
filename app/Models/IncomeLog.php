@@ -31,6 +31,12 @@ class IncomeLog extends Model
     {
         return $this->belongsTo(PaymentMethod::class);
     }
+
+    public function studentDue()
+    {
+        return $this->hasOne(StudentDue::class);
+    }
+
     public function scopeFilter($query, array $filters)
     {
         $query->when($filters['search'] ?? false, function ($query, $search) {

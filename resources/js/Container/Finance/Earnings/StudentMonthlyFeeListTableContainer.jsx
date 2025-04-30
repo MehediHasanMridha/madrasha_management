@@ -93,16 +93,13 @@ const StudentMonthlyFeeListTableContainer = ({ data, setFee, setSelectedRows, se
     const dataSource = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'].map(
         (month, index) => {
             const boardingFeeDue =
-                data?.dues?.find((item) => item?.month === month)?.fee?.find((fee) => fee?.type === 'boarding-fee')?.due_amount || 0;
+                data?.income_logs?.find((item) => item?.month == month)?.fees?.find((item) => item?.type === 'boarding-fee')?.due || 0;
             const academicFeeDue =
-                data?.dues?.find((item) => item?.month === month)?.fee?.find((fee) => fee?.type === 'academic-fee')?.due_amount || 0;
-            const boardingFee =
-                data?.income_logs?.find((item) => item?.month === month)?.fee?.find((fee) => fee?.type === 'boarding-fee')?.amount ||
-                data?.boarding_fee;
+                data?.income_logs?.find((item) => item?.month == month)?.fees?.find((item) => item?.type === 'academic-fee')?.due || 0;
+            const boardingFee = data?.boarding_fee - boardingFeeDue;
 
-            const academicFee =
-                data?.income_logs?.find((item) => item?.month === month)?.fee?.find((fee) => fee?.type === 'academic-fee')?.amount ||
-                data?.academic_fee;
+            const academicFee = data?.academic_fee - academicFeeDue;
+            const isPaid = data?.income_logs?.find((item) => item?.month == month) ? true : false;
 
             return {
                 key: index,
@@ -110,11 +107,7 @@ const StudentMonthlyFeeListTableContainer = ({ data, setFee, setSelectedRows, se
                 boarding_fee: boardingFeeDue ? data?.boarding_fee - boardingFeeDue : boardingFee,
                 academic_fee: academicFeeDue ? data?.academic_fee - academicFeeDue : academicFee,
                 due: boardingFeeDue + academicFeeDue,
-                status: data?.income_logs?.find((item) => item?.month === month)
-                    ? data?.dues?.find((item) => item?.month === month)
-                        ? 'Due'
-                        : 'Paid'
-                    : 'Unpaid',
+                status: boardingFeeDue + academicFeeDue > 0 ? 'Due' : isPaid ? 'Paid' : 'Unpaid',
             };
         },
     );

@@ -8,20 +8,12 @@ class StudentDue extends Model
     protected $table = 'student_dues';
 
     protected $fillable = [
-        'user_id',
-        'fee_type_id',
-        'due_period',
-        'expected_amount',
-        'paid_amount',
+        'income_log_id',
         'due_amount',
     ];
 
-    public function user()
+    public function incomeLog()
     {
-        return $this->belongsTo(User::class);
-    }
-    public function feeType()
-    {
-        return $this->belongsTo(FeeType::class);
+        return $this->belongsTo(IncomeLog::class);
     }
 }
