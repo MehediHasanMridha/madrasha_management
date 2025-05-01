@@ -98,7 +98,7 @@ const ClassListTableContainer = ({ classes, departments }) => {
 
     return (
         <TableUI
-            dataSource={classes}
+            data={classes}
             columns={columns}
             className="w-full"
             onChange={(pagination, filters, sorter) => {
