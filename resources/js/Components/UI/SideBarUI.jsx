@@ -1,3 +1,4 @@
+import { cn } from '@/lib/utils';
 import { Layout } from 'antd';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
@@ -51,8 +52,10 @@ const SideBarItemText = ({ children, className = '', collapsed, ...props }) => {
     );
 };
 
-const SideBarItem = ({ children, className = '', collapsed }) => (
-    <div className={`flex items-center ${collapsed ? 'h-[80px] justify-center' : className}`}>{children}</div>
+const SideBarItem = ({ children, className = '', collapsed, ...props }) => (
+    <div {...props} className={cn('flex items-center', collapsed ? 'h-[80px] justify-center' : className)}>
+        {children}
+    </div>
 );
 
 SideBarUI.Icon = SideBarItemIcon;

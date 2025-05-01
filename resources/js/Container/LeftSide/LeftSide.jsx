@@ -30,8 +30,12 @@ const LeftSide = () => {
                 </SideBarUI.Icon>
                 <SideBarUI.Text collapsed={collapsed}>Madrasatul Hera</SideBarUI.Text>
             </SideBarUI.Item>
-            <SideBarUI.Item collapsed={collapsed} className="flex h-[64px] items-center space-x-[12px] px-[50px] hover:bg-[#F2F2F2]">
-                <SideBarUI.Icon onClick={handleCollapsed} className="cursor-pointer">
+            <SideBarUI.Item
+                onClick={handleCollapsed}
+                collapsed={collapsed}
+                className="flex h-[64px] cursor-pointer items-center space-x-[12px] px-[50px] hover:bg-[#F2F2F2]"
+            >
+                <SideBarUI.Icon>
                     <img src={CollapseIcon} alt="CollapseIcon" />
                 </SideBarUI.Icon>
                 <SideBarUI.Text collapsed={collapsed}>Collapse</SideBarUI.Text>
