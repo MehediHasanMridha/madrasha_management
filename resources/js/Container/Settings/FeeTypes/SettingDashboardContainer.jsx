@@ -1,4 +1,4 @@
-import SettingDashboardComponent from '@/Components/Setting/SettingDashboardComponent';
+import SettingDashboardComponent from '@/Components/Settings/SettingDashboardComponent';
 
 const SettingDashboardContainer = () => {
     return <SettingDashboardComponent />;

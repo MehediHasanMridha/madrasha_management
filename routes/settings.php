@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Settings\FeeTypeController;
 use App\Http\Controllers\Settings\PasswordController;
 use App\Http\Controllers\Settings\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -17,4 +18,15 @@ Route::middleware('auth')->group(function () {
     Route::get('settings/appearance', function () {
         return Inertia::render('settings/appearance');
     })->name('appearance');
+
+    // Fee Type Routes
+    Route::resource('settings/fee-types', FeeTypeController::class)
+        ->names([
+            'index'   => 'settings.fee-types.index',
+            'create'  => 'settings.fee-types.create',
+            'store'   => 'settings.fee-types.store',
+            'edit'    => 'settings.fee-types.edit',
+            'update'  => 'settings.fee-types.update',
+            'destroy' => 'settings.fee-types.destroy',
+        ]);
 });
