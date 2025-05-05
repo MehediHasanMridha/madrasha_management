@@ -35,7 +35,8 @@ jobs:
             - name: 📂 Sync files
               uses: SamKirkland/FTP-Deploy-Action@v4.3.4
               with:
-                  server: ftp.madrasatulhera.com
+                  server: 168.119.39.20
+                  port: 21
                   username: ${{ secrets.MAIN_USER }}
                   password: ${{ secrets.MAIN_PASS }}
                   server-dir: public_html/
