@@ -62,9 +62,8 @@ class FinanceController extends Controller
 
         // return $outgoings;
         $data = [
-            'remaining_amount' => 234567,
-            'earnings'         => $earnings,
-            'expenses'         => $outgoings,
+            'earnings' => $earnings,
+            'expenses' => $outgoings,
         ];
 
         return Inertia::render('Finance/Summary', [
