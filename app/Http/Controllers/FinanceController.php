@@ -22,22 +22,16 @@ class FinanceController extends Controller
      *
      * @return \Inertia\Response
      */
-    public function summary($period = null)
+    public function summary()
     {
-        $earningMonth  = request()->input('earningMonth');
-        $earningYear   = request()->input('earningYear');
-        $outgoingMonth = request()->input('outgoingMonth');
-        $outgoingYear  = request()->input('outgoingYear');
+        $month = request()->input('month');
+        $year  = request()->input('year');
 
         // how to convert month & year to Y-m
-        $period = date('Y-m', strtotime($earningMonth . ' ' . $earningYear));
-        $date   = date('Y-m', strtotime($outgoingMonth . ' ' . $outgoingYear));
+        $period = date('Y-m', strtotime($month . ' ' . $year));
         // If no period is provided, use the current month
         if (! $period) {
             $period = date('Y-m');
-        }
-        if (! $date) {
-            $date = date('Y-m');
         }
 
         // Mock data for demonstration
@@ -55,7 +49,7 @@ class FinanceController extends Controller
             });
 
         $outgoings = ExpenseLog::with('voucherType')
-            ->where('date', 'like', $date . '%') // get all vouchers for the month but date is "2025-04-22" format
+            ->where('date', 'like', $period . '%') // get all vouchers for the month but date is "2025-04-22" format
             ->groupBy('voucher_type_id')
             ->selectRaw('voucher_type_id, sum(amount) as amount')
             ->get()
