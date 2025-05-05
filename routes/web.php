@@ -3,6 +3,7 @@
 use App\Http\Controllers\ClassController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\FeeTypeController;
 use App\Http\Controllers\FinanceController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\StudentController;
@@ -37,7 +38,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     //settings
     Route::prefix("settings")->group(function () {
         Route::get("/", function () {
-            return Inertia::render("Settings/settingDashboard");
+            return Inertia::render("settings/settingDashboard");
         })->name("settings");
 
         //department
@@ -57,6 +58,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('{class_slug}/update', [ClassController::class, 'update'])->name('class.update');
             Route::delete('{class_slug}/delete', [ClassController::class, 'destroy'])->name('class.delete');
         });
+
+        // Fee Type Routes
+        Route::resource('fee-types', FeeTypeController::class)
+            ->names([
+                'index'   => 'settings.fee-types.index',
+                'create'  => 'settings.fee-types.create',
+                'store'   => 'settings.fee-types.store',
+                'edit'    => 'settings.fee-types.edit',
+                'update'  => 'settings.fee-types.update',
+                'destroy' => 'settings.fee-types.destroy',
+            ]);
 
     });
 

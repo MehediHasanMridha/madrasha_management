@@ -2,7 +2,7 @@ import StaticBtn from '@/Components/UI/StaticBtn';
 import AddDepartmentModalFormContainer from '@/Container/Department/AddDepartmentModalFormContainer';
 import DepartmentTableListContainer from '@/Container/Department/DepartmentTableListContainer';
 import EditDepartmentModalFormContainer from '@/Container/Department/EditDepartmentModalFormContainer';
-import SettingsLayout from '@/layouts/Settings/SettingsLayout';
+import SettingsLayout from '@/layouts/settings/SettingsLayout';
 import { notification } from 'antd';
 import { useState } from 'react';
 import { RiUserAddLine } from 'react-icons/ri';
