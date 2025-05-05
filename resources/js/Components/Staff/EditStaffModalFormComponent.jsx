@@ -80,7 +80,6 @@ const EditStaffModalFormComponent = ({
                                         <ModalUI
                                             isModalOpen={showWebcam}
                                             handleCancel={toggleWebcam}
-                                            width={'80%'}
                                             title="Capture Image"
                                             width={'20%'}
                                             onCancel={toggleWebcam}
