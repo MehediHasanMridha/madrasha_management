@@ -2,7 +2,7 @@ import StaticBtn from '@/Components/UI/StaticBtn';
 import AddClassModalFormContainer from '@/Container/Class/AddClassModalFormContainer';
 import ClassListTableContainer from '@/Container/Class/ClassListTableContainer';
 import EditClassModalFormContainer from '@/Container/Class/EditClassModalFormContainer';
-import SettingsLayout from '@/layouts/settings/layout';
+import SettingsLayout from '@/layouts/Settings/SettingsLayout';
 import { useBoundStore } from '@/stores';
 import { Head } from '@inertiajs/react';
 import { notification } from 'antd';

@@ -1,5 +1,5 @@
 import FeeTypeContainer from '@/Container/Settings/FeeTypes/FeeTypeContainer';
-import SettingsLayout from '@/layouts/settings/layout';
+import SettingsLayout from '@/layouts/Settings/SettingsLayout';
 import { Head } from '@inertiajs/react';
 
 const FeeTypes = ({ feeTypes }) => {
