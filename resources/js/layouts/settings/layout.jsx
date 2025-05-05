@@ -1,5 +1,5 @@
 import LayoutUI from '@/Components/UI/LayoutUI';
-import SettingLeftSide from '@/Container/Settings/FeeTypes/SettingLeftSide';
+import SettingLeftSide from '@/Container/Settings/SettingLeftSide';
 
 export default function SettingsLayout({ children }) {
     return (
