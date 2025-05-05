@@ -35,7 +35,7 @@ jobs:
             - name: 📂 Sync files
               uses: SamKirkland/FTP-Deploy-Action@v4.3.4
               with:
-                  server: ${{ secrets.MAIN_HOST }}
+                  server: ftp.madrasatulhera.com
                   username: ${{ secrets.MAIN_USER }}
                   password: ${{ secrets.MAIN_PASS }}
                   server-dir: public_html/
