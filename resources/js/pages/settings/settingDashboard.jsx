@@ -1,5 +1,5 @@
-import SettingDashboardContainer from '@/Container/Settings/FeeTypes/SettingDashboardContainer';
-import SettingsLayout from '@/layouts/settings/layout';
+import SettingDashboardContainer from '@/Container/SettingsContainer/SettingDashboardContainer';
+import SettingsLayout from '@/layouts/settings/SettingsLayout';
 
 const settingDashboard = () => {
     return (

@@ -1,5 +1,5 @@
 <?php
-namespace App\Http\Controllers\Settings;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\FeeType;
@@ -26,14 +26,14 @@ class FeeTypeController extends Controller
         } else {
             $feeTypes->orderBy($sortField, 'desc');
         }
-        return Inertia::render('Settings/FeeTypes/Index', [
+        return Inertia::render('FeeTypes/Index', [
             'feeTypes' => $feeTypes->paginate($per_page, ['*'], 'page', $page)->withQueryString(),
         ]);
     }
 
     public function create()
     {
-        return Inertia::render('Settings/FeeTypes/Create');
+        return Inertia::render('FeeTypes/Create');
     }
 
     public function store(Request $request)
