@@ -25,7 +25,7 @@ const EarningPieChartContainer = ({ data }) => {
             data={earningData}
             angleField="amount"
             colorField="feeType"
-            innerRadius={0}
+            innerRadius={0.6}
             label={{
                 text: (data) => `${data.amount}`,
                 style: {

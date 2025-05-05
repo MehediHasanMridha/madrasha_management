@@ -37,7 +37,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     //settings
     Route::prefix("settings")->group(function () {
         Route::get("/", function () {
-            return Inertia::render("settings/settingDashboard");
+            return Inertia::render("Settings/settingDashboard");
         })->name("settings");
 
         //department

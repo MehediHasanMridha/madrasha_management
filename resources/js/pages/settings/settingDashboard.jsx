@@ -1,4 +1,4 @@
-import SettingDashboardContainer from '@/Container/Setting/SettingDashboardContainer';
+import SettingDashboardContainer from '@/Container/Settings/FeeTypes/SettingDashboardContainer';
 import SettingsLayout from '@/layouts/settings/layout';
 
 const settingDashboard = () => {

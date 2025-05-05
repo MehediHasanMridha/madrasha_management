@@ -5,13 +5,13 @@ import EarningPieChartContainer from './EarningPieChartContainer';
 
 const SummaryComponent = ({ data, getData, remainingAmount }) => {
     return (
-        <div className="space-y-3 py-6">
+        <div className="space-y-4 py-6">
             <FinanceTabBarComponent tab="summary" />
             <div className="flex justify-between rounded-lg bg-white p-6">
                 <span className="text-lg font-medium text-gray-700">Remaining amount in this month : {remainingAmount.toLocaleString()} BDT</span>
                 <MonthYearContainer getData={getData} />
             </div>
-            <div className="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2">
+            <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2">
                 {/* Earnings Card */}
                 <Card className="rounded-lg border-none bg-white p-6 shadow-none">
                     <CardTitle>Total Earnings</CardTitle>
