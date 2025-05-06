@@ -1,3 +1,4 @@
+import LoadingUI from '@/Components/UI/LoadingUI';
 import StaticBtn from '@/Components/UI/StaticBtn';
 import StudentMonthlyFeeListTableContainer from '@/Container/Finance/Earnings/StudentMonthlyFeeListTableContainer';
 import { getAvatarImage } from '@/lib/avatarImageUrlUtils';
@@ -66,7 +67,7 @@ const ModalStepThreeComponent = ({ data, loading, setStep, year, setYear, fee, s
 
     return (
         <div className="h-full space-y-4">
-            {loading ? <div>Loading...</div> : data ? renderStudentInfo() : <div>No data found</div>}
+            {loading ? <LoadingUI /> : data ? renderStudentInfo() : <div>No data found</div>}
             <div className="mt-5 flex w-full gap-[18px]">
                 <StaticBtn
                     onClick={() => setStep((prev) => prev - 1)}
