@@ -36,6 +36,7 @@ jobs:
               uses: SamKirkland/FTP-Deploy-Action@v4.3.4
               with:
                   server: ${{ secrets.MAIN_HOST }}
+                  port: 21
                   username: ${{ secrets.MAIN_USER }}
                   password: ${{ secrets.MAIN_PASS }}
                   server-dir: public_html/
