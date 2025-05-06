@@ -40,16 +40,17 @@ const LeftSide = () => {
                 </SideBarUI.Icon>
                 <SideBarUI.Text collapsed={collapsed}>Collapse</SideBarUI.Text>
             </SideBarUI.Item>
-            <div className={`my-2 flex items-center space-x-[12px] ${collapsed ? 'pl-0' : 'pl-[24px]'}`}>
+            <div className={cn('my-2 flex items-center space-x-[12px]', collapsed ? 'pl-0' : 'pl-[24px]')}>
                 <SideBarUI.Text collapsed={collapsed}>Universal</SideBarUI.Text>
                 <hr className="h-[0.5px] w-full bg-[#AFAFAF]" />
             </div>
             <Link href="/dashboard" as="button" className="w-full cursor-pointer">
                 <SideBarUI.Item
                     collapsed={collapsed}
-                    className={`flex h-[64px] items-center space-x-[12px] px-[50px] hover:bg-[#F2F2F2] ${
-                        route().current('dashboard') ? 'w-full bg-[#F2F2F2]' : ''
-                    }`}
+                    className={cn(
+                        'flex h-[64px] items-center space-x-[12px] px-[50px] hover:bg-[#F2F2F2]',
+                        route().current('dashboard') && 'w-full bg-[#F2F2F2]',
+                    )}
                 >
                     <SideBarUI.Icon>
                         <img src={Dashboard} alt="Dashboard" className="h-[24px] w-[24px]" />
@@ -60,9 +61,10 @@ const LeftSide = () => {
             <Link href={route('finance.summary')} as="button" className="w-full cursor-pointer" preserveState preserveScroll>
                 <SideBarUI.Item
                     collapsed={collapsed}
-                    className={`flex h-[64px] items-center space-x-[12px] px-[50px] hover:bg-[#F2F2F2] ${
-                        route().current('finance.*') ? 'w-full bg-[#F2F2F2]' : ''
-                    }`}
+                    className={cn(
+                        'flex h-[64px] items-center space-x-[12px] px-[50px] hover:bg-[#F2F2F2]',
+                        route().current('finance.*') && 'w-full bg-[#F2F2F2]',
+                    )}
                 >
                     <SideBarUI.Icon>
                         <img src={Finance} alt="Finance" className="h-[24px] w-[24px]" />
@@ -84,7 +86,7 @@ const LeftSide = () => {
                     <SideBarUI.Text collapsed={collapsed}>Manage Staff </SideBarUI.Text>
                 </SideBarUI.Item>
             </Link>
-            <div className={`my-2 flex items-center space-x-[12px] ${collapsed ? 'pl-0' : 'pl-[24px]'}`}>
+            <div className={cn('my-2 flex items-center space-x-[12px]', collapsed ? 'pl-0' : 'pl-[24px]')}>
                 <SideBarUI.Text collapsed={collapsed}>Campus</SideBarUI.Text>
                 <hr className="h-[0.5px] w-full bg-[#AFAFAF]" />
             </div>
@@ -92,16 +94,21 @@ const LeftSide = () => {
                 <Link key={department.id} href={route('department.students_show', department.slug)} className="w-full cursor-pointer" as="button">
                     <SideBarUI.Item
                         collapsed={collapsed}
-                        className={`flex h-[64px] items-center space-x-[12px] px-[50px] ${route().current('department.*', department.slug) && 'bg-[#F2F2F2]'} hover:bg-[#F2F2F2]`}
+                        className={cn(
+                            'flex h-[64px] items-center space-x-[8px] pl-[50px] hover:bg-[#F2F2F2]',
+                            route().current('department.students_show', department.slug) && 'bg-[#F2F2F2]',
+                        )}
                     >
                         <SideBarUI.Icon>
-                            <img src={Islamic_School} alt="Islamic_School}" className="h-[24px] w-[24px]" />
+                            <img src={Islamic_School} alt={department.name} className="h-[24px] w-[24px]" />
                         </SideBarUI.Icon>
-                        <SideBarUI.Text collapsed={collapsed}>{department.name}</SideBarUI.Text>
+                        <SideBarUI.Text className="w-full text-start" collapsed={collapsed}>
+                            {department.name}
+                        </SideBarUI.Text>
                     </SideBarUI.Item>
                 </Link>
             ))}
-            <div className={`my-2 flex items-center space-x-[12px] ${collapsed ? 'pl-0' : 'pl-[24px]'}`}>
+            <div className={cn('my-2 flex items-center space-x-[12px]', collapsed ? 'pl-0' : 'pl-[24px]')}>
                 <SideBarUI.Text collapsed={collapsed} className="w-[120px]">
                     Mobile app
                 </SideBarUI.Text>
