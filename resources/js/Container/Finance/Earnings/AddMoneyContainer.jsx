@@ -42,7 +42,7 @@ const AddMoneyContainer = ({ modal, setModal }) => {
     const getData = async (data) => {
         try {
             setLoading(true);
-            const { data: info } = await axios.get(route('finance.get_user_data', { user_id: studentId, year: data || year }));
+            const { data: info } = await axios.get(route('finance.get_user_data', { user_id: studentId.replace(/\s+/g, ''), year: data || year }));
             if (info) {
                 setData(info);
             }

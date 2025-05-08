@@ -7,6 +7,7 @@ use App\Http\Controllers\FeeTypeController;
 use App\Http\Controllers\FinanceController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\VoucherTypeController;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -68,6 +69,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 'edit'    => 'settings.fee-types.edit',
                 'update'  => 'settings.fee-types.update',
                 'destroy' => 'settings.fee-types.destroy',
+            ]);
+
+        // Voucher Type Routes
+        Route::resource('voucher-types', VoucherTypeController::class)
+            ->names([
+                'index'   => 'settings.voucher-types.index',
+                'create'  => 'settings.voucher-types.create',
+                'store'   => 'settings.voucher-types.store',
+                'edit'    => 'settings.voucher-types.edit',
+                'update'  => 'settings.voucher-types.update',
+                'destroy' => 'settings.voucher-types.destroy',
             ]);
 
     });

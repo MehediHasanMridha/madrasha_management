@@ -19,7 +19,7 @@ const ModalStepThreeComponent = ({ data, loading, setStep, year, setYear, fee, s
                         <p className="text-sm text-gray-600">Student ID: {data.unique_id}</p>
                     </div>
                 </div>
-                <div className="">
+                <div>
                     <span>
                         Boarding fee: <span className="font-semibold text-black">{data.boarding_fee}BDT</span>
                     </span>

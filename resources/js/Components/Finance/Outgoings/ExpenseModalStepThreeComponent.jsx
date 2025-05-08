@@ -1,63 +1,98 @@
-import Field from '@/Components/UI/Field';
+import LoadingUI from '@/Components/UI/LoadingUI';
 import StaticBtn from '@/Components/UI/StaticBtn';
+import StaffMonthlySalaryListTableContainer from '@/Container/Finance/Outgoings/StaffMonthlySalaryListTableContainer';
 import { getAvatarImage } from '@/lib/avatarImageUrlUtils';
+import { cn } from '@/lib/utils';
 
-const ExpenseModalStepThreeComponent = ({ data, loading, setStep, month, setMonth, salary, setSalary, submitData }) => {
-    const renderStudentInfo = () => (
+const ExpenseModalStepThreeComponent = ({
+    data,
+    loading,
+    setStep,
+    setExpense,
+    expense,
+    submitData,
+    year,
+    setYear,
+    selectedRows,
+    setSelectedRows,
+}) => {
+    const renderStaffInfo = () => (
         <div className="space-y-4">
-            <div className="flex items-center space-x-4">
-                <img src={getAvatarImage(data.image, 'staff_images', data.name)} alt="Student" className="h-16 w-16 rounded-full border" />
+            <div className="flex items-center justify-between rounded-[8px] bg-[#F2F2F2] p-[12px]">
+                <div className="flex items-center space-x-4">
+                    <img src={getAvatarImage(data.image, 'staff_images', data.name)} alt="Staff" className="h-[50px] w-[50px] rounded-full border" />
+                    <div>
+                        <p className="text-lg font-semibold">{data.name || 'N/A'}</p>
+                        <p className="text-sm text-gray-600">Staff ID: {data.unique_id}</p>
+                    </div>
+                </div>
                 <div>
-                    <p className="text-lg font-semibold">{data.name || 'N/A'}</p>
-                    <p className="text-sm text-gray-600">Staff ID: {data.unique_id}</p>
+                    <span>
+                        Salary: <span className="font-semibold text-black">{data.salary}BDT</span>
+                    </span>
                 </div>
             </div>
-            <Field label="Select Month">
+
+            <div className="flex items-center justify-between border-b border-[#AFAFAF] pb-[12px]">
+                <span className="text-[16px] font-semibold">Monthly Salary details</span>
                 <select
-                    id="month"
-                    name="month"
-                    className="w-full rounded-[8px] border border-solid border-[#AFAFAF] px-[16px] py-[12px] text-black focus:outline-0"
-                    value={month}
-                    onChange={(e) => setMonth(e.target.value)}
+                    className="w-[78px] rounded-[4px] border-[1px] border-[#AFAFAF] px-[8px] py-[4px] text-black focus:outline-0"
+                    value={year}
+                    onChange={(e) => {
+                        setYear(e.target.value);
+                    }}
                 >
-                    {['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'].map(
-                        (m) => (
-                            <option key={m} value={m}>
-                                {m}
-                            </option>
-                        ),
-                    )}
+                    <option value="">Year</option>
+                    {['2025', '2026', '2027', '2028', '2029', '2030'].map((item) => (
+                        <option key={item} value={item}>
+                            {item}
+                        </option>
+                    ))}
                 </select>
-            </Field>
-            <Field label="Salary:">
-                <input
-                    type="text"
-                    placeholder="Salary"
-                    className="w-full rounded-[8px] border border-solid border-[#AFAFAF] px-[16px] py-[12px] text-black focus:outline-0"
-                    value={salary}
-                    onChange={(e) => setSalary(Number(e.target.value))}
+            </div>
+
+            <div className="h-[300px] overflow-y-auto">
+                <StaffMonthlySalaryListTableContainer
+                    data={data}
+                    setExpense={setExpense}
+                    expense={expense}
+                    setSelectedRows={setSelectedRows}
+                    selectedRows={selectedRows}
                 />
-            </Field>
+            </div>
+
             <div className="space-y-[8px] rounded-[8px] bg-[#F2F2F2] p-[12px]">
-                <div className="flex justify-between font-semibold">
-                    <span>Total Salary:</span>
-                    <span>{Number(salary)} TK</span>
-                </div>
-                <hr />
                 <div className="flex justify-between">
-                    <span>Due:</span>
-                    <span>{Number(data.salary) - Number(salary)} TK</span>
+                    <span>Base Salary:</span>
+                    <span>{Number(expense.amount || 0)} BDT</span>
                 </div>
             </div>
         </div>
     );
 
     return (
-        <div className="h-[500px] space-y-4">
-            {loading ? <div>Loading...</div> : data ? renderStudentInfo() : <div>No data found</div>}
-            <div className="absolute bottom-12 left-0 flex w-full justify-between px-2">
-                <StaticBtn onClick={() => setStep(2)}>Previous</StaticBtn>
-                <StaticBtn onClick={submitData}>Next</StaticBtn>
+        <div className="h-full space-y-4">
+            {loading ? <LoadingUI /> : data ? renderStaffInfo() : <div>No data found</div>}
+            <div className="mt-5 flex w-full gap-[18px]">
+                <StaticBtn
+                    onClick={() => setStep((prev) => prev - 1)}
+                    className="flex h-14 flex-1 cursor-pointer items-center justify-center rounded-lg bg-[#F2F2F2] text-[#4A4A4A] hover:bg-[#0267FF] hover:text-white"
+                    disabled={loading}
+                >
+                    Back
+                </StaticBtn>
+                <StaticBtn
+                    onClick={() => {
+                        if (selectedRows.length === 0) return;
+                        submitData();
+                    }}
+                    className={cn(
+                        'flex h-14 flex-1 cursor-pointer items-center justify-center rounded-lg bg-[#0267FF] text-white',
+                        selectedRows.length === 0 && 'cursor-not-allowed opacity-50',
+                    )}
+                >
+                    {loading ? 'Processing...' : 'Submit'}
+                </StaticBtn>
             </div>
         </div>
     );

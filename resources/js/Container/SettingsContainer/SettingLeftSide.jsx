@@ -48,6 +48,18 @@ const SettingLeftSide = () => {
                     <br /> <span className="text-[#AFAFAF]">Manage fee types</span>
                 </SideBarUI.Text>
             </SideBarUI.Item>
+            <SideBarUI.Item>
+                <SideBarUI.Text
+                    className={cn('w-full items-center px-[32px] py-[9px] hover:bg-[#F2F2F2]', {
+                        'bg-[#F2F2F2]': route().current('settings.voucher-types.*'),
+                    })}
+                >
+                    <Link href={route('settings.voucher-types.index')} as="button" className="cursor-pointer text-[16px] font-medium">
+                        Voucher Types
+                    </Link>{' '}
+                    <br /> <span className="text-[#AFAFAF]">Manage voucher types</span>
+                </SideBarUI.Text>
+            </SideBarUI.Item>
         </SideBarUI>
     );
 };

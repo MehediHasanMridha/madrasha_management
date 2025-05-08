@@ -11,8 +11,10 @@ class ExpenseLog extends Model
         'voucher_type_id',
         'amount',
         'date',
+        'created_by',
         'details',
-        'remarks',
+        'note',
+        'holder_name',
     ];
 
     public function user()

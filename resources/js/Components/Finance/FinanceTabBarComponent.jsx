@@ -1,6 +1,7 @@
 import SettingDropdownContainer from '@/Container/Shared/SettingDropdownContainer';
 import { cn } from '@/lib/utils';
 import { Link } from '@inertiajs/react';
+import { BanknoteArrowDown } from 'lucide-react';
 import { FaChartPie, FaMoneyBills } from 'react-icons/fa6';
 
 const FinanceTabBarComponent = ({ tab }) => {
@@ -32,6 +33,19 @@ const FinanceTabBarComponent = ({ tab }) => {
                 >
                     <FaMoneyBills className="inline-flex" size={24} />
                     <span>Earnings</span>
+                </Link>
+                <Link
+                    href={route('finance.outgoings')}
+                    className={cn(
+                        'flex w-fit cursor-pointer items-center space-x-[8px]',
+                        tab === 'outgoings' ? 'border-b-[1px] border-[#4891FF] px-[8px] py-[6px] text-[#4891FF]' : 'text-gray-500',
+                    )}
+                    preserveState
+                    preserveScroll
+                    as="button"
+                >
+                    <BanknoteArrowDown strokeWidth={1.5} />
+                    <span>Outgoings</span>
                 </Link>
             </div>
             <SettingDropdownContainer />

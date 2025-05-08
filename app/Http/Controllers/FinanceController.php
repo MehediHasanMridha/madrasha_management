@@ -105,7 +105,7 @@ class FinanceController extends Controller
     {
 
         if (request()->input('type') == 'staff') {
-            $user = User::whereHas('roles', fn($q) => $q->where('name', 'staff'))->where('unique_id', $user_id)->with('academics')->firstOrFail();
+            $user = User::whereHas('roles', fn($q) => $q->where('name', 'staff'))->where('unique_id', $user_id)->with(['academics', 'expenseLogs'])->firstOrFail();
 
             return response()->json([
                 'id'        => $user->id,
@@ -115,8 +115,19 @@ class FinanceController extends Controller
                 'image'     => $user->img,
                 'unique_id' => $user->unique_id,
                 'salary'    => $user->academics->salary,
+                'expenses'  => $user->expenseLogs->map(function ($item) {
+                    return [
+                        'amount' => round($item->amount, 2),
+                        'type'   => $item->voucherType->slug ?? 'Unknown',
+                        'month'  => date('F', strtotime($item->date)),
+                    ];
+                })->groupBy('month')->map(function ($group, $month) {
+                    return [
+                        'month' => $month,
+                        'fees'  => $group,
+                    ];
+                })->values(),
             ]);
-
         }
         $year = request()->input('year') ?? date('Y');
         // find user by id
@@ -181,7 +192,7 @@ class FinanceController extends Controller
                 $total_fee                   = $request->academic_fee + $request->boarding_fee;
                 $transaction                 = new Transaction();
                 $transaction->transaction_id = 'TRN-' . str_pad(mt_rand(1, 999999999), 9, '0', STR_PAD_LEFT);
-                $transaction->user_id        = $student->id;
+                $transaction->user_id        = Auth::user()->id;
                 $transaction->amount         = $total_fee;
                 $transaction->note           = $request->details ?? null;
                 $transaction->save();
@@ -273,10 +284,10 @@ class FinanceController extends Controller
     }
     public function add_voucher(Request $request)
     {
+        // dd($request->all());
         // Validate the request data
         $request->validate([
             'staff_id' => 'required|exists:users,unique_id',
-            'month'    => 'required|in:January,February,March,April,May,June,July,August,September,October,November,December', // 'January',
             'type'     => 'required|in:salary',
             'note'     => 'nullable|string|max:255',
         ]);
@@ -289,16 +300,30 @@ class FinanceController extends Controller
         }
 
         // convert date to 2025-04-22
-        $date = date('Y-m-d', strtotime($request->month));
 
-        if ($request->type == 'salary') {
-
-            ExpenseLog::create([
-                'user_id'         => $staff->id,
-                'voucher_type_id' => VoucherType::where('name', 'like', '%salary%')->first()->id, // get from fee_types table
-                'date'            => $date,
-                'amount'          => $request->salary,
+        if ($request->type == 'salary' && $request->monthlyInfo) {
+            // add new Transaction
+            Transaction::create([
+                'transaction_id'   => 'TRN-' . str_pad(mt_rand(1, 999999999), 9, '0', STR_PAD_LEFT),
+                'user_id'          => Auth::user()->id,
+                'transaction_type' => 'expense',
+                'amount'           => $request->expense['amount'],
+                'note'             => $request->expense['note'] ?? null,
             ]);
+            $monthlyInfo = collect($request->monthlyInfo);
+            $monthlyInfo->map(function ($item, $key) use ($staff) {
+                $date = date('Y-m-d', strtotime($item['month']));
+                if ($item['salary'] > 0) {
+                    // create a new voucher
+                    ExpenseLog::create([
+                        'user_id'         => $staff->id,
+                        'voucher_type_id' => VoucherType::where('name', 'like', '%salary%')->first()->id, // get from fee_types table
+                        'date'            => $date,
+                        'amount'          => $item['salary'],
+                        'created_by'      => Auth::user()->id,
+                    ]);
+                }
+            });
 
             // return response
             return to_route('finance.outgoings')->with('success', 'Voucher added successfully');

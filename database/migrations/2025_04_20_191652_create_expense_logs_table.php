@@ -14,11 +14,13 @@ return new class extends Migration
         Schema::create('expense_logs', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained()->cascadeOnDelete(); // টিচারের আইডি
+            $table->string('holder_name')->nullable();                                  // খরচের জন্য যিনি অনুমোদন দিয়েছেন
             $table->foreignId('voucher_type_id')->constrained()->cascadeOnDelete();
-            $table->decimal('amount', 10, 2);    // খরচের পরিমাণ
-            $table->date('date');                // খরচের তারিখ
-            $table->json('details')->nullable(); // খরচের বিস্তারিত (যেমন: "টিচার বেতন মার্চ মাসের জন্য")
-            $table->text('remarks')->nullable(); // ব্যয়ের বিস্তারিত (যেমন: "টিচার বেতন মার্চ মাসের জন্য")
+            $table->decimal('amount', 10, 2);                                                     // খরচের পরিমাণ
+            $table->date('date')->nullable();                                                     // খরচের সময়কাল (যেমন: "2025-04")
+            $table->json('details')->nullable();                                                  // খরচের বিস্তারিত (যেমন: "টিচার বেতন মার্চ মাসের জন্য")
+            $table->text('note')->nullable();                                                     // খরচের বর্ণনা
+            $table->foreignId('created_by')->nullable()->constrained('users')->cascadeOnDelete(); // track who created the record
             $table->timestamps();
         });
     }
