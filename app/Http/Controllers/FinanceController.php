@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Actions\Expense\AddSalaryVoucher;
+use App\Actions\Finance\Expense\AddSalaryVoucher;
 use App\Models\ExpenseLog;
 use App\Models\FeeType;
 use App\Models\IncomeLog;

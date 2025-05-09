@@ -1,5 +1,5 @@
 <?php
-namespace App\Actions\Expense;
+namespace App\Actions\Finance\Expense;
 
 use App\Models\ExpenseLog;
 use App\Models\Transaction;
