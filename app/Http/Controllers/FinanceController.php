@@ -104,11 +104,15 @@ class FinanceController extends Controller
     public function get_user_data($user_id)
     {
 
+        $year = request()->input('year') ?? date('Y');
         if (request()->input('type') == 'staff') {
-            $user = User::whereHas('roles', fn($q) => $q->where('name', 'staff'))->where('unique_id', $user_id)->with(['academics', 'expenseLogs'])->firstOrFail();
+            $user = User::with(['academics', 'expenseLogs' => function ($q) use ($year) {
+                $q->whereYear('date', $year);
+            }])->whereHas('roles', fn($q) => $q->where('name', 'staff'))->where('unique_id', $user_id)->firstOrFail();
 
             return response()->json([
                 'id'        => $user->id,
+                'year'      => $year,
                 'name'      => $user->name,
                 'email'     => $user->email,
                 'phone'     => $user->phone,
@@ -129,7 +133,6 @@ class FinanceController extends Controller
                 })->values(),
             ]);
         }
-        $year = request()->input('year') ?? date('Y');
         // find user by id
         $user = User::with([
             'incomeLogs' =>
@@ -310,9 +313,11 @@ class FinanceController extends Controller
                 'amount'           => $request->expense['amount'],
                 'note'             => $request->expense['note'] ?? null,
             ]);
+            $year        = $request->year;
             $monthlyInfo = collect($request->monthlyInfo);
-            $monthlyInfo->map(function ($item, $key) use ($staff) {
-                $date = date('Y-m-d', strtotime($item['month']));
+            $monthlyInfo->map(function ($item, $key) use ($staff, $year) {
+                $month = $year . '-' . $item['month'];
+                $date  = date('Y-m-d', strtotime($month));
                 if ($item['salary'] > 0) {
                     // create a new voucher
                     ExpenseLog::create([

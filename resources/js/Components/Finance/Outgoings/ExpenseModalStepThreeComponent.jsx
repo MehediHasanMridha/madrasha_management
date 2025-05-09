@@ -15,6 +15,7 @@ const ExpenseModalStepThreeComponent = ({
     setYear,
     selectedRows,
     setSelectedRows,
+    getData,
 }) => {
     const renderStaffInfo = () => (
         <div className="space-y-4">
@@ -40,9 +41,10 @@ const ExpenseModalStepThreeComponent = ({
                     value={year}
                     onChange={(e) => {
                         setYear(e.target.value);
+                        getData(e.target.value);
                     }}
                 >
-                    <option value="">Year</option>
+                    <option disabled>Year</option>
                     {['2025', '2026', '2027', '2028', '2029', '2030'].map((item) => (
                         <option key={item} value={item}>
                             {item}

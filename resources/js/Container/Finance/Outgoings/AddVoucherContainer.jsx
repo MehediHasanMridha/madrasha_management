@@ -23,17 +23,18 @@ const AddVoucherContainer = ({ modal, setModal }) => {
 
     const [api, contextHolder] = notification.useNotification();
 
-    const getData = async () => {
+    const getData = async (data) => {
         try {
             setLoading(true);
             const { data: info } = await axios.get(
                 route('finance.get_user_data', {
                     user_id: staffId.replace(/\s+/g, ''), // Remove all spaces from staffId
                     type: 'staff',
-                    year,
+                    year: data || year,
                 }),
             );
             if (info) {
+                console.log('🚀 ~ getData ~ info:', info);
                 setData(info);
             }
         } catch (error) {
@@ -121,6 +122,7 @@ const AddVoucherContainer = ({ modal, setModal }) => {
                     setYear={setYear}
                     selectedRows={selectedRows}
                     setSelectedRows={setSelectedRows}
+                    getData={getData}
                 />
             );
             break;
