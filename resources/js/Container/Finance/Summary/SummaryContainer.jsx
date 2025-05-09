@@ -2,7 +2,9 @@ import SummaryComponent from '@/Components/Finance/Summary/SummaryComponent';
 import { router } from '@inertiajs/react';
 
 const SummaryContainer = ({ data }) => {
-    const remainingAmount = data?.earnings.reduce((acc, item) => acc + Number(item.amount), 0) || 0;
+    const remainingAmount =
+        (data?.earnings ?? []).reduce((acc, { amount }) => acc + Number(amount), 0) -
+        (data?.expenses ?? []).reduce((acc, { amount }) => acc + Number(amount), 0);
     const getData = (month, year) => {
         router.get(
             route('finance.summary'),

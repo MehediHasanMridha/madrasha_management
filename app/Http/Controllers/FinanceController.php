@@ -2,7 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Finance\Expense\AddSalaryVoucher;
-use App\Models\ExpenseLog;
+use App\Actions\Finance\Summary;
 use App\Models\FeeType;
 use App\Models\IncomeLog;
 use App\Models\PaymentMethod;
@@ -26,44 +26,7 @@ class FinanceController extends Controller
         $month = request()->input('month');
         $year  = request()->input('year');
 
-        // how to convert month & year to Y-m
-        $period = date('Y-m', strtotime($month . ' ' . $year));
-        // If no period is provided, use the current month
-        if (! $period) {
-            $period = date('Y-m');
-        }
-
-        // Mock data for demonstration
-        $earnings = IncomeLog::with('feeType')
-            ->where('status', 'paid')
-            ->where('payment_period', $period)
-            ->groupBy('fee_type_id')
-            ->selectRaw('fee_type_id, sum(amount) as amount')
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'type'   => $item->feeType->name ?? 'Unknown',
-                    'amount' => $item->amount,
-                ];
-            });
-
-        $outgoings = ExpenseLog::with('voucherType')
-            ->where('date', 'like', $period . '%') // get all vouchers for the month but date is "2025-04-22" format
-            ->groupBy('voucher_type_id')
-            ->selectRaw('voucher_type_id, sum(amount) as amount')
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'type'   => $item->voucherType->name ?? 'Unknown',
-                    'amount' => $item->amount,
-                ];
-            });
-
-        // return $outgoings;
-        $data = [
-            'earnings' => $earnings,
-            'expenses' => $outgoings,
-        ];
+        $data = Summary::run($month, $year);
 
         return Inertia::render('Finance/Summary', [
             'data' => $data,
