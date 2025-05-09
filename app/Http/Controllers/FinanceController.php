@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Actions\Expense\AddSalaryVoucher;
 use App\Models\ExpenseLog;
 use App\Models\FeeType;
 use App\Models\IncomeLog;
@@ -9,8 +10,6 @@ use App\Models\StudentDiscount;
 use App\Models\StudentDue;
 use App\Models\Transaction;
 use App\Models\User;
-use App\Models\VoucherType;
-use function Pest\Laravel\get;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -287,49 +286,15 @@ class FinanceController extends Controller
     }
     public function add_voucher(Request $request)
     {
-        // dd($request->all());
-        // Validate the request data
         $request->validate([
             'staff_id' => 'required|exists:users,unique_id',
             'type'     => 'required|in:salary',
             'note'     => 'nullable|string|max:255',
         ]);
 
-        // Find the student by unique_id
-        $staff = User::where('unique_id', $request->staff_id)->first();
-
-        if (! $staff) {
-            return response()->json(['error' => 'Staff not found'], 404);
-        }
-
-        // convert date to 2025-04-22
-
         if ($request->type == 'salary' && $request->monthlyInfo) {
-            // add new Transaction
-            Transaction::create([
-                'transaction_id'   => 'TRN-' . str_pad(mt_rand(1, 999999999), 9, '0', STR_PAD_LEFT),
-                'user_id'          => Auth::user()->id,
-                'transaction_type' => 'expense',
-                'amount'           => $request->expense['amount'],
-                'note'             => $request->expense['note'] ?? null,
-            ]);
-            $year        = $request->year;
-            $monthlyInfo = collect($request->monthlyInfo);
-            $monthlyInfo->map(function ($item, $key) use ($staff, $year) {
-                $month = $year . '-' . $item['month'];
-                $date  = date('Y-m-d', strtotime($month));
-                if ($item['salary'] > 0) {
-                    // create a new voucher
-                    ExpenseLog::create([
-                        'user_id'         => $staff->id,
-                        'voucher_type_id' => VoucherType::where('name', 'like', '%salary%')->first()->id, // get from fee_types table
-                        'date'            => $date,
-                        'amount'          => $item['salary'],
-                        'created_by'      => Auth::user()->id,
-                    ]);
-                }
-            });
 
+            AddSalaryVoucher::run($request);
             // return response
             return to_route('finance.outgoings')->with('success', 'Voucher added successfully');
 
