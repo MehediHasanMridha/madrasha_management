@@ -1,18 +1,21 @@
 import PieChartUI from '@/Components/UI/chart/PieChartUI';
 import { useEffect, useState } from 'react';
 
-const EarningPieChartContainer = ({ data }) => {
-    const [earningData, setEarningData] = useState([]);
+const PieChartContainer = ({ data }) => {
+    const [containerData, setContainerData] = useState([]);
     useEffect(() => {
         setTimeout(() => {
-            if (data?.earnings.length > 0) {
-                modifyData(data.earnings);
+            if (data?.length > 0) {
+                modifyData(data);
+            }
+            if (data?.length > 0) {
+                modifyData(data);
             }
         }, 500);
     }, [data]);
 
     const modifyData = (data) => {
-        setEarningData(
+        setContainerData(
             data.map((item) => ({
                 ...item,
                 amount: Number(item.amount),
@@ -20,11 +23,11 @@ const EarningPieChartContainer = ({ data }) => {
         );
     };
 
-    return data?.earnings.length > 0 ? (
+    return (
         <PieChartUI.antPie
-            data={earningData}
+            data={containerData}
             angleField="amount"
-            colorField="feeType"
+            colorField="type"
             innerRadius={0.6}
             label={{
                 text: (data) => `${data.amount}`,
@@ -52,16 +55,14 @@ const EarningPieChartContainer = ({ data }) => {
             tooltip={{
                 items: [
                     (datum, index, data, column) => ({
-                        name: datum.feeType,
+                        name: datum?.type,
                         value: datum.amount,
                         color: ['#f28e2c', '#91cc75', '#ff9f7f', '#ff6a00'][index % 4],
                     }),
                 ],
             }}
         />
-    ) : (
-        <div className="text-center text-lg">This month has no earning</div>
     );
 };
 
-export default EarningPieChartContainer;
+export default PieChartContainer;

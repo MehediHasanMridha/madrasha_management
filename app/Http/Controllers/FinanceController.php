@@ -42,8 +42,8 @@ class FinanceController extends Controller
             ->get()
             ->map(function ($item) {
                 return [
-                    'feeType' => $item->feeType->name ?? 'Unknown',
-                    'amount'  => $item->amount,
+                    'type'   => $item->feeType->name ?? 'Unknown',
+                    'amount' => $item->amount,
                 ];
             });
 
@@ -54,8 +54,8 @@ class FinanceController extends Controller
             ->get()
             ->map(function ($item) {
                 return [
-                    'voucherType' => $item->voucherType->name ?? 'Unknown',
-                    'amount'      => $item->amount,
+                    'type'   => $item->voucherType->name ?? 'Unknown',
+                    'amount' => $item->amount,
                 ];
             });
 
