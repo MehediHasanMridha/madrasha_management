@@ -2,6 +2,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\Department;
+use App\Models\VoucherType;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
@@ -41,16 +42,17 @@ class HandleInertiaRequests extends Middleware
 
         return [
              ...parent::share($request),
-            'name'        => config('app.name'),
-            'quote'       => ['message' => trim($message), 'author' => trim($author)],
-            'auth'        => [
+            'name'         => config('app.name'),
+            'quote'        => ['message' => trim($message), 'author' => trim($author)],
+            'auth'         => [
                 'user' => $request->user(),
             ],
-            'flash'       => [
+            'flash'        => [
                 'success' => Session::get('success'),
                 'error'   => Session::get('error'),
             ],
-            'departments' => Department::all(),
+            'departments'  => Department::get(),
+            'voucherTypes' => VoucherType::get(),
         ];
     }
 }

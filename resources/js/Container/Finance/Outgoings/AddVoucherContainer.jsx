@@ -7,6 +7,7 @@ import { router } from '@inertiajs/react';
 import { notification } from 'antd';
 import axios from 'axios';
 import { useState } from 'react';
+import OtherModelStepTwoContainer from './OtherModelStepTwoContainer';
 
 const AddVoucherContainer = ({ modal, setModal }) => {
     const [step, setStep] = useState(1);
@@ -105,9 +106,12 @@ const AddVoucherContainer = ({ modal, setModal }) => {
             content = <ExpenseModalStepOneComponent setStep={setStep} setType={setType} />;
             break;
         case 2:
-            content = (
-                <ExpenseModalStepTwoComponent loading={loading} staffId={staffId} setStaffId={setStaffId} setStep={setStep} getData={getData} />
-            );
+            content =
+                type === 'salary' ? (
+                    <ExpenseModalStepTwoComponent loading={loading} staffId={staffId} setStaffId={setStaffId} setStep={setStep} getData={getData} />
+                ) : (
+                    <OtherModelStepTwoContainer api={api} type={type} setStep={setStep} setType={setType} />
+                );
             break;
         case 3:
             content = (

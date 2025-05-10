@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('slug')->unique();                     // example: academic, boarding, admission
             $table->decimal('default_amount', 10, 2)->nullable(); // যদি সব ছাত্রের জন্য এক হয়
             $table->boolean('is_variable')->default(false);       // true হলে student-custom amount লাগবে
+            $table->boolean('status')->default(1);                // 0 = inactive, 1 = active
             $table->timestamps();
         });
     }

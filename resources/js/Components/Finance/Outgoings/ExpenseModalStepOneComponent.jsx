@@ -17,10 +17,10 @@ const ExpenseModalStepOneComponent = ({ setStep, setType }) => {
             </StaticBtn>
             <StaticBtn
                 className="h-[100px] w-[440px] rounded-lg bg-[#F2F2F2] px-[8px] py-[6px] text-[#4A4A4A] hover:bg-[#4891FF] hover:text-white"
-                // onClick={() => {
-                //     setType('expense');
-                //     setStep((prev) => prev + 1);
-                // }}
+                onClick={() => {
+                    setType('others');
+                    setStep((prev) => prev + 1);
+                }}
             >
                 <div className="flex flex-col items-center space-y-2">
                     <span className="text-lg font-medium">Other Expense</span>

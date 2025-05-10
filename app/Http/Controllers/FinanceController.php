@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Actions\Finance\Expense\AddOthersVoucher;
 use App\Actions\Finance\Expense\AddSalaryVoucher;
 use App\Actions\Finance\Summary;
 use App\Models\FeeType;
@@ -115,6 +116,7 @@ class FinanceController extends Controller
             'phone'        => $user->phone,
             'image'        => $user->img,
             'unique_id'    => $user->unique_id,
+            'department'   => $user->academics->department->name ?? null,
             'boarding_fee' => round(getStudentFee($user->id, 'boarding'), 2),
             'academic_fee' => round(getStudentFee($user->id, 'academic'), 2),
             'income_logs'  => $user->incomeLogs->map(function ($item) {
@@ -250,18 +252,18 @@ class FinanceController extends Controller
     public function add_voucher(Request $request)
     {
         $request->validate([
-            'staff_id' => 'required|exists:users,unique_id',
-            'type'     => 'required|in:salary',
-            'note'     => 'nullable|string|max:255',
+            'type' => 'required',
+            'note' => 'nullable|string|max:255',
         ]);
 
         if ($request->type == 'salary' && $request->monthlyInfo) {
 
             AddSalaryVoucher::run($request);
-            // return response
             return to_route('finance.outgoings')->with('success', 'Voucher added successfully');
-
         }
+
+        AddOthersVoucher::run($request);
+        return to_route('finance.outgoings')->with('success', 'Voucher added successfully');
 
     }
 

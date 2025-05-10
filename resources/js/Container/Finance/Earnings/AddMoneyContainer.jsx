@@ -189,6 +189,8 @@ const AddMoneyContainer = ({ modal, setModal }) => {
                     setModal={setModal}
                     setStep={setStep}
                     setLoading={setLoading}
+                    year={year}
+                    comments={comments}
                 />
             );
             break;
