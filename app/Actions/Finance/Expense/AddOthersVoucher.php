@@ -15,14 +15,14 @@ class AddOthersVoucher
             'transaction_id'   => 'TRN-' . str_pad(mt_rand(1, 999999999), 9, '0', STR_PAD_LEFT),
             'user_id'          => Auth::user()->id,
             'transaction_type' => 'expense',
-            'amount'           => collect($request->items)->reduce(fn($carry, $item) => $carry + intval($item['amount']), 0),
+            'amount'           => collect($request->items)->reduce(fn($carry, $item) => $carry + intval($item['amount'])),
             'note'             => $request->comments ?? null,
         ]);
 
         ExpenseLog::create([
             'voucher_type_id' => $request->voucherType, // get from fee_types table
             'date'            => date('Y-m-d', strtotime($request->date)),
-            'amount'          => collect($request->items)->reduce(fn($carry, $item) => $carry + intval($item['amount']), 0),
+            'amount'          => collect($request->items)->reduce(fn($carry, $item) => $carry + intval($item['amount'])),
             'created_by'      => Auth::user()->id,
             'note'            => $request->comments,
             'details'         => json_encode($request->items),
