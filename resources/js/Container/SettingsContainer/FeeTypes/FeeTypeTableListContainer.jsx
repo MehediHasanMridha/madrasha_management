@@ -3,6 +3,7 @@ import TableUI from '@/Components/UI/TableUI';
 import Icons from '@/icons';
 import { useBoundStore } from '@/stores';
 import { router } from '@inertiajs/react';
+import { notification } from 'antd';
 import { useState } from 'react';
 
 const FeeTypeTableListContainer = ({ data, setIsLoading, isLoading }) => {
@@ -31,6 +32,22 @@ const FeeTypeTableListContainer = ({ data, setIsLoading, isLoading }) => {
                 onStart: () => {
                     setConfirmLoading(true);
                 },
+                onSuccess: (res) => {
+                    if (res.props.flash.success) {
+                        notification.success({
+                            message: 'Success',
+                            description: res.props.flash.success,
+                            placement: 'bottomRight',
+                        });
+                    }
+                    if (res.props.flash.error) {
+                        notification.error({
+                            message: 'Error',
+                            description: res.props.flash.error,
+                            placement: 'bottomRight',
+                        });
+                    }
+                },
                 onFinish: () => {
                     setConfirmLoading(false);
                     setOpen(false);
@@ -54,12 +71,12 @@ const FeeTypeTableListContainer = ({ data, setIsLoading, isLoading }) => {
             key: 'default_amount',
             render: (text) => (text ? `${text} TK` : 'N/A'),
         },
-        {
-            title: 'Variable',
-            dataIndex: 'is_variable',
-            key: 'is_variable',
-            render: (value) => (value ? 'Yes' : 'No'),
-        },
+        // {
+        //     title: 'Variable',
+        //     dataIndex: 'is_variable',
+        //     key: 'is_variable',
+        //     render: (value) => (value ? 'Yes' : 'No'),
+        // },
         {
             title: 'Action',
             dataIndex: 'action',

@@ -77,9 +77,21 @@ class FeeTypeController extends Controller
 
     public function destroy(FeeType $feeType)
     {
-        $feeType->delete();
+                                                    // Check if the FeeType is used in any other table
+        $isUsed = $feeType->incomeLogs()->exists(); // Assuming 'incomeLogs' is the relationship name
 
-        return redirect()->route('settings.fee-types.index')
-            ->with('success', 'Fee type deleted successfully.');
+        if ($isUsed) {
+            return redirect()->route('settings.fee-types.index')
+                ->with('error', 'Fee type cannot be deleted as it is being used in other records.');
+        }
+
+        try {
+            $feeType->delete();
+            return redirect()->route('settings.fee-types.index')
+                ->with('success', 'Fee type deleted successfully.');
+        } catch (\Exception $e) {
+            return redirect()->route('settings.fee-types.index')
+                ->with('error', 'An error occurred while deleting the fee type.');
+        }
     }
 }

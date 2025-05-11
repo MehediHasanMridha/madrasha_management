@@ -24,4 +24,9 @@ class FeeType extends Model
     {
         return $this->hasMany(StudentDue::class);
     }
+
+    public function incomeLogs()
+    {
+        return $this->hasMany(IncomeLog::class);
+    }
 }
