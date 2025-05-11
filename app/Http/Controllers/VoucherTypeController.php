@@ -61,9 +61,21 @@ class VoucherTypeController extends Controller
 
     public function destroy(VoucherType $voucherType)
     {
-        $voucherType->delete();
+        // Check if the VoucherType is used in any expense logs
+        $isUsed = $voucherType->expenseLogs()->exists();
 
-        return redirect()->route('settings.voucher-types.index')
-            ->with('success', 'Voucher type deleted successfully.');
+        if ($isUsed) {
+            return redirect()->route('settings.voucher-types.index')
+                ->with('error', 'Voucher type cannot be deleted as it is being used in expense records.');
+        }
+
+        try {
+            $voucherType->delete();
+            return redirect()->route('settings.voucher-types.index')
+                ->with('success', 'Voucher type deleted successfully.');
+        } catch (\Exception $e) {
+            return redirect()->route('settings.voucher-types.index')
+                ->with('error', 'An error occurred while deleting the voucher type.');
+        }
     }
 }
