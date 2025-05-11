@@ -1,9 +1,10 @@
 import VoucherBorder from '@/assets/images/VoucherBorder.png';
 import StaticBtn from '@/Components/UI/StaticBtn';
 import AddVoucherContainer from '@/Container/Finance/Outgoings/AddVoucherContainer';
+import VoucherModalContainer from '@/Container/Finance/Outgoings/VoucherModalContainer';
 import FinanceTabBarComponent from '../FinanceTabBarComponent';
 
-const OutgoingComponent = ({ activeTab, setActiveTab, modal, setModal, outgoings, voucherList }) => {
+const OutgoingComponent = ({ activeTab, setActiveTab, modal, setModal, outgoings, voucherList, voucherModal, setVoucherModal }) => {
     return (
         <div className="py-6">
             <FinanceTabBarComponent tab="outgoings" />
@@ -33,8 +34,12 @@ const OutgoingComponent = ({ activeTab, setActiveTab, modal, setModal, outgoings
                 <h2 className="mb-4 text-base font-medium text-gray-900">Vouchers</h2>
                 <hr className="h-[2px] bg-[#AFAFAF]" />
                 <div className="grid grid-cols-3 gap-4">
-                    {voucherList.map((voucher, index) => (
-                        <div key={index} className="rounded-lg bg-white shadow-lg">
+                    {voucherList.map((voucher) => (
+                        <div
+                            key={voucher?.id}
+                            onClick={() => setVoucherModal({ isOpen: true, data: voucher })}
+                            className="cursor-pointer rounded-lg bg-white shadow-lg transition duration-200 ease-in-out hover:shadow-xl"
+                        >
                             <div className="h-fit w-full">
                                 <img src={VoucherBorder} alt="" className="w-full" />
                                 <div className="flex items-center justify-between bg-[#FF8848] px-[16px] py-[8px]">
@@ -89,8 +94,8 @@ const OutgoingComponent = ({ activeTab, setActiveTab, modal, setModal, outgoings
                     ))}
                 </div>
             </div>
-
             <AddVoucherContainer modal={modal} setModal={setModal} />
+            <VoucherModalContainer modal={voucherModal} setModal={setVoucherModal} />
         </div>
     );
 };

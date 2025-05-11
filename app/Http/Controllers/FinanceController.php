@@ -6,6 +6,7 @@ use App\Actions\Finance\Expense\AddSalaryVoucher;
 use App\Actions\Finance\Expense\Expense;
 use App\Actions\Finance\Expense\VoucherList;
 use App\Actions\Finance\Summary;
+use App\Models\ExpenseLog;
 use App\Models\FeeType;
 use App\Models\IncomeLog;
 use App\Models\PaymentMethod;
@@ -283,6 +284,19 @@ class FinanceController extends Controller
         AddOthersVoucher::run($request);
         return to_route('finance.outgoings')->with('success', 'Voucher added successfully');
 
+    }
+
+    // delete voucher
+    public function delete_voucher($voucher_id)
+    {
+
+        // delete ExpenseLog
+        $expenseLog = ExpenseLog::find($voucher_id);
+        if ($expenseLog) {
+            $expenseLog->delete();
+            return to_route('finance.outgoings')->with('success', 'Voucher deleted successfully');
+        }
+        return response()->json(['error' => 'Voucher not found'], 404);
     }
 
 }

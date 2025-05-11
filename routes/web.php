@@ -98,6 +98,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/get_user_data/{user_id}', [FinanceController::class, 'get_user_data'])->name('finance.get_user_data');
         Route::post('/add_money', [FinanceController::class, 'add_money'])->name('finance.add_money');
         Route::post('/add_voucher', [FinanceController::class, 'add_voucher'])->name('finance.add_voucher');
+        // delete voucher
+        Route::delete('/delete_voucher/{voucher_id}', [FinanceController::class, 'delete_voucher'])->name('finance.delete_voucher');
     });
 });
 

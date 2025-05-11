@@ -12,6 +12,7 @@ const ModalUI = ({ isModalOpen = false, handleOk = () => {}, handleCancel = () =
             footer={footer}
             style={{ top: 20 }}
             centered
+            modalRender={false} // This is a placeholder, you can customize the modal render if needed
             {...props}
         >
             {children}

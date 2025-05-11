@@ -4,6 +4,10 @@ import { useState } from 'react';
 const OutgoingContainer = ({ outgoings, voucherList }) => {
     const [activeTab, setActiveTab] = useState('outgoings');
     const [modal, setModal] = useState(false);
+    const [voucherModal, setVoucherModal] = useState({
+        isOpen: false,
+        data: null,
+    });
     return (
         <OutgoingComponent
             outgoings={outgoings}
@@ -12,6 +16,8 @@ const OutgoingContainer = ({ outgoings, voucherList }) => {
             setActiveTab={setActiveTab}
             modal={modal}
             setModal={setModal}
+            voucherModal={voucherModal}
+            setVoucherModal={setVoucherModal}
         />
     );
 };
