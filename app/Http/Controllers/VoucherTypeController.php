@@ -51,7 +51,7 @@ class VoucherTypeController extends Controller
             'name' => 'required|string|max:255',
         ]);
 
-        $validated['slug'] = Str::slug($validated['name']);
+        // $validated['slug'] = Str::slug($validated['name']);
 
         $voucherType->update($validated);
 

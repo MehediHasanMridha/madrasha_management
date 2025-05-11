@@ -39,8 +39,8 @@ const PieChartContainer = ({ data }) => {
                         const color = ['#f28e2c', '#91cc75', '#ff9f7f', '#ff6a00'][index % 4];
                         return color;
                     },
-                    itemLabelFontSize: 14,
-                    itemMarkerSize: 14,
+                    itemLabelFontSize: 12,
+                    itemMarkerSize: 20,
                 },
             }}
             tooltip={{

@@ -67,7 +67,7 @@ class FeeTypeController extends Controller
             'is_variable'    => 'boolean',
         ]);
 
-        $validated['slug'] = Str::slug($validated['name']);
+        // $validated['slug'] = Str::slug($validated['name']);
 
         $feeType->update($validated);
 
