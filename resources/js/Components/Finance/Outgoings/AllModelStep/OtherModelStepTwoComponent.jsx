@@ -4,7 +4,7 @@ import FieldSet from '@/Components/UI/FieldSet';
 import StaticBtn from '@/Components/UI/StaticBtn';
 import { cn } from '@/lib/utils';
 import dayjs from 'dayjs';
-import { Trash2 } from 'lucide-react';
+import { CirclePlus, Trash2 } from 'lucide-react';
 import { Controller } from 'react-hook-form';
 
 const OtherModelStepTwoComponent = ({
@@ -70,40 +70,47 @@ const OtherModelStepTwoComponent = ({
                 </select>
             </Field>
 
-            <span>Add Product details</span>
+            <p className="pb-[6px]">Add Product details</p>
             <div className="rounded-lg border border-solid border-[#AFAFAF] px-3 py-4">
-                {fields.map((field, index) => (
-                    <div className="flex w-full items-center justify-between space-x-2" key={field.id}>
-                        <input
-                            className="w-[45px] rounded-[8px] border border-solid border-[#AFAFAF] px-[16px] py-[12px] text-black focus:outline-0"
-                            defaultValue={index + 1}
-                            readOnly
-                        />
-                        <input
-                            className="w-full rounded-[8px] border border-solid border-[#AFAFAF] px-[16px] py-[12px] text-black focus:outline-0"
-                            {...register(`items[${index}].name`, { required: 'Name is required' })}
-                            placeholder="Item Name"
-                        />
-                        <input
-                            {...register(`items[${index}].amount`, { required: 'Amount is required' })}
-                            className="w-fit rounded-[8px] border border-solid border-[#AFAFAF] px-[16px] py-[12px] text-center text-black focus:outline-0"
-                            onChange={(e) => {
-                                const value = e.target.value;
-                                if (isNaN(value)) {
-                                    return;
-                                }
-                                setItemsData((prev) => {
-                                    const newData = [...prev];
-                                    newData[index].amount = value;
-                                    return newData;
-                                });
-                            }}
-                        />
-                        <Trash2 size={50} strokeWidth={1.5} className="cursor-pointer text-red-500" onClick={() => remove(index)} />
-                    </div>
-                ))}
+                <div className="max-h-[200px] space-y-[4px] overflow-y-scroll">
+                    {fields.map((field, index) => (
+                        <div className="flex w-full items-center justify-between space-x-[4px]" key={field.id}>
+                            <input
+                                className="w-[45px] rounded-[8px] border border-solid border-[#AFAFAF] px-[16px] py-[12px] text-black focus:outline-0"
+                                defaultValue={index + 1}
+                                readOnly
+                            />
+                            <input
+                                className="w-full rounded-[8px] border border-solid border-[#AFAFAF] px-[16px] py-[12px] text-black focus:outline-0"
+                                {...register(`items[${index}].name`, { required: 'Name is required' })}
+                                placeholder="Item Name"
+                            />
+                            <input
+                                {...register(`items[${index}].amount`, { required: 'Amount is required' })}
+                                className="w-fit rounded-[8px] border border-solid border-[#AFAFAF] px-[16px] py-[12px] text-center text-black focus:outline-0"
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    if (isNaN(value)) {
+                                        return;
+                                    }
+                                    setItemsData((prev) => {
+                                        const newData = [...prev];
+                                        newData[index].amount = value;
+                                        return newData;
+                                    });
+                                }}
+                            />
+                            <Trash2 size={34} strokeWidth={1.5} className="mx-2 cursor-pointer text-red-500" onClick={() => remove(index)} />
+                        </div>
+                    ))}
+                </div>
                 <hr className="my-[12px] border-[1px] bg-black" />
-                <button type="button" onClick={() => append({ name: '', amount: 0 })}>
+                <button
+                    className="flex items-center gap-x-2 rounded-lg p-1 text-blue-400"
+                    type="button"
+                    onClick={() => append({ name: '', amount: 0 })}
+                >
+                    <CirclePlus size={18} strokeWidth={1.5} />
                     Add Item
                 </button>
             </div>

@@ -1,44 +1,43 @@
 import SettingDropdownContainer from '@/Container/Shared/SettingDropdownContainer';
 import { cn } from '@/lib/utils';
 import { Link } from '@inertiajs/react';
-import { BanknoteArrowDown } from 'lucide-react';
-import { FaChartPie, FaMoneyBills } from 'react-icons/fa6';
+import { BanknoteArrowDown, BanknoteArrowUp, ChartPie, FileSpreadsheet } from 'lucide-react';
 
 const FinanceTabBarComponent = ({ tab }) => {
     return (
         <div className="mb-6 flex w-full items-center justify-between rounded-lg bg-white p-[24px]">
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-[24px]">
                 <Link
                     href={route('finance.summary')}
                     className={cn(
                         'flex w-fit cursor-pointer items-center space-x-[8px]',
-                        tab === 'summary' ? 'border-b-[1px] border-[#4891FF] px-[8px] py-[6px] text-[#4891FF]' : 'text-gray-500',
+                        tab === 'summary' ? 'border-b-[1px] border-[#4891FF] px-[8px] py-[6px] text-[#4891FF]' : 'text-[#4A4A4A]',
                     )}
                     preserveState
                     preserveScroll
                     as="button"
                 >
-                    <FaChartPie className="inline-flex" size={24} />
+                    <ChartPie size={24} strokeWidth={1.5} />
                     <span>Summary</span>
                 </Link>
                 <Link
                     href={route('finance.earnings')}
                     className={cn(
                         'flex w-fit cursor-pointer items-center space-x-[8px]',
-                        tab === 'earnings' ? 'border-b-[1px] border-[#4891FF] px-[8px] py-[6px] text-[#4891FF]' : 'text-gray-500',
+                        tab === 'earnings' ? 'border-b-[1px] border-[#4891FF] px-[8px] py-[6px] text-[#4891FF]' : 'text-[#4A4A4A]',
                     )}
                     preserveState
                     preserveScroll
                     as="button"
                 >
-                    <FaMoneyBills className="inline-flex" size={24} />
+                    <BanknoteArrowUp strokeWidth={1.5} size={24} />
                     <span>Earnings</span>
                 </Link>
                 <Link
                     href={route('finance.outgoings')}
                     className={cn(
                         'flex w-fit cursor-pointer items-center space-x-[8px]',
-                        tab === 'outgoings' ? 'border-b-[1px] border-[#4891FF] px-[8px] py-[6px] text-[#4891FF]' : 'text-gray-500',
+                        tab === 'outgoings' ? 'border-b-[1px] border-[#4891FF] px-[8px] py-[6px] text-[#4891FF]' : 'text-[#4A4A4A]',
                     )}
                     preserveState
                     preserveScroll
@@ -46,6 +45,19 @@ const FinanceTabBarComponent = ({ tab }) => {
                 >
                     <BanknoteArrowDown strokeWidth={1.5} />
                     <span>Outgoings</span>
+                </Link>
+                <Link
+                    href={route('finance.monthly-reports')}
+                    className={cn(
+                        'flex w-fit cursor-pointer items-center space-x-[8px]',
+                        tab === 'monthly_reports' ? 'border-b-[1px] border-[#4891FF] px-[8px] py-[6px] text-[#4891FF]' : 'text-[#4A4A4A]',
+                    )}
+                    preserveState
+                    preserveScroll
+                    as="button"
+                >
+                    <FileSpreadsheet strokeWidth={1.5} />
+                    <span>Monthly Report</span>
                 </Link>
             </div>
             <SettingDropdownContainer />
