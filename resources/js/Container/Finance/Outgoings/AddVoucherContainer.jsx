@@ -1,8 +1,8 @@
 import ModalComponent from '@/Components/Finance/ModalComponent';
-import ExpenseFinalStepComponent from '@/Components/Finance/Outgoings/ExpenseFinalStepComponent';
-import ExpenseModalStepOneComponent from '@/Components/Finance/Outgoings/ExpenseModalStepOneComponent';
-import ExpenseModalStepThreeComponent from '@/Components/Finance/Outgoings/ExpenseModalStepThreeComponent';
-import ExpenseModalStepTwoComponent from '@/Components/Finance/Outgoings/ExpenseModalStepTwoComponent';
+import ExpenseFinalStepComponent from '@/Components/Finance/Outgoings/AllModelStep/ExpenseFinalStepComponent';
+import ExpenseModalStepOneComponent from '@/Components/Finance/Outgoings/AllModelStep/ExpenseModalStepOneComponent';
+import ExpenseModalStepThreeComponent from '@/Components/Finance/Outgoings/AllModelStep/ExpenseModalStepThreeComponent';
+import ExpenseModalStepTwoComponent from '@/Components/Finance/Outgoings/AllModelStep/ExpenseModalStepTwoComponent';
 import { router } from '@inertiajs/react';
 import { notification } from 'antd';
 import axios from 'axios';

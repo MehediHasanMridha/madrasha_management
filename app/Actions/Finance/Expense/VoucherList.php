@@ -20,6 +20,7 @@ class VoucherList
             $query->where('slug', '!=', 'salary');
         }
         )->where('date', 'like', $period . '%')
+            ->orderByDesc('created_at')
             ->get();
 
         return $voucherList;

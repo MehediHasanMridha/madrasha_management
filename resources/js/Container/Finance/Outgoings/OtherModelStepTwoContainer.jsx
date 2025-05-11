@@ -1,4 +1,4 @@
-import OtherModelStepTwoComponent from '@/Components/Finance/Outgoings/OtherModelStepTwoComponent';
+import OtherModelStepTwoComponent from '@/Components/Finance/Outgoings/AllModelStep/OtherModelStepTwoComponent';
 import { router, usePage } from '@inertiajs/react';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
