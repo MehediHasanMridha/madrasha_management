@@ -41,14 +41,13 @@ const FinalModalStepComponent = ({ data, fee, selectedRows, handleClose, loading
             @media print {
                 @page {
                     size: A5;
-                    margin: 12px;
+                    margin: 32px;
                 }
                 body {
-                    font-size: 8px;
+                    font-size: 10px;
                     margin: 0;
                     padding: 0;
                     line-height: 1.2;
-
                 }
             }
         `,
@@ -106,23 +105,27 @@ const FinalModalStepComponent = ({ data, fee, selectedRows, handleClose, loading
                 {selectedRows && selectedRows.length > 0 && (
                     <div className="h-[200px] overflow-x-auto overflow-y-scroll print:h-fit print:overflow-y-auto">
                         <table className="w-full min-w-full table-auto border-collapse">
-                            <thead className="bg-gray-50">
+                            <thead>
                                 <tr>
-                                    <th className="border px-4 py-2 text-left">S/N</th>
-                                    <th className="border px-4 py-2 text-left">Month ({year})</th>
-                                    <th className="border px-4 py-2 text-right">Boarding fee</th>
-                                    <th className="border px-4 py-2 text-right">Academic fee</th>
-                                    <th className="border px-4 py-2 text-right">Total</th>
+                                    <th className="border-[0.5px] border-black px-4 py-2 text-left">S/N</th>
+                                    <th className="border-[0.5px] border-black px-4 py-2 text-left">Month ({year})</th>
+                                    <th className="border-[0.5px] border-black px-4 py-2 text-right">Boarding fee</th>
+                                    <th className="border-[0.5px] border-black px-4 py-2 text-right">Academic fee</th>
+                                    <th className="border-[0.5px] border-black px-4 py-2 text-right">Total</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {selectedRows.map((row, index) => (
                                     <tr key={index}>
-                                        <td className="border px-4 py-2">{index + 1}</td>
-                                        <td className="border px-4 py-2">{row.month}</td>
-                                        <td className="border px-4 py-2 text-right">{formattedAmount(fee?.boarding_fee || 500)}</td>
-                                        <td className="border px-4 py-2 text-right">{formattedAmount(fee?.academic_fee || 500)}</td>
-                                        <td className="border px-4 py-2 text-right">
+                                        <td className="border-[0.5px] border-black px-4 py-2">{index + 1}</td>
+                                        <td className="border-[0.5px] border-black px-4 py-2">{row.month}</td>
+                                        <td className="border-[0.5px] border-black px-4 py-2 text-right">
+                                            {formattedAmount(fee?.boarding_fee || 500)}
+                                        </td>
+                                        <td className="border-[0.5px] border-black px-4 py-2 text-right">
+                                            {formattedAmount(fee?.academic_fee || 500)}
+                                        </td>
+                                        <td className="border-[0.5px] border-black px-4 py-2 text-right">
                                             {formattedAmount((fee?.boarding_fee || 500) + (fee?.academic_fee || 500))}
                                         </td>
                                     </tr>
