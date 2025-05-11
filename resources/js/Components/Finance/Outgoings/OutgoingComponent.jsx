@@ -55,14 +55,27 @@ const OutgoingComponent = ({ activeTab, setActiveTab, modal, setModal, outgoings
                             </div>
                             <div className="p-4 pt-5">
                                 <div className="mt-3">
-                                    <div className="flex items-center justify-between">
-                                        <p className="text-sm text-gray-600">{voucher?.category || 'Boarding Bazar'}</p>
-                                        <p className="text-sm font-medium text-gray-900">{Number(3000).toLocaleString()} BDT</p>
-                                    </div>
-                                    <div className="mt-2 flex items-center justify-between">
-                                        <p className="text-sm text-gray-500">And +5 more</p>
-                                        <p className="text-sm font-medium text-gray-500">{Number(34000).toLocaleString()} BDT</p>
-                                    </div>
+                                    {JSON.parse(voucher?.details)
+                                        ?.slice(0, 1)
+                                        .map((detail, index) => (
+                                            <div key={index} className="mt-2 flex items-center justify-between">
+                                                <p className="text-sm text-gray-500">{detail?.name}</p>
+                                                <p className="text-sm font-medium text-gray-500">{Number(detail?.amount).toLocaleString()} BDT</p>
+                                            </div>
+                                        ))}
+                                    {JSON.parse(voucher?.details)?.length > 1 && (
+                                        <div className="mt-2 flex items-center justify-between">
+                                            <p className="text-sm text-gray-500">And +{JSON.parse(voucher?.details)?.length - 1} more</p>
+                                            <p className="text-sm font-medium text-gray-500">
+                                                {Number(
+                                                    JSON.parse(voucher?.details)
+                                                        ?.slice(1, JSON.parse(voucher?.details)?.length)
+                                                        ?.reduce((a, b) => a + Number(b?.amount), 0),
+                                                ).toLocaleString()}{' '}
+                                                BDT
+                                            </p>
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div className="mt-4 border-t pt-3">
