@@ -22,7 +22,7 @@ const OutgoingComponent = ({ activeTab, setActiveTab, modal, setModal, outgoings
                 {outgoings.map((outgoing, index) => (
                     <div key={index} className="relative rounded-lg bg-white p-6 shadow">
                         <h3 className="border-b pb-2 text-base text-gray-900">{outgoing?.type}</h3>
-                        <p className="mt-4 text-[2.5rem] leading-none font-medium text-gray-900">{Number(outgoing?.amount).toLocaleString()}</p>
+                        <p className="mt-4 text-[2.5rem] leading-none font-medium text-gray-900">{Number(outgoing?.amount).toLocaleString()} BDT</p>
                         <p className="mt-2 text-sm text-gray-600">Total expenses</p>
                     </div>
                 ))}
