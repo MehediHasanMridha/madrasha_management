@@ -75,11 +75,15 @@ if (! function_exists('getStudentFee')) {
         $name = $feeSlug === 'academic' ? 'Academic Fee' : 'Boarding Fee';
         // ছাত্রের একাডেমিক তথ্য এবং ফি টাইপের তথ্য একসাথে বের করা
         $student = Academic::where('user_id', $studentId)->first();
-        $feeType = FeeType::where('name', 'like', '%' . $feeSlug . '%')->firstOrCreate([
-            'name'           => $name,
-            'slug'           => Str::slug($name),
-            'default_amount' => 0,
-        ]);
+        $feeType = FeeType::where('slug', 'like', "%{$feeSlug}%", 'and')->first();
+        // যদি ফি টাইপ না পাওয়া যায়, তাহলে ডিফল্ট ফি নির্ধারণ করা হবে
+        if (! $feeType) {
+            FeeType::create([
+                'name'           => $name,
+                'slug'           => Str::slug($name),
+                'default_amount' => 0,
+            ]);
+        }
 
         // ফি নাম নির্ধারণ করা
         $fieldName = match (true) {
@@ -89,9 +93,8 @@ if (! function_exists('getStudentFee')) {
         };
 
         // ফি নির্ধারণ করা
-        $amount = $fieldName && $student ? ($student->$fieldName ?? $feeType->default_amount) : $feeType->default_amount;
-
-        return $amount;
+        $amount = $fieldName && $student ? ($student->$fieldName ?? $feeType->default_amount ?? 0) : $feeType->default_amount ?? 0;
+        return intval($amount);
     }
 
 }

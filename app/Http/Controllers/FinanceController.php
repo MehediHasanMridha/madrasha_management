@@ -208,7 +208,7 @@ class FinanceController extends Controller
                         IncomeLog::create([
                             'user_id'           => $student->id,
                             'amount'            => $academic_fee,
-                            'fee_type_id'       => FeeType::where('name', 'like', '%academic%')->first()->id,                                     // get from fee_types table
+                            'fee_type_id'       => FeeType::where('slug', 'like', "%academic%", 'and')->first()->id,                              // get from fee_types table
                             'payment_method_id' => PaymentMethod::where('slug', 'cash')->firstOrCreate(['name' => 'Cash', 'slug' => 'cash'])->id, // get from payment_methods table
                             'status'            => 'paid',
                             'payment_period'    => $month,
@@ -218,7 +218,7 @@ class FinanceController extends Controller
                         $incomeLog = IncomeLog::create([
                             'user_id'           => $student->id,
                             'amount'            => $academic_fee,
-                            'fee_type_id'       => FeeType::where('name', 'like', '%academic%')->first()->id,                                     // get from fee_types table
+                            'fee_type_id'       => FeeType::where('slug', 'like', "%academic%", 'and')->first()->id,                              // get from fee_types table
                             'payment_method_id' => PaymentMethod::where('slug', 'cash')->firstOrCreate(['name' => 'Cash', 'slug' => 'cash'])->id, // get from payment_methods table
                             'status'            => 'paid',
                             'payment_period'    => $month,
@@ -235,7 +235,7 @@ class FinanceController extends Controller
                         IncomeLog::create([
                             'user_id'           => $student->id,
                             'amount'            => $boarding_fee,
-                            'fee_type_id'       => FeeType::where('name', 'like', '%boarding%')->first()->id,                                     // get from fee_types table
+                            'fee_type_id'       => FeeType::where('slug', 'like', "%boarding%", 'and')->first()->id,                              // get from fee_types table
                             'payment_method_id' => PaymentMethod::where('slug', 'cash')->firstOrCreate(['name' => 'Cash', 'slug' => 'cash'])->id, // get from payment_methods table
                             'status'            => 'paid',
                             'payment_period'    => $month,
@@ -245,7 +245,7 @@ class FinanceController extends Controller
                         $incomeLog = IncomeLog::create([
                             'user_id'           => $student->id,
                             'amount'            => $boarding_fee,
-                            'fee_type_id'       => FeeType::where('name', 'like', '%boarding%')->first()->id,                                     // get from fee_types table
+                            'fee_type_id'       => FeeType::where('slug', 'like', "%boarding%", 'and')->first()->id,                              // get from fee_types table
                             'payment_method_id' => PaymentMethod::where('slug', 'cash')->firstOrCreate(['name' => 'Cash', 'slug' => 'cash'])->id, // get from payment_methods table
                             'status'            => 'paid',
                             'payment_period'    => $month,
