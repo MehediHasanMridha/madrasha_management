@@ -3,6 +3,7 @@
 use App\Models\Academic;
 use App\Models\FeeType;
 use App\Models\User;
+use Illuminate\Support\Str;
 use Intervention\Image\Laravel\Facades\Image;
 
 //image processing & uploading function
@@ -71,9 +72,14 @@ if (! function_exists('generateUniqueId')) {
 if (! function_exists('getStudentFee')) {
     function getStudentFee($studentId, $feeSlug)
     {
+        $name = $feeSlug === 'academic' ? 'Academic Fee' : 'Boarding Fee';
         // ছাত্রের একাডেমিক তথ্য এবং ফি টাইপের তথ্য একসাথে বের করা
         $student = Academic::where('user_id', $studentId)->first();
-        $feeType = FeeType::where('name', 'like', '%' . $feeSlug . '%')->first();
+        $feeType = FeeType::where('name', 'like', '%' . $feeSlug . '%')->firstOrCreate([
+            'name'           => $name,
+            'slug'           => Str::slug($name),
+            'default_amount' => 0,
+        ]);
 
         // ফি নাম নির্ধারণ করা
         $fieldName = match (true) {

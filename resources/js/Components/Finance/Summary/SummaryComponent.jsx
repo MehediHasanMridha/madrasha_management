@@ -1,7 +1,7 @@
 import { Card, CardTitle } from '@/Components/UI/card';
+import PieChartContainer from '@/Container/Finance/Summary/PieChartContainer';
 import MonthYearContainer from '@/Container/Shared/MonthYearContainer';
 import FinanceTabBarComponent from '../FinanceTabBarComponent';
-import EarningPieChartContainer from './EarningPieChartContainer';
 
 const SummaryComponent = ({ data, getData, remainingAmount }) => {
     return (
@@ -15,12 +15,20 @@ const SummaryComponent = ({ data, getData, remainingAmount }) => {
                 {/* Earnings Card */}
                 <Card className="rounded-lg border-none bg-white p-6 shadow-none">
                     <CardTitle>Total Earnings</CardTitle>
-                    <EarningPieChartContainer data={data} />
+                    {data?.earnings?.length !== 0 ? (
+                        <PieChartContainer data={data?.earnings} />
+                    ) : (
+                        <div className="text-center text-lg">This month has no earning</div>
+                    )}
                 </Card>
                 {/* Expenses Card */}
                 <Card className="rounded-lg border-none bg-white p-6 shadow-none">
                     <CardTitle>Total Expenses</CardTitle>
-                    <div className="flex h-full items-center justify-center text-lg">Under development</div>
+                    {data?.expenses?.length !== 0 ? (
+                        <PieChartContainer data={data?.expenses} />
+                    ) : (
+                        <div className="text-center text-lg">This month has no expense</div>
+                    )}
                 </Card>
             </div>
         </div>

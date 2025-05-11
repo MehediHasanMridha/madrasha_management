@@ -1,33 +1,42 @@
 import ModalComponent from '@/Components/Finance/ModalComponent';
-import ExpenseModalStepOneComponent from '@/Components/Finance/Outgoings/ExpenseModalStepOneComponent';
-import ExpenseModalStepThreeComponent from '@/Components/Finance/Outgoings/ExpenseModalStepThreeComponent';
-import ExpenseModalStepTwoComponent from '@/Components/Finance/Outgoings/ExpenseModalStepTwoComponent';
+import ExpenseFinalStepComponent from '@/Components/Finance/Outgoings/AllModelStep/ExpenseFinalStepComponent';
+import ExpenseModalStepOneComponent from '@/Components/Finance/Outgoings/AllModelStep/ExpenseModalStepOneComponent';
+import ExpenseModalStepThreeComponent from '@/Components/Finance/Outgoings/AllModelStep/ExpenseModalStepThreeComponent';
+import ExpenseModalStepTwoComponent from '@/Components/Finance/Outgoings/AllModelStep/ExpenseModalStepTwoComponent';
 import { router } from '@inertiajs/react';
 import { notification } from 'antd';
 import axios from 'axios';
 import { useState } from 'react';
+import OtherModelStepTwoContainer from './OtherModelStepTwoContainer';
 
 const AddVoucherContainer = ({ modal, setModal }) => {
     const [step, setStep] = useState(1);
     const [staffId, setStaffId] = useState('');
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState(null);
-    const [type, setType] = useState();
-    const [month, setMonth] = useState('January');
-    const [salary, setSalary] = useState(0);
-
-    let content = null;
+    const [type, setType] = useState(null);
+    const [year, setYear] = useState(new Date().getFullYear().toString());
+    const [selectedRows, setSelectedRows] = useState([]);
+    const [expense, setExpense] = useState({
+        amount: 0,
+        note: '',
+    });
 
     const [api, contextHolder] = notification.useNotification();
 
-    const getData = async () => {
+    const getData = async (data) => {
         try {
             setLoading(true);
-            const { data: info } = await axios.get(route('finance.get_user_data', { user_id: staffId, type: 'staff' }));
-            console.log('🚀 ~ getData ~ info:', info);
+            const { data: info } = await axios.get(
+                route('finance.get_user_data', {
+                    user_id: staffId.replace(/\s+/g, ''), // Remove all spaces from staffId
+                    type: 'staff',
+                    year: data || year,
+                }),
+            );
             if (info) {
+                console.log('🚀 ~ getData ~ info:', info);
                 setData(info);
-                setSalary(info.salary);
             }
         } catch (error) {
             setLoading(false);
@@ -42,9 +51,10 @@ const AddVoucherContainer = ({ modal, setModal }) => {
             route('finance.add_voucher'),
             {
                 staff_id: staffId,
-                month: month,
-                salary: salary,
                 type: type,
+                monthlyInfo: selectedRows,
+                year,
+                expense,
             },
             {
                 onStart: () => {
@@ -52,16 +62,21 @@ const AddVoucherContainer = ({ modal, setModal }) => {
                 },
                 onSuccess: (response) => {
                     setLoading(false);
-                    setStep(1);
-                    setStaffId('');
-                    setSalary(0);
-                    setData(null);
-                    setModal(false);
-                    api.success({
-                        message: 'Success',
-                        description: response.props.flash.success,
-                        placement: 'bottomRight',
-                    });
+                    if (response.props.flash.success) {
+                        setStep(0);
+                        api.success({
+                            message: 'Success',
+                            description: response.props.flash.success,
+                            placement: 'bottomRight',
+                        });
+                    }
+                    if (response.props.flash.error) {
+                        api.error({
+                            message: 'Error',
+                            description: response.props.flash.error,
+                            placement: 'bottomRight',
+                        });
+                    }
                 },
                 onError: (error) => {
                     console.error('Error submitting data:', error);
@@ -73,27 +88,62 @@ const AddVoucherContainer = ({ modal, setModal }) => {
         );
     };
 
+    const handleClose = () => {
+        setStep(1);
+        setExpense({
+            amount: 0,
+            note: '',
+        });
+        setSelectedRows([]);
+        setData(null);
+        setType(null);
+        setStaffId('');
+    };
+
+    let content = null;
     switch (step) {
         case 1:
             content = <ExpenseModalStepOneComponent setStep={setStep} setType={setType} />;
-
             break;
         case 2:
-            content = <ExpenseModalStepTwoComponent staffId={staffId} setStaffId={setStaffId} setStep={setStep} getData={getData} />;
+            content =
+                type === 'salary' ? (
+                    <ExpenseModalStepTwoComponent loading={loading} staffId={staffId} setStaffId={setStaffId} setStep={setStep} getData={getData} />
+                ) : (
+                    <OtherModelStepTwoContainer api={api} type={type} setStep={setStep} setType={setType} />
+                );
             break;
         case 3:
             content = (
                 <ExpenseModalStepThreeComponent
                     data={data}
-                    setStep={setStep}
                     loading={loading}
-                    month={month}
-                    setMonth={setMonth}
-                    salary={salary}
-                    setSalary={setSalary}
+                    setStep={setStep}
+                    expense={expense}
+                    setExpense={setExpense}
                     submitData={submitData}
+                    year={year}
+                    setYear={setYear}
+                    selectedRows={selectedRows}
+                    setSelectedRows={setSelectedRows}
+                    getData={getData}
                 />
             );
+            break;
+        case 0:
+            content = (
+                <ExpenseFinalStepComponent
+                    data={data}
+                    loading={loading}
+                    expense={expense}
+                    handleClose={handleClose}
+                    setModal={setModal}
+                    setStep={setStep}
+                    selectedRows={selectedRows}
+                    setLoading={setLoading}
+                />
+            );
+            break;
         default:
             break;
     }
@@ -101,7 +151,7 @@ const AddVoucherContainer = ({ modal, setModal }) => {
     return (
         <>
             {contextHolder}
-            <ModalComponent modal={modal} setModal={setModal} content={content} />;
+            <ModalComponent modal={modal} setModal={setModal} content={content} />
         </>
     );
 };

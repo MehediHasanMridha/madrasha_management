@@ -1,6 +1,11 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Actions\Finance\Expense\AddOthersVoucher;
+use App\Actions\Finance\Expense\AddSalaryVoucher;
+use App\Actions\Finance\Expense\Expense;
+use App\Actions\Finance\Expense\VoucherList;
+use App\Actions\Finance\Summary;
 use App\Models\ExpenseLog;
 use App\Models\FeeType;
 use App\Models\IncomeLog;
@@ -9,10 +14,9 @@ use App\Models\StudentDiscount;
 use App\Models\StudentDue;
 use App\Models\Transaction;
 use App\Models\User;
-use App\Models\VoucherType;
-use function Pest\Laravel\get;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class FinanceController extends Controller
@@ -27,44 +31,7 @@ class FinanceController extends Controller
         $month = request()->input('month');
         $year  = request()->input('year');
 
-        // how to convert month & year to Y-m
-        $period = date('Y-m', strtotime($month . ' ' . $year));
-        // If no period is provided, use the current month
-        if (! $period) {
-            $period = date('Y-m');
-        }
-
-        // Mock data for demonstration
-        $earnings = IncomeLog::with('feeType')
-            ->where('status', 'paid')
-            ->where('payment_period', $period)
-            ->groupBy('fee_type_id')
-            ->selectRaw('fee_type_id, sum(amount) as amount')
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'feeType' => $item->feeType->name ?? 'Unknown',
-                    'amount'  => $item->amount,
-                ];
-            });
-
-        $outgoings = ExpenseLog::with('voucherType')
-            ->where('date', 'like', $period . '%') // get all vouchers for the month but date is "2025-04-22" format
-            ->groupBy('voucher_type_id')
-            ->selectRaw('voucher_type_id, sum(amount) as amount')
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'voucherType' => $item->voucherType->name ?? 'Unknown',
-                    'amount'      => $item->amount,
-                ];
-            });
-
-        // return $outgoings;
-        $data = [
-            'earnings' => $earnings,
-            'expenses' => $outgoings,
-        ];
+        $data = Summary::run($month, $year);
 
         return Inertia::render('Finance/Summary', [
             'data' => $data,
@@ -88,7 +55,18 @@ class FinanceController extends Controller
      */
     public function outgoings()
     {
-        return Inertia::render('Finance/Outgoings');
+        $month = request()->input('month');
+        $year  = request()->input('year');
+
+        $outgoings   = Expense::run($month, $year);
+        $voucherList = VoucherList::run($month, $year);
+
+        return Inertia::render('Finance/Outgoings',
+            [
+                'outgoings'   => $outgoings,
+                'voucherList' => $voucherList,
+            ]
+        );
     }
 
     /**
@@ -104,21 +82,35 @@ class FinanceController extends Controller
     public function get_user_data($user_id)
     {
 
+        $year = request()->input('year') ?? date('Y');
         if (request()->input('type') == 'staff') {
-            $user = User::whereHas('roles', fn($q) => $q->where('name', 'staff'))->where('unique_id', $user_id)->with('academics')->firstOrFail();
+            $user = User::with(['academics', 'expenseLogs' => function ($q) use ($year) {
+                $q->whereYear('date', $year);
+            }])->whereHas('roles', fn($q) => $q->where('name', 'staff'))->where('unique_id', $user_id)->firstOrFail();
 
             return response()->json([
                 'id'        => $user->id,
+                'year'      => $year,
                 'name'      => $user->name,
                 'email'     => $user->email,
                 'phone'     => $user->phone,
                 'image'     => $user->img,
                 'unique_id' => $user->unique_id,
                 'salary'    => $user->academics->salary,
+                'expenses'  => $user->expenseLogs->map(function ($item) {
+                    return [
+                        'amount' => round($item->amount, 2),
+                        'type'   => $item->voucherType->slug ?? 'Unknown',
+                        'month'  => date('F', strtotime($item->date)),
+                    ];
+                })->groupBy('month')->map(function ($group, $month) {
+                    return [
+                        'month' => $month,
+                        'fees'  => $group,
+                    ];
+                })->values(),
             ]);
-
         }
-        $year = request()->input('year') ?? date('Y');
         // find user by id
         $user = User::with([
             'incomeLogs' =>
@@ -139,6 +131,7 @@ class FinanceController extends Controller
             'phone'        => $user->phone,
             'image'        => $user->img,
             'unique_id'    => $user->unique_id,
+            'department'   => $user->academics->department->name ?? null,
             'boarding_fee' => round(getStudentFee($user->id, 'boarding'), 2),
             'academic_fee' => round(getStudentFee($user->id, 'academic'), 2),
             'income_logs'  => $user->incomeLogs->map(function ($item) {
@@ -178,10 +171,13 @@ class FinanceController extends Controller
             // convert month to 2025-04
 
             if ($request->type == 'monthly_fee') {
+
+                // if fee_type is not in fee_types table then create it
+
                 $total_fee                   = $request->academic_fee + $request->boarding_fee;
                 $transaction                 = new Transaction();
                 $transaction->transaction_id = 'TRN-' . str_pad(mt_rand(1, 999999999), 9, '0', STR_PAD_LEFT);
-                $transaction->user_id        = $student->id;
+                $transaction->user_id        = Auth::user()->id;
                 $transaction->amount         = $total_fee;
                 $transaction->note           = $request->details ?? null;
                 $transaction->save();
@@ -212,8 +208,8 @@ class FinanceController extends Controller
                         IncomeLog::create([
                             'user_id'           => $student->id,
                             'amount'            => $academic_fee,
-                            'fee_type_id'       => FeeType::where('name', 'like', '%academic%')->first()->id, // get from fee_types table
-                            'payment_method_id' => PaymentMethod::where('slug', 'cash')->first()->id,         // get from payment_methods table
+                            'fee_type_id'       => FeeType::where('name', 'like', '%academic%')->first()->id,                                     // get from fee_types table
+                            'payment_method_id' => PaymentMethod::where('slug', 'cash')->firstOrCreate(['name' => 'Cash', 'slug' => 'cash'])->id, // get from payment_methods table
                             'status'            => 'paid',
                             'payment_period'    => $month,
                             'receiver_id'       => Auth::user()->id,
@@ -222,8 +218,8 @@ class FinanceController extends Controller
                         $incomeLog = IncomeLog::create([
                             'user_id'           => $student->id,
                             'amount'            => $academic_fee,
-                            'fee_type_id'       => FeeType::where('name', 'like', '%academic%')->first()->id, // get from fee_types table
-                            'payment_method_id' => PaymentMethod::where('slug', 'cash')->first()->id,         // get from payment_methods table
+                            'fee_type_id'       => FeeType::where('name', 'like', '%academic%')->first()->id,                                     // get from fee_types table
+                            'payment_method_id' => PaymentMethod::where('slug', 'cash')->firstOrCreate(['name' => 'Cash', 'slug' => 'cash'])->id, // get from payment_methods table
                             'status'            => 'paid',
                             'payment_period'    => $month,
                             'receiver_id'       => Auth::user()->id,
@@ -239,8 +235,8 @@ class FinanceController extends Controller
                         IncomeLog::create([
                             'user_id'           => $student->id,
                             'amount'            => $boarding_fee,
-                            'fee_type_id'       => FeeType::where('name', 'like', '%boarding%')->first()->id, // get from fee_types table
-                            'payment_method_id' => PaymentMethod::where('slug', 'cash')->first()->id,         // get from payment_methods table
+                            'fee_type_id'       => FeeType::where('name', 'like', '%boarding%')->first()->id,                                     // get from fee_types table
+                            'payment_method_id' => PaymentMethod::where('slug', 'cash')->firstOrCreate(['name' => 'Cash', 'slug' => 'cash'])->id, // get from payment_methods table
                             'status'            => 'paid',
                             'payment_period'    => $month,
                             'receiver_id'       => Auth::user()->id,
@@ -249,8 +245,8 @@ class FinanceController extends Controller
                         $incomeLog = IncomeLog::create([
                             'user_id'           => $student->id,
                             'amount'            => $boarding_fee,
-                            'fee_type_id'       => FeeType::where('name', 'like', '%boarding%')->first()->id, // get from fee_types table
-                            'payment_method_id' => PaymentMethod::where('slug', 'cash')->first()->id,         // get from payment_methods table
+                            'fee_type_id'       => FeeType::where('name', 'like', '%boarding%')->first()->id,                                     // get from fee_types table
+                            'payment_method_id' => PaymentMethod::where('slug', 'cash')->firstOrCreate(['name' => 'Cash', 'slug' => 'cash'])->id, // get from payment_methods table
                             'status'            => 'paid',
                             'payment_period'    => $month,
                             'receiver_id'       => Auth::user()->id,
@@ -267,44 +263,40 @@ class FinanceController extends Controller
             }
 
         } catch (\Throwable $th) {
+            Log::error('Error adding money: ' . $th->getMessage());
             return redirect()->back()->with('error', "You have already added this month fee");
         }
 
     }
     public function add_voucher(Request $request)
     {
-        // Validate the request data
         $request->validate([
-            'staff_id' => 'required|exists:users,unique_id',
-            'month'    => 'required|in:January,February,March,April,May,June,July,August,September,October,November,December', // 'January',
-            'type'     => 'required|in:salary',
-            'note'     => 'nullable|string|max:255',
+            'type' => 'required',
+            'note' => 'nullable|string|max:255',
         ]);
 
-        // Find the student by unique_id
-        $staff = User::where('unique_id', $request->staff_id)->first();
+        if ($request->type == 'salary' && $request->monthlyInfo) {
 
-        if (! $staff) {
-            return response()->json(['error' => 'Staff not found'], 404);
-        }
-
-        // convert date to 2025-04-22
-        $date = date('Y-m-d', strtotime($request->month));
-
-        if ($request->type == 'salary') {
-
-            ExpenseLog::create([
-                'user_id'         => $staff->id,
-                'voucher_type_id' => VoucherType::where('name', 'like', '%salary%')->first()->id, // get from fee_types table
-                'date'            => $date,
-                'amount'          => $request->salary,
-            ]);
-
-            // return response
+            AddSalaryVoucher::run($request);
             return to_route('finance.outgoings')->with('success', 'Voucher added successfully');
-
         }
 
+        AddOthersVoucher::run($request);
+        return to_route('finance.outgoings')->with('success', 'Voucher added successfully');
+
+    }
+
+    // delete voucher
+    public function delete_voucher($voucher_id)
+    {
+
+        // delete ExpenseLog
+        $expenseLog = ExpenseLog::find($voucher_id);
+        if ($expenseLog) {
+            $expenseLog->delete();
+            return to_route('finance.outgoings')->with('success', 'Voucher deleted successfully');
+        }
+        return response()->json(['error' => 'Voucher not found'], 404);
     }
 
 }

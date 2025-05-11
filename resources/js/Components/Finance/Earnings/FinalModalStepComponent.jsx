@@ -1,12 +1,25 @@
+import Logo from '@/assets/images/logo.png';
 import StaticBtn from '@/Components/UI/StaticBtn';
 import { getAvatarImage } from '@/lib/avatarImageUrlUtils';
 import { formattedAmount } from '@/lib/utils';
+import { usePage } from '@inertiajs/react';
 import { useCallback, useRef } from 'react';
-import { FaCheckCircle } from 'react-icons/fa';
+import { FaPhone } from 'react-icons/fa';
 import { useReactToPrint } from 'react-to-print';
 
-const FinalModalStepComponent = ({ data, fee, selectedRows, handleClose, loading, setModal, setLoading, setStep }) => {
+const FinalModalStepComponent = ({ data, fee, selectedRows, handleClose, loading, setModal, setLoading, setStep, year, comments }) => {
     const printComponentRef = useRef(null);
+    const currentDate = new Date();
+    const { user } = usePage().props.auth;
+    const formattedDate = currentDate.toLocaleString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+    });
+    console.log('🚀 ~ FinalModalStepComponent ~ user:', user);
 
     const handleBeforePrint = useCallback(() => {
         setLoading(true);
@@ -14,99 +27,153 @@ const FinalModalStepComponent = ({ data, fee, selectedRows, handleClose, loading
     }, []);
 
     const handleAfterPrint = () => {
-        handleClose();
+        // handleClose();
         setLoading(false);
     };
 
     const printFn = useReactToPrint({
         contentRef: printComponentRef,
-        documentTitle: 'AwesomeFileName',
+        documentTitle: `Receipt_${data?.unique_id}_${new Date().toISOString().split('T')[0]}`,
         onAfterPrint: handleAfterPrint,
         onBeforePrint: handleBeforePrint,
-        pageStyle: 'print',
+        // receipt page size is small & font size is small & print to printable area
+        pageStyle: `
+            @media print {
+                @page {
+                    size: A5;
+                    margin: 12px;
+                }
+                body {
+                    font-size: 8px;
+                    margin: 0;
+                    padding: 0;
+                    line-height: 1.2;
+
+                }
+            }
+        `,
     });
+
     return (
         <div className="flex h-full flex-col space-y-4 px-2">
-            {/* Success Header */}
-            <div className="flex flex-col items-center justify-center space-y-3 py-5">
-                <FaCheckCircle className="h-16 w-16 text-green-500" />
-                <h2 className="text-xl font-semibold text-[#111827]">Payment Successful!</h2>
-                <p className="text-sm text-[#4A4A4A]">Transaction ID: {Math.random().toString(36).substring(2, 12).toUpperCase()}</p>
-            </div>
-
-            {/* Student Info */}
-            {data && (
-                <div className="rounded-[8px] bg-[#F2F2F2] p-4">
-                    <div className="flex items-center space-x-4">
-                        <img
-                            src={getAvatarImage(data.image, 'student_images', data.name)}
-                            alt="Student"
-                            className="h-[50px] w-[50px] rounded-full border"
-                        />
+            {/* Printable Receipt Content */}
+            <div className="space-y-4" ref={printComponentRef}>
+                {/* School Header */}
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        <img src={Logo} alt="School Logo" className="h-12 print:h-[37px]" />
                         <div>
-                            <p className="text-lg font-semibold">{data.name || 'N/A'}</p>
-                            <p className="text-sm text-gray-600">Student ID: {data.unique_id}</p>
+                            <h1 className="text-lg font-bold print:text-[18px]">Madrasatul Hera Tangail</h1>
+                            <p className="text-sm text-gray-600 print:text-[10px]">Munshwpara Rashid Villa, Rahman vaban, Kedialla, Tangail</p>
+                        </div>
+                    </div>
+                    <div className="text-right text-sm print:text-[10px]">
+                        <div className="flex items-center justify-end gap-2">
+                            <FaPhone className="h-[8px] w-[8px]" />
+                            <span>017170-52793</span>
+                        </div>
+                        <div className="flex items-center justify-end gap-2">
+                            <FaPhone className="h-[8px] w-[8px]" />
+                            <span>017170-52793</span>
                         </div>
                     </div>
                 </div>
-            )}
-
-            <div className="space-y-4" ref={printComponentRef}>
-                {/* Payment Details */}
-                <div className="rounded-[8px] border border-[#AFAFAF] p-4">
-                    <h3 className="mb-3 font-medium">Payment Details</h3>
-                    <div className="space-y-2 text-sm">
-                        <div className="flex justify-between">
-                            <span>Academic Fee:</span>
-                            <span>{formattedAmount(fee?.academic_fee || 0)} BDT</span>
-                        </div>
-                        <div className="flex justify-between">
-                            <span>Boarding Fee:</span>
-                            <span>{formattedAmount(fee?.boarding_fee || 0)} BDT</span>
-                        </div>
-                        {fee?.discount > 0 && (
-                            <div className="flex justify-between">
-                                <span>Discount:</span>
-                                <span>-{formattedAmount(fee?.discount || 0)} BDT</span>
+                <hr />
+                {/* Student Info */}
+                {data && (
+                    <div className="flex items-center justify-between rounded-[8px]">
+                        <div className="flex items-center space-x-4">
+                            <img
+                                src={getAvatarImage(data.image, 'student_images', data.name)}
+                                alt="Student"
+                                className="h-[50px] w-[50px] rounded-full border print:h-[28px] print:w-[28px]"
+                            />
+                            <div>
+                                <p className="text-lg font-semibold print:text-[12px]">{data.name || 'N/A'}</p>
+                                <p className="text-sm text-gray-600 print:text-[10px]">
+                                    {data?.unique_id} • {data?.department}
+                                </p>
                             </div>
-                        )}
-                        <hr className="my-2 border-dashed border-[#AFAFAF]" />
-                        <div className="flex justify-between font-medium">
-                            <span>Total Paid:</span>
+                        </div>
+                        <div className="text-right">
+                            <div className="text-lg font-semibold print:text-[12px]">Monthly Payment Receipt</div>
+                            <div className="text-sm text-gray-600 print:text-[10px]">Date: {formattedDate}</div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Monthly Fee Table */}
+                {selectedRows && selectedRows.length > 0 && (
+                    <div className="h-[200px] overflow-x-auto overflow-y-scroll print:h-fit print:overflow-y-auto">
+                        <table className="w-full min-w-full table-auto border-collapse">
+                            <thead className="bg-gray-50">
+                                <tr>
+                                    <th className="border px-4 py-2 text-left">S/N</th>
+                                    <th className="border px-4 py-2 text-left">Month ({year})</th>
+                                    <th className="border px-4 py-2 text-right">Boarding fee</th>
+                                    <th className="border px-4 py-2 text-right">Academic fee</th>
+                                    <th className="border px-4 py-2 text-right">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {selectedRows.map((row, index) => (
+                                    <tr key={index}>
+                                        <td className="border px-4 py-2">{index + 1}</td>
+                                        <td className="border px-4 py-2">{row.month}</td>
+                                        <td className="border px-4 py-2 text-right">{formattedAmount(fee?.boarding_fee || 500)}</td>
+                                        <td className="border px-4 py-2 text-right">{formattedAmount(fee?.academic_fee || 500)}</td>
+                                        <td className="border px-4 py-2 text-right">
+                                            {formattedAmount((fee?.boarding_fee || 500) + (fee?.academic_fee || 500))}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+
+                {/* Payment Summary */}
+                <div className="mt-6 flex justify-between rounded-[4px] border-[0.5px] border-[#131313] p-4">
+                    <div className="w-full space-y-2">
+                        <div className="flex justify-between">
+                            <span>Sub Total:</span>
+                            <span>{formattedAmount(fee?.total || 0)} BDT</span>
+                        </div>
+                        <div className="flex justify-between">
+                            <span>Discount:</span>
+                            <span>{formattedAmount(fee?.discount || 0)} BDT</span>
+                        </div>
+                        <div className="flex justify-between border-t border-dashed pt-2 font-bold">
+                            <span>Grand total:</span>
+                            <span>{formattedAmount((fee?.total || 0) - (fee?.discount || 0))} BDT</span>
+                        </div>
+                        <div className="flex justify-between border-t border-dashed pt-2">
+                            <span>Paid:</span>
                             <span>{formattedAmount(fee?.total || 0)} BDT</span>
                         </div>
                     </div>
                 </div>
 
-                {/* Months Paid */}
-                {selectedRows && selectedRows.length > 0 && (
-                    <div className="rounded-[8px] border border-[#AFAFAF] p-4">
-                        <h3 className="mb-2 font-medium">Months Paid</h3>
-                        <div className="flex flex-wrap gap-2">
-                            {selectedRows.map((row, index) => (
-                                <span key={index} className="rounded-full bg-[#E6F0FF] px-3 py-1 text-xs text-[#0267FF]">
-                                    {row.month}
-                                </span>
-                            ))}
-                        </div>
+                {/* Comment Section */}
+                {comments && (
+                    <div className="mt-6">
+                        <h3 className="mb-2 font-medium">Comment</h3>
+                        <p className="h-fit w-full rounded-[4px] border-[0.5px] border-[#131313] p-3 print:h-[50px]">{comments} </p>
                     </div>
                 )}
-
-                {/* Due Information */}
-                <div className="rounded-[8px] bg-[#F2F2F2] p-4">
-                    <div className="flex justify-between">
-                        <span>Academic Due:</span>
-                        <span>{formattedAmount(fee?.academic_due || 0)} BDT</span>
-                    </div>
-                    <div className="flex justify-between">
-                        <span>Boarding Due:</span>
-                        <span>{formattedAmount(fee?.boarding_due || 0)} BDT</span>
-                    </div>
+                <div className="flex items-center justify-center gap-2">
+                    Added by :
+                    <img
+                        src={getAvatarImage(user?.img, 'staff_images', user?.name)}
+                        alt=""
+                        className="h-[20px] w-[20px] rounded-sm print:h-[10px] print:w-[10px]"
+                    />
+                    {user?.name} ID: {user?.unique_id}
                 </div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="mt-auto flex w-full gap-[18px] pt-4">
+            {/* Action Buttons - Not Printed */}
+            <div className="mt-auto flex w-full gap-[18px] pt-4 print:hidden">
                 <StaticBtn
                     onClick={() => {
                         handleClose();

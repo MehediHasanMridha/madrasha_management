@@ -81,6 +81,11 @@ class User extends Authenticatable
         return $this->hasMany(IncomeLog::class);
     }
 
+    public function expenseLogs()
+    {
+        return $this->hasMany(ExpenseLog::class);
+    }
+
     public function studentDues()
     {
         return $this->hasMany(StudentDue::class);

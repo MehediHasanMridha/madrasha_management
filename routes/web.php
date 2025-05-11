@@ -7,6 +7,7 @@ use App\Http\Controllers\FeeTypeController;
 use App\Http\Controllers\FinanceController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\VoucherTypeController;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -70,6 +71,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 'destroy' => 'settings.fee-types.destroy',
             ]);
 
+        // Voucher Type Routes
+        Route::resource('voucher-types', VoucherTypeController::class)
+            ->names([
+                'index'   => 'settings.voucher-types.index',
+                'create'  => 'settings.voucher-types.create',
+                'store'   => 'settings.voucher-types.store',
+                'edit'    => 'settings.voucher-types.edit',
+                'update'  => 'settings.voucher-types.update',
+                'destroy' => 'settings.voucher-types.destroy',
+            ]);
+
     });
 
     //assign teacher to department
@@ -86,6 +98,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/get_user_data/{user_id}', [FinanceController::class, 'get_user_data'])->name('finance.get_user_data');
         Route::post('/add_money', [FinanceController::class, 'add_money'])->name('finance.add_money');
         Route::post('/add_voucher', [FinanceController::class, 'add_voucher'])->name('finance.add_voucher');
+        // delete voucher
+        Route::delete('/delete_voucher/{voucher_id}', [FinanceController::class, 'delete_voucher'])->name('finance.delete_voucher');
     });
 });
 
