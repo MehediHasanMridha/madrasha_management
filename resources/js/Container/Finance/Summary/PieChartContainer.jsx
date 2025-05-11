@@ -29,16 +29,7 @@ const PieChartContainer = ({ data }) => {
             angleField="amount"
             colorField="type"
             innerRadius={0.6}
-            label={{
-                text: (data) => `${data.amount}`,
-                style: {
-                    fontSize: 20,
-                    fill: '#000',
-                    textAlign: 'center',
-                    textBaseline: 'middle',
-                    fontWeight: 'bold',
-                },
-            }}
+            label={false}
             legend={{
                 color: {
                     title: false,
