@@ -19,7 +19,6 @@ const FinalModalStepComponent = ({ data, fee, selectedRows, handleClose, loading
         month: 'long',
         day: 'numeric',
     });
-    console.log('🚀 ~ FinalModalStepComponent ~ user:', user);
 
     const handleBeforePrint = useCallback(() => {
         setLoading(true);
@@ -44,7 +43,7 @@ const FinalModalStepComponent = ({ data, fee, selectedRows, handleClose, loading
                     margin: 32px;
                 }
                 body {
-                    font-size: 10px;
+                    font-size: 12px;
                     margin: 0;
                     padding: 0;
                     line-height: 1.2;
@@ -62,22 +61,22 @@ const FinalModalStepComponent = ({ data, fee, selectedRows, handleClose, loading
                     <div className="flex items-center gap-4">
                         <img src={Logo} alt="School Logo" className="h-12 print:h-[37px]" />
                         <div>
-                            <h1 className="text-lg font-bold print:text-[18px]">Madrasatul Hera Tangail</h1>
-                            <p className="text-sm text-gray-600 print:text-[10px]">Munshwpara Rashid Villa, Rahman vaban, Kedialla, Tangail</p>
+                            <h1 className="text-lg font-bold print:text-[20px]">Madrasatul Hera Tangail</h1>
+                            <p className="text-sm text-black print:text-[12px]">Monowara Rashid Villa, Rahman vaban, Kodalia, Tangail</p>
                         </div>
                     </div>
                     <div className="text-right text-sm print:text-[10px]">
-                        <div className="flex items-center justify-end gap-2">
+                        <div className="prtint:w-[100px] flex w-fit items-center justify-between gap-2">
                             <FaPhone className="h-[8px] w-[8px]" />
-                            <span>017170-52793</span>
+                            <span>017669-25262</span>
                         </div>
-                        <div className="flex items-center justify-end gap-2">
+                        <div className="prtint:w-[100px] flex w-fit items-center justify-between gap-2">
                             <FaPhone className="h-[8px] w-[8px]" />
                             <span>017170-52793</span>
                         </div>
                     </div>
                 </div>
-                <hr />
+                <hr className="print:border-[0.5px] print:border-black" />
                 {/* Student Info */}
                 {data && (
                     <div className="flex items-center justify-between rounded-[8px]">
@@ -89,14 +88,14 @@ const FinalModalStepComponent = ({ data, fee, selectedRows, handleClose, loading
                             />
                             <div>
                                 <p className="text-lg font-semibold print:text-[12px]">{data.name || 'N/A'}</p>
-                                <p className="text-sm text-gray-600 print:text-[10px]">
+                                <p className="text-sm text-black print:text-[10px]">
                                     {data?.unique_id} • {data?.department}
                                 </p>
                             </div>
                         </div>
                         <div className="text-right">
                             <div className="text-lg font-semibold print:text-[12px]">Monthly Payment Receipt</div>
-                            <div className="text-sm text-gray-600 print:text-[10px]">Date: {formattedDate}</div>
+                            <div className="text-sm text-black print:text-[10px]">Date: {formattedDate}</div>
                         </div>
                     </div>
                 )}
