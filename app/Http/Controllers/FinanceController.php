@@ -3,6 +3,8 @@ namespace App\Http\Controllers;
 
 use App\Actions\Finance\Expense\AddOthersVoucher;
 use App\Actions\Finance\Expense\AddSalaryVoucher;
+use App\Actions\Finance\Expense\Expense;
+use App\Actions\Finance\Expense\VoucherList;
 use App\Actions\Finance\Summary;
 use App\Models\FeeType;
 use App\Models\IncomeLog;
@@ -13,6 +15,7 @@ use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class FinanceController extends Controller
@@ -51,7 +54,18 @@ class FinanceController extends Controller
      */
     public function outgoings()
     {
-        return Inertia::render('Finance/Outgoings');
+        $month = request()->input('month');
+        $year  = request()->input('year');
+
+        $outgoings   = Expense::run($month, $year);
+        $voucherList = VoucherList::run($month, $year);
+
+        return Inertia::render('Finance/Outgoings',
+            [
+                'outgoings'   => $outgoings,
+                'voucherList' => $voucherList,
+            ]
+        );
     }
 
     /**
@@ -156,6 +170,9 @@ class FinanceController extends Controller
             // convert month to 2025-04
 
             if ($request->type == 'monthly_fee') {
+
+                // if fee_type is not in fee_types table then create it
+
                 $total_fee                   = $request->academic_fee + $request->boarding_fee;
                 $transaction                 = new Transaction();
                 $transaction->transaction_id = 'TRN-' . str_pad(mt_rand(1, 999999999), 9, '0', STR_PAD_LEFT);
@@ -190,8 +207,8 @@ class FinanceController extends Controller
                         IncomeLog::create([
                             'user_id'           => $student->id,
                             'amount'            => $academic_fee,
-                            'fee_type_id'       => FeeType::where('name', 'like', '%academic%')->first()->id, // get from fee_types table
-                            'payment_method_id' => PaymentMethod::where('slug', 'cash')->first()->id,         // get from payment_methods table
+                            'fee_type_id'       => FeeType::where('name', 'like', '%academic%')->first()->id,                                     // get from fee_types table
+                            'payment_method_id' => PaymentMethod::where('slug', 'cash')->firstOrCreate(['name' => 'Cash', 'slug' => 'cash'])->id, // get from payment_methods table
                             'status'            => 'paid',
                             'payment_period'    => $month,
                             'receiver_id'       => Auth::user()->id,
@@ -200,8 +217,8 @@ class FinanceController extends Controller
                         $incomeLog = IncomeLog::create([
                             'user_id'           => $student->id,
                             'amount'            => $academic_fee,
-                            'fee_type_id'       => FeeType::where('name', 'like', '%academic%')->first()->id, // get from fee_types table
-                            'payment_method_id' => PaymentMethod::where('slug', 'cash')->first()->id,         // get from payment_methods table
+                            'fee_type_id'       => FeeType::where('name', 'like', '%academic%')->first()->id,                                     // get from fee_types table
+                            'payment_method_id' => PaymentMethod::where('slug', 'cash')->firstOrCreate(['name' => 'Cash', 'slug' => 'cash'])->id, // get from payment_methods table
                             'status'            => 'paid',
                             'payment_period'    => $month,
                             'receiver_id'       => Auth::user()->id,
@@ -217,8 +234,8 @@ class FinanceController extends Controller
                         IncomeLog::create([
                             'user_id'           => $student->id,
                             'amount'            => $boarding_fee,
-                            'fee_type_id'       => FeeType::where('name', 'like', '%boarding%')->first()->id, // get from fee_types table
-                            'payment_method_id' => PaymentMethod::where('slug', 'cash')->first()->id,         // get from payment_methods table
+                            'fee_type_id'       => FeeType::where('name', 'like', '%boarding%')->first()->id,                                     // get from fee_types table
+                            'payment_method_id' => PaymentMethod::where('slug', 'cash')->firstOrCreate(['name' => 'Cash', 'slug' => 'cash'])->id, // get from payment_methods table
                             'status'            => 'paid',
                             'payment_period'    => $month,
                             'receiver_id'       => Auth::user()->id,
@@ -227,8 +244,8 @@ class FinanceController extends Controller
                         $incomeLog = IncomeLog::create([
                             'user_id'           => $student->id,
                             'amount'            => $boarding_fee,
-                            'fee_type_id'       => FeeType::where('name', 'like', '%boarding%')->first()->id, // get from fee_types table
-                            'payment_method_id' => PaymentMethod::where('slug', 'cash')->first()->id,         // get from payment_methods table
+                            'fee_type_id'       => FeeType::where('name', 'like', '%boarding%')->first()->id,                                     // get from fee_types table
+                            'payment_method_id' => PaymentMethod::where('slug', 'cash')->firstOrCreate(['name' => 'Cash', 'slug' => 'cash'])->id, // get from payment_methods table
                             'status'            => 'paid',
                             'payment_period'    => $month,
                             'receiver_id'       => Auth::user()->id,
@@ -245,6 +262,7 @@ class FinanceController extends Controller
             }
 
         } catch (\Throwable $th) {
+            Log::error('Error adding money: ' . $th->getMessage());
             return redirect()->back()->with('error', "You have already added this month fee");
         }
 
