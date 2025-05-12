@@ -3,6 +3,7 @@ import FieldSet from '@/Components/UI/FieldSet';
 import ModalUI from '@/Components/UI/ModalUI';
 import SubmitBtn from '@/Components/UI/SubmitBtn';
 import { router } from '@inertiajs/react';
+import { notification } from 'antd';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -27,7 +28,21 @@ const AddDepartmentModalFormContainer = ({ isModalOpen, setIsModalOpen }) => {
             onStart: () => {
                 setIsLoading(true);
             },
-            onSuccess: () => {
+            onSuccess: (res) => {
+                if (res.props.flash.error) {
+                    notification.error({
+                        message: 'Error',
+                        description: res.props.flash.error,
+                        placement: 'bottomRight',
+                    });
+                }
+                if (res.props.flash.success) {
+                    notification.success({
+                        message: 'Success',
+                        description: res.props.flash.success,
+                        placement: 'bottomRight',
+                    });
+                }
                 reset();
                 setIsModalOpen(false);
                 setIsLoading(false);
@@ -80,14 +95,6 @@ const AddDepartmentModalFormContainer = ({ isModalOpen, setIsModalOpen }) => {
                             placeholder="Enter Description"
                             {...register('description')}
                             rows={4}
-                        />
-                    </Field>
-                    <Field error={errors.icon} label={'Icon'}>
-                        <input
-                            type="text"
-                            className="rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
-                            placeholder="Enter Icon URL"
-                            {...register('icon', { required: 'Icon URL is required' })}
                         />
                     </Field>
                 </FieldSet>
