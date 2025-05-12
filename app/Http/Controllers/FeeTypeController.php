@@ -46,10 +46,15 @@ class FeeTypeController extends Controller
 
         $validated['slug'] = Str::slug($validated['name']);
 
-        FeeType::create($validated);
+        try {
+            FeeType::create($validated);
 
-        return redirect()->route('settings.fee-types.index')
-            ->with('success', 'Fee type created successfully.');
+            return redirect()->route('settings.fee-types.index')
+                ->with('success', 'Fee type created successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', $e->getCode() === '23000' ? 'Fee type name or slug already exists.' : 'An error occurred while creating the Fee type: ');
+        }
     }
 
     public function edit(FeeType $feeType)
