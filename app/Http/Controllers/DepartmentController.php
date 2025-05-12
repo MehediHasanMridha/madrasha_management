@@ -180,15 +180,19 @@ class DepartmentController extends Controller
             'image'       => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        $department       = new Department();
-        $department->name = $request->name;
-        $department->slug = Str::slug($request->name) . '-' . uniqid();
-        $department->des  = $request->input('description');
-        $department->img  = $request->icon;
+        try {
+            $department       = new Department();
+            $department->name = $request->name;
+            $department->slug = Str::slug($request->name);
+            $department->des  = $request->input('description');
+            $department->img  = $request->icon ?? null;
+            $department->save();
 
-        $department->save();
+            return redirect()->back()->with('success', 'Department created successfully.');
 
-        return redirect()->route('department')->with('success', 'Department created successfully.');
+        } catch (\Throwable $th) {
+            return redirect()->back()->with('error', $th->getCode() === '23000' ? 'Department name or slug already exists.' : 'An error occurred while creating the department.');
+        }
     }
 
     public function departmentEditView($slug)
@@ -207,15 +211,23 @@ class DepartmentController extends Controller
             'image'       => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        $department       = Department::where('slug', $slug)->firstOrFail();
-        $department->name = $request->name;
-        $department->slug = Str::slug($request->name) . '-' . uniqid();
-        $department->des  = $request->input('description');
-        $department->img  = $request->icon;
+        try {
+            $department       = Department::where('slug', $slug)->firstOrFail();
+            $department->name = $request->name;
+            $department->slug = Str::slug($request->name);
+            $department->des  = $request->input('description');
+            $department->img  = $request->icon ?? null;
 
-        $department->save();
+            $department->save();
 
-        return redirect()->route('department')->with('success', 'Department updated successfully.');
+            return redirect()->route('department')->with('success', 'Department updated successfully.');
+
+        } catch (\Throwable $th) {
+            if ($th->getCode() === '23000') {
+                return redirect()->back()->with('error', 'Department name or slug already exists.');
+            }
+            return redirect()->back()->with('error', 'An error occurred while updating the department.');
+        }
     }
 
     public function departmentDelete(string $slug)
