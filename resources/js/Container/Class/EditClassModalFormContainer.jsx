@@ -25,7 +25,6 @@ const EditClassModalFormContainer = ({ departments }) => {
     useEffect(() => {
         if (passData) {
             setValue('name', passData.name);
-            setValue('department', passData.department_id);
             setValue('icon', passData.img);
             setValue('description', passData.des);
         }
@@ -87,19 +86,6 @@ const EditClassModalFormContainer = ({ departments }) => {
                             placeholder="Enter Class Name"
                             {...register('name', { required: 'Class Name is required' })}
                         />
-                    </Field>
-                    <Field error={errors.department} label={'Department'}>
-                        <select
-                            className="w-full rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
-                            {...register('department', { required: 'Department is required' })}
-                        >
-                            <option value="">Select Department</option>
-                            {departments?.map((dept) => (
-                                <option key={dept.id} value={dept.id}>
-                                    {dept.name}
-                                </option>
-                            ))}
-                        </select>
                     </Field>
                     <Field error={errors.icon} label={'Class Icon URL'}>
                         <input
