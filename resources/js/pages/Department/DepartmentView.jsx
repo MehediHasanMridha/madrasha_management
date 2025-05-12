@@ -3,25 +3,13 @@ import AddDepartmentModalFormContainer from '@/Container/Department/AddDepartmen
 import DepartmentTableListContainer from '@/Container/Department/DepartmentTableListContainer';
 import EditDepartmentModalFormContainer from '@/Container/Department/EditDepartmentModalFormContainer';
 import SettingsLayout from '@/layouts/settings/SettingsLayout';
-import { notification } from 'antd';
 import { useState } from 'react';
 import { RiUserAddLine } from 'react-icons/ri';
 
 const DepartmentView = ({ departments, flash }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [api, contextHolder] = notification.useNotification();
-    if (flash.error) {
-        api.error({
-            message: 'Error',
-            description: flash.error,
-            placement: 'bottomRight',
-            duration: 4,
-        });
-    }
-
     return (
         <SettingsLayout>
-            {contextHolder}
             <div className="p-4">
                 <h1 className="mb-4 text-2xl font-bold">Campus List</h1>
                 <div className="mt-[8px] flex w-full flex-col items-end space-y-5 rounded-[8px] bg-white p-[24px] text-center">

@@ -225,7 +225,7 @@ class DepartmentController extends Controller
             $department->delete();
 
             return redirect()
-                ->route('department')
+                ->back()
                 ->with('success', 'Department deleted successfully.');
 
         } catch (QueryException $e) {
