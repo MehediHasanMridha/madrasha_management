@@ -16,4 +16,9 @@ class VoucherType extends Model
     protected $casts = [
         'slug' => 'string',
     ];
+
+    public function expenseLogs()
+    {
+        return $this->hasMany(ExpenseLog::class);
+    }
 }

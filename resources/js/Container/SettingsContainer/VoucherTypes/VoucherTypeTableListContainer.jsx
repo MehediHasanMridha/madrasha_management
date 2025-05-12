@@ -3,6 +3,7 @@ import TableUI from '@/Components/UI/TableUI';
 import Icons from '@/icons';
 import { useBoundStore } from '@/stores';
 import { router } from '@inertiajs/react';
+import { notification } from 'antd';
 import { useState } from 'react';
 
 const VoucherTypeTableListContainer = ({ data, setIsLoading, isLoading }) => {
@@ -30,6 +31,22 @@ const VoucherTypeTableListContainer = ({ data, setIsLoading, isLoading }) => {
             router.delete(route('settings.voucher-types.destroy', id), {
                 onStart: () => {
                     setConfirmLoading(true);
+                },
+                onSuccess: (res) => {
+                    if (res.props.flash.success) {
+                        notification.success({
+                            message: 'Success',
+                            description: res.props.flash.success,
+                            placement: 'bottomRight',
+                        });
+                    }
+                    if (res.props.flash.error) {
+                        notification.error({
+                            message: 'Error',
+                            description: res.props.flash.error,
+                            placement: 'bottomRight',
+                        });
+                    }
                 },
                 onFinish: () => {
                     setConfirmLoading(false);
