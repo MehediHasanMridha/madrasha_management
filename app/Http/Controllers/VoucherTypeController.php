@@ -39,10 +39,14 @@ class VoucherTypeController extends Controller
 
         $validated['slug'] = Str::slug($validated['name']);
 
-        VoucherType::create($validated);
-
-        return redirect()->route('settings.voucher-types.index')
-            ->with('success', 'Voucher type created successfully.');
+        try {
+            VoucherType::create($validated);
+            return redirect()->route('settings.voucher-types.index')
+                ->with('success', 'Voucher type created successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', $e->getCode() === '23000' ? 'Voucher type name or slug already exists.' : 'An error occurred while creating the voucher type.');
+        }
     }
 
     public function update(Request $request, VoucherType $voucherType)

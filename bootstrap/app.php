@@ -5,8 +5,6 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets;
-use Illuminate\Http\Response;
-use Inertia\Inertia;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -22,16 +20,16 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions) {
         // app()->environment('production')
-        if (! config('app.debug')) {
-            $exceptions->respond(using: function (Response $response) {
-                if ($response->getStatusCode() === 404) {
-                    return Inertia::render("Errors/404");
-                } elseif ($response->getStatusCode() === 500) {
-                    $exception = $response->exception;
-                    return Inertia::render("Errors/500", [
-                        'message' => $exception ? $exception->getMessage() : 'An error occurred',
-                    ]);
-                }
-            });
-        }
+        // if (! config('app.debug')) {
+        //     $exceptions->respond(using: function (Response $response) {
+        //         if ($response->getStatusCode() === 404) {
+        //             return Inertia::render("Errors/404");
+        //         } elseif ($response->getStatusCode() === 500) {
+        //             $exception = $response->exception;
+        //             return Inertia::render("Errors/500", [
+        //                 'message' => $exception ? $exception->getMessage() : 'An error occurred',
+        //             ]);
+        //         }
+        //     });
+        // }
     })->create();

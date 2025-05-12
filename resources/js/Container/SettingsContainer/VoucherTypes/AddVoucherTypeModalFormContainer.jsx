@@ -4,6 +4,7 @@ import ModalUI from '@/Components/UI/ModalUI';
 import SubmitBtn from '@/Components/UI/SubmitBtn';
 import { useBoundStore } from '@/stores';
 import { router } from '@inertiajs/react';
+import { notification } from 'antd';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -30,7 +31,14 @@ const AddVoucherTypeModalFormContainer = () => {
             onStart: () => {
                 setIsLoading(true);
             },
-            onSuccess: () => {
+            onSuccess: (res) => {
+                if (res.props.flash.error) {
+                    notification.error({
+                        message: 'Error',
+                        description: res.props.flash.error,
+                        placement: 'bottomRight',
+                    });
+                }
                 reset();
                 setModal({ add: false });
                 setIsLoading(false);
@@ -49,6 +57,8 @@ const AddVoucherTypeModalFormContainer = () => {
                 });
                 setIsLoading(false);
             },
+            preserveState: true,
+            preserveScroll: true,
         });
     };
 
