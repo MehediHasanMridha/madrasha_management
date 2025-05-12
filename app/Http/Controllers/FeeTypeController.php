@@ -90,8 +90,8 @@ class FeeTypeController extends Controller
             return redirect()->route('settings.fee-types.index')
                 ->with('success', 'Fee type deleted successfully.');
         } catch (\Exception $e) {
-            return redirect()->route('settings.fee-types.index')
-                ->with('error', 'An error occurred while deleting the fee type.');
+            return redirect()->back()
+                ->with('error', $e->getCode() === '23000' ? 'Fee type cannot be deleted as it is being used in other records.' : 'An error occurred while deleting the Fee type.');
         }
     }
 }
