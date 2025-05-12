@@ -5,24 +5,12 @@ import EditClassModalFormContainer from '@/Container/Class/EditClassModalFormCon
 import SettingsLayout from '@/layouts/settings/SettingsLayout';
 import { useBoundStore } from '@/stores';
 import { Head } from '@inertiajs/react';
-import { notification } from 'antd';
 import { RiUserAddLine } from 'react-icons/ri';
 
 const ClassIndex = ({ classes, filters, departments, flash }) => {
     const { setModal } = useBoundStore((state) => state);
-    const [api, contextHolder] = notification.useNotification();
-    if (flash.error) {
-        api.error({
-            message: 'Error',
-            description: flash.error,
-            placement: 'bottomRight',
-            duration: 3,
-        });
-    }
-
     return (
         <SettingsLayout>
-            {contextHolder}
             <Head title="Classes" />
             <div className="p-4">
                 <h1 className="mb-4 text-2xl font-bold">Class List</h1>
