@@ -55,16 +55,24 @@ class ClassController extends Controller
             'icon'        => 'nullable|string',
         ]);
 
-        $class                = new Classes();
-        $class->name          = $request->input('name');
-        $class->department_id = $request->input('department');
-        $class->slug          = Str::slug($request->input('name')) . '-' . uniqid();
-        $class->des           = $request->input('description') ?? null;
-        $class->img           = $request->input('icon') ?? null;
+        try {
+            // department info
+            $department           = Department::where('id', $request->input('department'))->firstOrFail();
+            $class                = new Classes();
+            $class->name          = $request->input('name');
+            $class->department_id = $request->input('department');
+            $class->slug          = Str::slug($request->input('name')) . '-' . $department->slug ?? uniqid();
+            $class->des           = $request->input('description') ?? null;
+            $class->img           = $request->input('icon') ?? null;
 
-        $class->save();
+            $class->save();
 
-        return redirect()->route('class')->with('success', 'Class created successfully.');
+            return redirect()->route('class')->with('success', 'Class created successfully.');
+        } catch (QueryException $e) {
+            return redirect()
+                ->back()
+                ->with('error', $e->getCode() === '23000' ? 'Class name or slug already exists.' : 'An error occurred while creating the Class.');
+        }
     }
 
     public function update(Request $request, $class_slug)

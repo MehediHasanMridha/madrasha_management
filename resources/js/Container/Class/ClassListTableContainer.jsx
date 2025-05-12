@@ -3,6 +3,7 @@ import TableUI from '@/Components/UI/TableUI';
 import Icons from '@/icons';
 import { useBoundStore } from '@/stores';
 import { router } from '@inertiajs/react';
+import { notification } from 'antd';
 import { useEffect, useState } from 'react';
 
 const ClassListTableContainer = ({ classes, departments }) => {
@@ -36,6 +37,22 @@ const ClassListTableContainer = ({ classes, departments }) => {
             router.delete(route('class.delete', slug), {
                 onStart: () => {
                     setConfirmLoading(true);
+                },
+                onSuccess: (res) => {
+                    if (res.props?.flash?.error) {
+                        notification.error({
+                            message: 'Error',
+                            description: res.props?.flash?.error,
+                            placement: 'bottomRight',
+                        });
+                    }
+                    if (res.props?.flash?.success) {
+                        notification.success({
+                            message: 'Success',
+                            description: res.props?.flash?.success,
+                            placement: 'bottomRight',
+                        });
+                    }
                 },
                 onFinish: () => {
                     setConfirmLoading(false);
