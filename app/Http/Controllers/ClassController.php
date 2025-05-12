@@ -79,17 +79,15 @@ class ClassController extends Controller
     {
         $request->validate([
             'name'        => 'required|string|max:255',
-            'department'  => 'required|exists:departments,id',
             'description' => 'nullable|string',
             'icon'        => 'nullable|string',
         ]);
 
-        $class                = Classes::where('slug', $class_slug)->firstOrFail();
-        $class->name          = $request->input('name');
-        $class->department_id = $request->input('department');
-        $class->slug          = Str::slug($request->input('name')) . '-' . uniqid();
-        $class->des           = $request->input('description') ?? null;
-        $class->img           = $request->input('icon') ?? null;
+        $class       = Classes::where('slug', $class_slug)->firstOrFail();
+        $class->name = $request->input('name');
+        $class->slug = Str::slug($request->input('name')) . '-' . $class->department->slug ?? uniqid();
+        $class->des  = $request->input('description') ?? null;
+        $class->img  = $request->input('icon') ?? null;
 
         $class->save();
 
