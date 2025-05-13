@@ -43,6 +43,7 @@ class HandleInertiaRequests extends Middleware
         return [
              ...parent::share($request),
             'name'         => config('app.name'),
+            'mode'         => env('IS_DEV_SERVER', false) ? 'development' : 'production',
             'quote'        => ['message' => trim($message), 'author' => trim($author)],
             'auth'         => [
                 'user' => $request->user(),
