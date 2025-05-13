@@ -15,18 +15,16 @@ createInertiaApp({
 
         root.render(
             <>
-                {import.meta.env.VITE_IS_DEV_SERVER && (
-                    <div className="fixed z-50 w-full bg-red-500 text-center text-xl text-white">
-                        <GradientTextAnimation
-                            colors={['#fffffe', '#27defa', '#fffffe', '#27defa', '#fffffe']}
-                            animationSpeed={3}
-                            showBorder={false}
-                            className="custom-class"
-                        >
-                            This is Development Server
-                        </GradientTextAnimation>
-                    </div>
-                )}
+                <div className="fixed z-50 w-full bg-red-500 text-center text-xl text-white">
+                    <GradientTextAnimation
+                        colors={['#fffffe', '#27defa', '#fffffe', '#27defa', '#fffffe']}
+                        animationSpeed={3}
+                        showBorder={false}
+                        // className="custom-class"
+                    >
+                        This is Development Server
+                    </GradientTextAnimation>
+                </div>
                 <App {...props} />
             </>,
         );
