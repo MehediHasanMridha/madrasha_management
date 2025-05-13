@@ -75,11 +75,6 @@ const DepartmentTableListContainer = ({ data }) => {
             sorter: true,
         },
         {
-            title: 'Description',
-            dataIndex: 'des',
-            key: 'des',
-        },
-        {
             title: 'Action',
             dataIndex: 'action',
             key: 'action',
