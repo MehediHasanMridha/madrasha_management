@@ -4,6 +4,7 @@ import ModalUI from '@/Components/UI/ModalUI';
 import SubmitBtn from '@/Components/UI/SubmitBtn';
 import { useBoundStore } from '@/stores';
 import { router } from '@inertiajs/react';
+import { notification } from 'antd';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -25,8 +26,6 @@ const EditClassModalFormContainer = ({ departments }) => {
     useEffect(() => {
         if (passData) {
             setValue('name', passData.name);
-            setValue('icon', passData.img);
-            setValue('description', passData.des);
         }
     }, [passData, setValue]);
 
@@ -40,7 +39,21 @@ const EditClassModalFormContainer = ({ departments }) => {
             onStart: () => {
                 setIsLoading(true);
             },
-            onSuccess: () => {
+            onSuccess: (res) => {
+                if (res.props.flash.error) {
+                    notification.error({
+                        message: 'Error',
+                        description: res.props.flash.error,
+                        placement: 'bottomRight',
+                    });
+                }
+                if (res.props.flash.success) {
+                    notification.success({
+                        message: 'Success',
+                        description: res.props.flash.success,
+                        placement: 'bottomRight',
+                    });
+                }
                 reset();
                 setModal({ edit: false });
                 setIsLoading(false);
@@ -85,23 +98,6 @@ const EditClassModalFormContainer = ({ departments }) => {
                             className="rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
                             placeholder="Enter Class Name"
                             {...register('name', { required: 'Class Name is required' })}
-                        />
-                    </Field>
-                    <Field error={errors.icon} label={'Class Icon URL'}>
-                        <input
-                            type="text"
-                            name="icon"
-                            className="rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
-                            placeholder="Enter Class Icon URL"
-                            {...register('icon')}
-                        />
-                    </Field>
-                    <Field label={'Description'}>
-                        <textarea
-                            className="rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
-                            placeholder="Enter Description"
-                            {...register('description')}
-                            rows={4}
                         />
                     </Field>
                 </FieldSet>

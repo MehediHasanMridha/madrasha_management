@@ -83,15 +83,28 @@ class ClassController extends Controller
             'icon'        => 'nullable|string',
         ]);
 
-        $class       = Classes::where('slug', $class_slug)->firstOrFail();
-        $class->name = $request->input('name');
-        $class->slug = Str::slug($request->input('name')) . '-' . $class->department->slug ?? uniqid();
-        $class->des  = $request->input('description') ?? null;
-        $class->img  = $request->input('icon') ?? null;
+        try {
+            $class       = Classes::where('slug', $class_slug)->firstOrFail();
+            $class->name = $request->input('name');
+            $class->slug = Str::slug($request->input('name')) . '-' . $class->department->slug ?? uniqid();
+            $class->des  = $request->input('description') ?? null;
+            $class->img  = $request->input('icon') ?? null;
 
-        $class->save();
+            $class->save();
 
-        return redirect()->route('class')->with('success', 'Class updated successfully.');
+            return redirect()->back()->with('success', 'Class updated successfully.');
+
+        } catch (\Throwable $th) {
+            if ($th->getCode() === '23000') {
+                return redirect()
+                    ->back()
+                    ->with('error', 'Class name or slug already exists.');
+            }
+
+            return redirect()
+                ->back()
+                ->with('error', 'An error occurred while updating the Class.');
+        }
     }
 
     public function destroy($class_slug)

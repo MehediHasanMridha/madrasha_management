@@ -77,11 +77,6 @@ const ClassListTableContainer = ({ classes, departments }) => {
             key: 'department',
         },
         {
-            title: 'Description',
-            dataIndex: 'des',
-            key: 'des',
-        },
-        {
             title: 'Action',
             dataIndex: 'action',
             key: 'action',

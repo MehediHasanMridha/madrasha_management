@@ -106,23 +106,6 @@ const AddClassModalFormContainer = ({ departments }) => {
                             ))}
                         </select>
                     </Field>
-                    <Field error={errors.icon} label={'Class Icon URL'}>
-                        <input
-                            type="text"
-                            name="icon"
-                            className="rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
-                            placeholder="Enter Class Icon URL"
-                            {...register('icon')}
-                        />
-                    </Field>
-                    <Field label={'Description'}>
-                        <textarea
-                            className="rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
-                            placeholder="Enter Description"
-                            {...register('description')}
-                            rows={4}
-                        />
-                    </Field>
                 </FieldSet>
             </form>
         </ModalUI>
