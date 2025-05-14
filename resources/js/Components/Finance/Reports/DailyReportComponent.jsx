@@ -8,7 +8,7 @@ const DailyReportComponent = ({ daysArray, month }) => {
         <div className="py-6">
             <FinanceTabBarComponent tab="reports" />
             <span
-                className="flex w-fit cursor-pointer gap-1 text-black hover:text-gray-500"
+                className="flex w-fit cursor-pointer gap-1 p-4 text-black hover:text-gray-500"
                 onClick={() =>
                     router.get(
                         route('finance.reports'),
