@@ -5,6 +5,7 @@ use App\Actions\Finance\Expense\AddOthersVoucher;
 use App\Actions\Finance\Expense\AddSalaryVoucher;
 use App\Actions\Finance\Expense\Expense;
 use App\Actions\Finance\Expense\VoucherList;
+use App\Actions\Finance\Reports\MonthlyGroupReport;
 use App\Actions\Finance\Summary;
 use App\Models\ExpenseLog;
 use App\Models\FeeType;
@@ -74,9 +75,19 @@ class FinanceController extends Controller
      *
      * @return \Inertia\Response
      */
-    public function monthlyReports()
+    public function reports()
     {
-        return Inertia::render('Finance/MonthlyReports');
+        $monthly = MonthlyGroupReport::make();
+        // dd($monthly->handle());
+        return Inertia::render('Finance/Reports/index');
+    }
+    public function daily_report()
+    {
+        $month = request()->input('month');
+        $year  = request()->input('year');
+        // $day   = MonthlyDailyReport::run($month, $year);
+        // dd($monthly->handle());
+        return Inertia::render('Finance/Reports/DailyReport');
     }
 
     public function get_user_data($user_id)

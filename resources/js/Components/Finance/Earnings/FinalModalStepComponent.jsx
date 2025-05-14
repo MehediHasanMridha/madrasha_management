@@ -119,13 +119,13 @@ const FinalModalStepComponent = ({ data, fee, selectedRows, handleClose, loading
                                         <td className="border-[0.5px] border-black px-4 py-2">{index + 1}</td>
                                         <td className="border-[0.5px] border-black px-4 py-2">{row.month}</td>
                                         <td className="border-[0.5px] border-black px-4 py-2 text-right">
-                                            {formattedAmount(fee?.boarding_fee || 500)}
+                                            {formattedAmount(fee?.boarding_fee || 0)}
                                         </td>
                                         <td className="border-[0.5px] border-black px-4 py-2 text-right">
-                                            {formattedAmount(fee?.academic_fee || 500)}
+                                            {formattedAmount(fee?.academic_fee || 0)}
                                         </td>
                                         <td className="border-[0.5px] border-black px-4 py-2 text-right">
-                                            {formattedAmount((fee?.boarding_fee || 500) + (fee?.academic_fee || 500))}
+                                            {formattedAmount((fee?.boarding_fee || 0) + (fee?.academic_fee || 0))}
                                         </td>
                                     </tr>
                                 ))}

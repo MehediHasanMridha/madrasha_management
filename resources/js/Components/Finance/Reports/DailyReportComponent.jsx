@@ -1,0 +1,48 @@
+import dailyReportFileIcon from '@/assets/images/dailyReportFileIcon.svg';
+import { router } from '@inertiajs/react';
+import { ArrowDownToLine, ArrowLeft } from 'lucide-react';
+import FinanceTabBarComponent from '../FinanceTabBarComponent';
+
+const DailyReportComponent = ({ daysArray, month }) => {
+    return (
+        <div className="py-6">
+            <FinanceTabBarComponent tab="reports" />
+            <span
+                className="flex w-fit cursor-pointer gap-1 text-black hover:text-gray-500"
+                onClick={() =>
+                    router.get(
+                        route('finance.reports'),
+                        {},
+                        {
+                            preserveState: true,
+                            preserveScroll: true,
+                        },
+                    )
+                }
+            >
+                <ArrowLeft strokeWidth={1.5} absoluteStrokeWidth />
+                back
+            </span>
+            <div className="">
+                <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+                    {daysArray?.map((day, index) => (
+                        <div
+                            key={index}
+                            className="group h-[200px] w-fit cursor-pointer items-center gap-2 rounded-lg p-4 px-8 text-center hover:bg-white"
+                        >
+                            <img src={dailyReportFileIcon} className="h-fit group-hover:scale-80" alt="" />
+                            <p className="group-hover:-translate-y-2">
+                                {month}-{day}
+                            </p>
+                            <div className="mx-auto hidden w-fit cursor-pointer rounded-[4px] border border-black p-2 group-hover:block hover:border-[#0267FF] hover:text-[#0267FF]">
+                                <ArrowDownToLine strokeWidth={1.5} size={20} />
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default DailyReportComponent;
