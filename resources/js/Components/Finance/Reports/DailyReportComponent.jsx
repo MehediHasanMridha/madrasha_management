@@ -1,6 +1,6 @@
 import dailyReportFileIcon from '@/assets/images/dailyReportFileIcon.svg';
 import { router } from '@inertiajs/react';
-import { ArrowDownToLine, ArrowLeft } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import FinanceTabBarComponent from '../FinanceTabBarComponent';
 
 const DailyReportComponent = ({ daysArray, month }) => {
@@ -24,19 +24,16 @@ const DailyReportComponent = ({ daysArray, month }) => {
                 back
             </span>
             <div className="">
-                <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+                <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
                     {daysArray?.map((day, index) => (
                         <div
                             key={index}
-                            className="group h-[200px] w-fit cursor-pointer items-center gap-2 rounded-lg p-4 px-8 text-center hover:bg-white"
+                            className="flex h-[236px] w-[236px] cursor-pointer flex-col items-center justify-center gap-y-4 rounded-lg p-4 px-8 text-center hover:bg-white"
                         >
-                            <img src={dailyReportFileIcon} className="h-fit group-hover:scale-80" alt="" />
-                            <p className="group-hover:-translate-y-2">
+                            <img src={dailyReportFileIcon} className="mx-auto h-fit" alt="" />
+                            <p className="">
                                 {month}-{day}
                             </p>
-                            <div className="mx-auto hidden w-fit cursor-pointer rounded-[4px] border border-black p-2 group-hover:block hover:border-[#0267FF] hover:text-[#0267FF]">
-                                <ArrowDownToLine strokeWidth={1.5} size={20} />
-                            </div>
                         </div>
                     ))}
                 </div>
