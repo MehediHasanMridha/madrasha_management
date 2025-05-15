@@ -22,7 +22,7 @@ const DailyReportComponent = ({ daysArray, month, breadcrumbItems }) => {
                             key={index}
                             className="flex h-[236px] w-[236px] cursor-pointer flex-col items-center justify-center gap-y-4 rounded-lg p-4 px-8 text-center hover:bg-white"
                         >
-                            <img src={dailyReportFileIcon} className="mx-auto h-fit" alt="" />
+                            <img src={dailyReportFileIcon} className="mx-auto h-fit select-none" draggable="false" alt="" />
                             <p className="">
                                 {month}-{day}
                             </p>

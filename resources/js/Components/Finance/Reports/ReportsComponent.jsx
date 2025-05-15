@@ -19,7 +19,7 @@ const ReportsComponent = ({ month, currentMonth, setDaysInMonth }) => {
                             }}
                             className="flex h-[236px] w-[236px] cursor-pointer flex-col items-center justify-center gap-y-4 rounded-lg p-4 px-8 text-center hover:bg-white"
                         >
-                            <img src={FolderIcon} className="mx-auto h-fit" alt="" />
+                            <img src={FolderIcon} className="mx-auto h-fit select-none" alt="" draggable="false" />
                             <p className="">{monthName}</p>
                             <div className="mx-auto hidden w-fit cursor-pointer rounded-[4px] border border-black p-2 group-hover:block hover:border-[#0267FF] hover:text-[#0267FF]">
                                 <ArrowDownToLine strokeWidth={1.5} size={20} />
