@@ -47,17 +47,17 @@ const FinanceTabBarComponent = ({ tab }) => {
                     <span>Outgoings</span>
                 </Link>
                 <Link
-                    href={route('finance.monthly-reports')}
+                    href={route('finance.reports')}
                     className={cn(
                         'flex w-fit cursor-pointer items-center space-x-[8px]',
-                        tab === 'monthly_reports' ? 'border-b-[1px] border-[#4891FF] px-[8px] py-[6px] text-[#4891FF]' : 'text-[#4A4A4A]',
+                        tab === 'reports' ? 'border-b-[1px] border-[#4891FF] px-[8px] py-[6px] text-[#4891FF]' : 'text-[#4A4A4A]',
                     )}
                     preserveState
                     preserveScroll
                     as="button"
                 >
                     <FileSpreadsheet strokeWidth={1.5} />
-                    <span>Monthly Report</span>
+                    <span>Report</span>
                 </Link>
             </div>
             <SettingDropdownContainer />
