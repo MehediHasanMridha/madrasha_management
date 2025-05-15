@@ -1,28 +1,20 @@
 import dailyReportFileIcon from '@/assets/images/dailyReportFileIcon.svg';
-import { router } from '@inertiajs/react';
-import { ArrowLeft } from 'lucide-react';
+import BreadcrumbUI from '@/Components/UI/BreadcrumbUI';
+import { CloudDownload } from 'lucide-react';
 import FinanceTabBarComponent from '../FinanceTabBarComponent';
 
-const DailyReportComponent = ({ daysArray, month }) => {
+const DailyReportComponent = ({ daysArray, month, breadcrumbItems }) => {
     return (
         <div className="py-6">
             <FinanceTabBarComponent tab="reports" />
-            <span
-                className="flex w-fit cursor-pointer gap-1 p-4 text-black hover:text-gray-500"
-                onClick={() =>
-                    router.get(
-                        route('finance.reports'),
-                        {},
-                        {
-                            preserveState: true,
-                            preserveScroll: true,
-                        },
-                    )
-                }
-            >
-                <ArrowLeft strokeWidth={1.5} absoluteStrokeWidth />
-                back
-            </span>
+            <div className="mb-6 flex items-center justify-between">
+                <BreadcrumbUI items={breadcrumbItems} />
+                {month && (
+                    <span className="flex cursor-pointer gap-x-2 text-[#0267FF]">
+                        <CloudDownload size={20} /> Download monthly report
+                    </span>
+                )}
+            </div>
             <div className="">
                 <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
                     {daysArray?.map((day, index) => (

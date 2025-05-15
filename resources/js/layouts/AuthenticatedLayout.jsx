@@ -10,7 +10,7 @@ export default function AuthenticatedLayout({ children }) {
             {({ Content }) => (
                 <>
                     {mode === 'development' && (
-                        <div className="absolute top-0 z-50 w-full bg-red-500 text-center text-xl text-white">
+                        <div className="text-md absolute top-0 z-50 w-full bg-red-500 py-[4px] text-center text-white">
                             <GradientTextAnimation
                                 colors={['#fffffe', '#27defa', '#fffffe', '#27defa', '#fffffe']}
                                 animationSpeed={3}
