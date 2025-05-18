@@ -16,7 +16,7 @@ const DailyReportViewContainer = ({ reportViewModal, setReportViewModal, reportV
         pageStyle: `
                 @media print {
                     @page {
-                        size: A5;
+                        size: A4;
                         margin: 32px;
                     }
                     body {
