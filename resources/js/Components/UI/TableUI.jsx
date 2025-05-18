@@ -143,6 +143,7 @@ const TableUI = ({ data, columns, showLoading = false, routeName, showRowSelecti
                         console.log('🚀 ~ TableUI ~ selectedRows:', selectedRows);
                         console.log('🚀 ~ TableUI ~ info:', info);
                     },
+                    selectedRowKeys: [],
                     getCheckboxProps: (record) => ({
                         disabled: record.name === 'Disabled User',
                         name: record.name,
