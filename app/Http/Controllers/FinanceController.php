@@ -5,6 +5,7 @@ use App\Actions\Finance\Expense\AddOthersVoucher;
 use App\Actions\Finance\Expense\AddSalaryVoucher;
 use App\Actions\Finance\Expense\Expense;
 use App\Actions\Finance\Expense\VoucherList;
+use App\Actions\Finance\Reports\MonthlyDailyReport;
 use App\Actions\Finance\Reports\MonthlyGroupReport;
 use App\Actions\Finance\Summary;
 use App\Models\ExpenseLog;
@@ -295,6 +296,15 @@ class FinanceController extends Controller
         AddOthersVoucher::run($request);
         return to_route('finance.outgoings')->with('success', 'Voucher added successfully');
 
+    }
+
+    public function daily_report_data()
+    {
+        $month = request()->input('month');
+        $day   = request()->input('day');
+        $year  = request()->input('year') ?? date('Y');
+        $data  = MonthlyDailyReport::run($day, $month, $year);
+        return response()->json($data);
     }
 
     // delete voucher

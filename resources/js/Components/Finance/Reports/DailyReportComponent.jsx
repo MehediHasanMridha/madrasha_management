@@ -3,7 +3,7 @@ import BreadcrumbUI from '@/Components/UI/BreadcrumbUI';
 import { CloudDownload } from 'lucide-react';
 import FinanceTabBarComponent from '../FinanceTabBarComponent';
 
-const DailyReportComponent = ({ daysArray, month, breadcrumbItems }) => {
+const DailyReportComponent = ({ daysArray, month, breadcrumbItems, handleClick }) => {
     return (
         <div className="py-6">
             <FinanceTabBarComponent tab="reports" />
@@ -21,8 +21,9 @@ const DailyReportComponent = ({ daysArray, month, breadcrumbItems }) => {
                         <div
                             key={index}
                             className="flex h-[236px] w-[236px] cursor-pointer flex-col items-center justify-center gap-y-4 rounded-lg p-4 px-8 text-center hover:bg-white"
+                            onClick={() => handleClick(day)}
                         >
-                            <img src={dailyReportFileIcon} className="mx-auto h-fit" alt="" />
+                            <img src={dailyReportFileIcon} className="mx-auto h-fit select-none" draggable="false" alt="" />
                             <p className="">
                                 {month}-{day}
                             </p>
