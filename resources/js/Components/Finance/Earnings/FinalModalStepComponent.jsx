@@ -11,14 +11,17 @@ const FinalModalStepComponent = ({ data, fee, selectedRows, handleClose, loading
     const printComponentRef = useRef(null);
     const currentDate = new Date();
     const { user } = usePage().props.auth;
-    const formattedDate = currentDate.toLocaleString('en-US', {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true,
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-    });
+    //  May 19, 2025 at 12:48 PM to  May 19, 2025 ও 12:48 PM
+    const formattedDate = currentDate
+        .toLocaleString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true,
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+        })
+        .replace('at', ' সময়:');
 
     const handleBeforePrint = useCallback(() => {
         setLoading(true);
@@ -56,28 +59,28 @@ const FinalModalStepComponent = ({ data, fee, selectedRows, handleClose, loading
         <div className="flex h-full flex-col space-y-4 px-2">
             {/* Printable Receipt Content */}
             <div className="space-y-4" ref={printComponentRef}>
-                {/* School Header */}
+                {/* স্কুল হেডার */}
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <img src={Logo} alt="School Logo" className="h-12 print:h-[37px]" />
                         <div>
-                            <h1 className="text-lg font-bold print:text-[20px]">Madrasatul Hera Tangail</h1>
-                            <p className="text-sm text-black print:text-[12px]">Monowara Rashid Villa, Rahman vaban, Kodalia, Tangail</p>
+                            <h1 className="text-lg font-bold print:text-[20px]">মাদরাসাতুল হেরা টাঙ্গাইল</h1>
+                            <p className="text-sm text-black print:text-[12px]">মনোয়ারা রশিদ ভিলা, রহমান ভবন, কোদালিয়া, টাঙ্গাইল</p>
                         </div>
                     </div>
                     <div className="text-right text-sm print:text-[10px]">
                         <div className="prtint:w-[100px] flex w-fit items-center justify-between gap-2">
                             <FaPhone className="h-[8px] w-[8px]" />
-                            <span>01766-925262</span>
+                            <span>০১৭৬৬-৯২৫২৬২</span>
                         </div>
                         <div className="prtint:w-[100px] flex w-fit items-center justify-between gap-2">
                             <FaPhone className="h-[8px] w-[8px]" />
-                            <span>01717-052793</span>
+                            <span>০১৭১৭-০৫২৭৯৩</span>
                         </div>
                     </div>
                 </div>
                 <hr className="print:border-[0.5px] print:border-black" />
-                {/* Student Info */}
+                {/* শিক্ষার্থী তথ্য */}
                 {data && (
                     <div className="flex items-center justify-between rounded-[8px]">
                         <div className="flex items-center space-x-4">
@@ -94,30 +97,36 @@ const FinalModalStepComponent = ({ data, fee, selectedRows, handleClose, loading
                             </div>
                         </div>
                         <div className="text-right">
-                            <div className="text-lg font-semibold print:text-[12px]">Monthly Payment Receipt</div>
-                            <div className="text-sm text-black print:text-[10px]">Date: {formattedDate}</div>
+                            <div className="text-lg font-semibold print:text-[12px]">মাসিক বেতন রসিদ</div>
+                            <div className="text-sm text-black print:text-[10px]">তারিখ: {formattedDate}</div>
                         </div>
                     </div>
                 )}
 
-                {/* Monthly Fee Table */}
+                {/* মাসিক ফি টেবিল */}
                 {selectedRows && selectedRows.length > 0 && (
                     <div className="h-[200px] overflow-x-auto overflow-y-scroll print:h-fit print:overflow-y-auto">
                         <table className="w-full min-w-full table-auto border-collapse">
                             <thead>
                                 <tr>
-                                    <th className="border-[0.5px] border-black px-4 py-2 text-left">S/N</th>
-                                    <th className="border-[0.5px] border-black px-4 py-2 text-left">Month ({year})</th>
-                                    <th className="border-[0.5px] border-black px-4 py-2 text-right">Boarding fee</th>
-                                    <th className="border-[0.5px] border-black px-4 py-2 text-right">Academic fee</th>
-                                    <th className="border-[0.5px] border-black px-4 py-2 text-right">Total</th>
+                                    <th className="border-[0.5px] border-black px-4 py-2 text-left">ক্রমিক</th>
+                                    <th className="border-[0.5px] border-black px-4 py-2 text-left">মাস ({year})</th>
+                                    <th className="border-[0.5px] border-black px-4 py-2 text-right">বোর্ডিং ফি</th>
+                                    <th className="border-[0.5px] border-black px-4 py-2 text-right">একাডেমিক ফি</th>
+                                    <th className="border-[0.5px] border-black px-4 py-2 text-right">মোট</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {selectedRows.map((row, index) => (
                                     <tr key={index}>
-                                        <td className="border-[0.5px] border-black px-4 py-2">{index + 1}</td>
-                                        <td className="border-[0.5px] border-black px-4 py-2">{row.month}</td>
+                                        <td className="border-[0.5px] border-black px-4 py-2">{Number(index + 1).toLocaleString('bn')}</td>
+                                        <td className="border-[0.5px] border-black px-4 py-2">
+                                            {(() => {
+                                                const monthIndex =
+                                                    typeof row.month === 'number' ? row.month - 1 : new Date(`${row.month} 1, 2000`).getMonth();
+                                                return new Date(2000, monthIndex, 1).toLocaleString('bn-BD', { month: 'long' });
+                                            })()}
+                                        </td>
                                         <td className="border-[0.5px] border-black px-4 py-2 text-right">
                                             {formattedAmount(fee?.boarding_fee || 0)}
                                         </td>
@@ -134,47 +143,45 @@ const FinalModalStepComponent = ({ data, fee, selectedRows, handleClose, loading
                     </div>
                 )}
 
-                {/* Payment Summary */}
+                {/* পেমেন্ট সারাংশ */}
                 <div className="mt-6 flex justify-between rounded-[4px] border-[0.5px] border-[#131313] p-4">
                     <div className="w-full space-y-2">
                         <div className="flex justify-between">
-                            <span>Sub Total:</span>
-                            <span>{formattedAmount(fee?.total || 0)} BDT</span>
+                            <span>মোট:</span>
+                            <span>{formattedAmount(fee?.total || 0)} টাকা</span>
                         </div>
                         <div className="flex justify-between">
-                            <span>Discount:</span>
-                            <span>{formattedAmount(fee?.discount || 0)} BDT</span>
+                            <span>ছাড়:</span>
+                            <span>{formattedAmount(fee?.discount || 0)} টাকা</span>
                         </div>
                         <div className="flex justify-between border-t border-dashed pt-2 font-bold">
-                            <span>Grand total:</span>
-                            <span>{formattedAmount((fee?.total || 0) - (fee?.discount || 0))} BDT</span>
+                            <span>সর্বমোট:</span>
+                            <span>{formattedAmount((fee?.total || 0) - (fee?.discount || 0))} টাকা</span>
                         </div>
                         <div className="flex justify-between border-t border-dashed pt-2">
-                            <span>Paid:</span>
-                            <span>{formattedAmount(fee?.total || 0)} BDT</span>
+                            <span>পরিশোধিত:</span>
+                            <span>{formattedAmount(fee?.total || 0)} টাকা</span>
                         </div>
                     </div>
                 </div>
 
-                {/* Comment Section */}
+                {/* মন্তব্য বিভাগ */}
                 {comments && (
                     <div className="mt-6">
-                        <h3 className="mb-2 font-medium">Comment</h3>
+                        <h3 className="mb-2 font-medium">মন্তব্য</h3>
                         <p className="h-fit w-full rounded-[4px] border-[0.5px] border-[#131313] p-3 print:h-[50px]">{comments} </p>
                     </div>
                 )}
                 <div className="flex items-center justify-center gap-2">
-                    Added by :
+                    যোগ করেছেন :
                     <img
                         src={getAvatarImage(user?.img, 'staff_images', user?.name)}
                         alt=""
                         className="h-[20px] w-[20px] rounded-sm print:h-[10px] print:w-[10px]"
                     />
-                    {user?.name} ID: {user?.unique_id}
+                    {user?.name} আইডি: {user?.unique_id}
                 </div>
             </div>
-
-            {/* Action Buttons - Not Printed */}
             <div className="mt-auto flex w-full gap-[18px] pt-4 print:hidden">
                 <StaticBtn
                     onClick={() => {

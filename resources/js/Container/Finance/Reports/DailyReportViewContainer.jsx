@@ -20,11 +20,22 @@ const DailyReportViewContainer = ({ reportViewModal, setReportViewModal, reportV
                         margin: 32px;
                     }
                     body {
-                        font-size: 12px;
+                        font-size: 14px;
                         margin: 0;
                         padding: 0;
-                        line-height: 1.2;
                     }
+                        table {
+                            width: 100%;
+                            border-collapse: collapse;
+                        }
+                        th, td {
+                            border: 1px solid black;
+                            padding: 8px;
+                            text-align: left;
+                        }
+                        th {
+                            background-color: #f2f2f2;
+                        }
                 }
             `,
     });
