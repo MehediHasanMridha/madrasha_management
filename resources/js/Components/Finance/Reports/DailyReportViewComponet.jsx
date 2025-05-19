@@ -18,25 +18,23 @@ const DailyReportViewComponent = forwardRef(({ reportViewModal, setReportViewMod
                     <div className="max-h-[60vh] overflow-y-scroll p-4 print:max-h-[100vh] print:overflow-y-auto print:p-0" ref={printViewDom}>
                         {/* Header */}
                         <div className="mb-4 text-center">
-                            <h1 className="text-xl font-bold">Madrasatul Hera Tangail</h1>
-                            <p className="text-sm">Monohordi Nashid villa,Ibrhima vobon, Kandila, Tangail</p>
+                            <h1 className="text-xl font-bold">মাদরাসাতুল হেরা</h1>
+                            <p className="text-sm">মোনোয়ারা রসিদ ভিলা,রহমান ভবন, কোদালিয়া, টাংগাইল</p>
                         </div>
-
                         {/* Date and Time */}
                         <div className="mb-4 flex justify-between">
-                            <div>Date: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
-                            <div>Print time: {new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}</div>
+                            <div>তারিখ: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
+                            <div>সময়: {new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}</div>
                         </div>
-
                         {/* Income Section */}
                         <div className="mb-4">
-                            <h2 className="mb-2 font-bold">Income today</h2>
+                            <h2 className="mb-2 font-bold">আজকের আয়</h2>
                             <table className="w-full border-collapse">
                                 <thead>
                                     <tr className="border">
-                                        <th className="border p-2">S/N</th>
-                                        <th className="border p-2">Income fields</th>
-                                        <th className="border p-2">Amount</th>
+                                        <th className="w-[20px] border p-2">ক্রমিক</th>
+                                        <th className="border p-2 text-left">আয়ের উৎস</th>
+                                        <th className="w-[100px] border p-2 text-left">টাকা</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -50,71 +48,74 @@ const DailyReportViewComponent = forwardRef(({ reportViewModal, setReportViewMod
                                 </tbody>
                             </table>
                         </div>
-
-                        {/* Outgoing Section */}
+                        {/* ব্যয়ের অংশ */}
                         <div className="mb-4">
-                            <h2 className="mb-2 font-bold">Outgoing today</h2>
+                            <h2 className="mb-2 font-bold">আজকের ব্যয়</h2>
                             <table className="w-full border-collapse">
                                 <thead>
                                     <tr className="border">
-                                        <td className="border p-2">S/N</td>
-                                        <td className="border p-2">Voucher name</td>
-                                        <td className="border p-2">Voucher no.</td>
-                                        <td className="border p-2">Amount</td>
+                                        <td className="w-[20px] border p-2 font-bold">ক্রমিক</td>
+                                        <td className="border p-2 font-bold">ভাউচারের নাম</td>
+                                        <td className="border p-2 font-bold">ভাউচার নং</td>
+                                        <td className="w-[100px] border p-2 font-bold">টাকা</td>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {reportViewData?.outgoings?.map((item, index) => (
                                         <tr key={index} className="border">
-                                            <td className="border p-2">{index + 1}</td>
+                                            <td className="border p-2">{(index + 1).toLocaleString('bn')}</td>
                                             <td className="border p-2">{item.name}</td>
-                                            <td className="border p-2">23455</td>
-                                            <td className="border p-2">{item.amount}</td>
+                                            <td className="border p-2">{item.voucher_no ? item.voucher_no.toLocaleString('bn') : ''}</td>
+                                            <td className="border p-2 text-right">
+                                                {Number(item.amount).toLocaleString('bn', {
+                                                    minimumFractionDigits: 0,
+                                                })}
+                                            </td>
                                         </tr>
                                     ))}
                                 </tbody>
                             </table>
                         </div>
-
-                        {/* Summary Section */}
+                        {/* সারসংক্ষেপ অংশ */}
                         <div className="mb-4">
                             <div className="flex justify-between">
-                                <span>Total Income today:</span>
-                                <span>{reportViewData?.incomings?.reduce((total, item) => total + Number(item.amount), 0)} BDT</span>
+                                <span>আজকের মোট আয়:</span>
+                                <span>
+                                    {reportViewData?.incomings?.reduce((total, item) => total + Number(item.amount), 0).toLocaleString('bn')} টাকা
+                                </span>
                             </div>
                             <div className="flex justify-between">
-                                <span>Total outgoing today:</span>
-                                <span>{reportViewData?.outgoings?.reduce((total, item) => total + item.amount, 0)} BDT</span>
+                                <span>আজকের মোট ব্যয়:</span>
+                                <span>{reportViewData?.outgoings?.reduce((total, item) => total + item.amount, 0).toLocaleString('bn')} টাকা</span>
                             </div>
                             <div className="flex justify-between font-bold">
-                                <span>Current balance today:</span>
+                                <span>আজকের বর্তমান ব্যালেন্স:</span>
                                 <span>
-                                    {reportViewData?.incomings?.reduce((total, item) => total + Number(item.amount), 0) -
-                                        reportViewData?.outgoings?.reduce((total, item) => total + item.amount, 0)}{' '}
-                                    BDT
+                                    {(
+                                        reportViewData?.incomings?.reduce((total, item) => total + Number(item.amount), 0) -
+                                        reportViewData?.outgoings?.reduce((total, item) => total + item.amount, 0)
+                                    ).toLocaleString('bn')}{' '}
+                                    টাকা
                                 </span>
                             </div>
                         </div>
-
-                        {/* Comment Section */}
+                        {/* মন্তব্য অংশ*/}
                         <div className="mb-4">
-                            <h2 className="mb-2 font-bold">Comment</h2>
-                            <textarea className="min-h-[100px] w-full border p-2" placeholder="Hi this is a comment" />
+                            <h2 className="mb-2 font-bold">মন্তব্য</h2>
+                            <textarea className="min-h-[100px] w-full border p-2" placeholder="এখানে মন্তব্য লিখুন" />
                         </div>
-
-                        {/* Signatures */}
+                        {/* স্বাক্ষর */}
                         <div className="mt-8 flex justify-between">
                             <div className="text-center">
-                                <div className="w-32 border-t border-black">Head of department</div>
+                                <div className="w-32 border-t border-black">বিভাগীয় প্রধান</div>
                             </div>
                             <div className="text-center">
-                                <div className="w-32 border-t border-black">Principal</div>
+                                <div className="w-32 border-t border-black">প্রধান শিক্ষক</div>
                             </div>
                         </div>
-
-                        {/* Footer */}
+                        {/* ফুটার */}
                         <div className="mt-8 text-center text-sm">
-                            This report is printed by © {user?.name} ID:{user?.unique_id}{' '}
+                            এই রিপোর্টটি প্রিন্ট করেছেন © {user?.name} আইডি:{user?.unique_id}{' '}
                         </div>
                     </div>
                     <div className="mt-4 flex justify-end">
