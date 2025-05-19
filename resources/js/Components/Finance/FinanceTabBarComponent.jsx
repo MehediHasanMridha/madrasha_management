@@ -16,6 +16,7 @@ const FinanceTabBarComponent = ({ tab }) => {
                     preserveState
                     preserveScroll
                     as="button"
+                    prefetch
                 >
                     <ChartPie size={24} strokeWidth={1.5} />
                     <span>Summary</span>
@@ -29,6 +30,7 @@ const FinanceTabBarComponent = ({ tab }) => {
                     preserveState
                     preserveScroll
                     as="button"
+                    prefetch
                 >
                     <BanknoteArrowUp strokeWidth={1.5} size={24} />
                     <span>Earnings</span>
@@ -42,6 +44,7 @@ const FinanceTabBarComponent = ({ tab }) => {
                     preserveState
                     preserveScroll
                     as="button"
+                    prefetch
                 >
                     <BanknoteArrowDown strokeWidth={1.5} />
                     <span>Outgoings</span>
@@ -55,6 +58,7 @@ const FinanceTabBarComponent = ({ tab }) => {
                     preserveState
                     preserveScroll
                     as="button"
+                    prefetch
                 >
                     <FileSpreadsheet strokeWidth={1.5} />
                     <span>Report</span>
