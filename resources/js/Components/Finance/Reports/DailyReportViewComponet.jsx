@@ -48,9 +48,13 @@ const DailyReportViewComponent = forwardRef(({ reportViewModal, setReportViewMod
                                 <tbody>
                                     {reportViewData?.incomings?.map((item, index) => (
                                         <tr key={index} className="border">
-                                            <td className="border p-2">{index + 1}</td>
+                                            <td className="border p-2">{Number(index + 1).toLocaleString('bn')}</td>
                                             <td className="border p-2">{item.type}</td>
-                                            <td className="border p-2">{item.amount}</td>
+                                            <td className="border p-2 text-right">
+                                                {Number(item.amount).toLocaleString('bn', {
+                                                    minimumFractionDigits: 0,
+                                                })}
+                                            </td>
                                         </tr>
                                     ))}
                                 </tbody>
