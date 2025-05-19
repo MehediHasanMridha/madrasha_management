@@ -16,6 +16,7 @@ const VoucherModalContainer = ({ modal, setModal }) => {
                 setConfirmLoading(false);
                 setOpen(false);
                 setModal(false);
+                router.flushAll();
             },
             onError: (errors) => {
                 console.log('🚀 ~ router.delete ~ errors:', errors);

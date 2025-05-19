@@ -77,6 +77,7 @@ const AddVoucherContainer = ({ modal, setModal }) => {
                             placement: 'bottomRight',
                         });
                     }
+                    router.flushAll();
                 },
                 onError: (error) => {
                     console.error('Error submitting data:', error);
