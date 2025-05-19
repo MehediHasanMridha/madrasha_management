@@ -23,7 +23,6 @@ const DailyReportViewContainer = ({ reportViewModal, setReportViewModal, reportV
                         font-size: 14px;
                         margin: 0;
                         padding: 0;
-                        line-height: 1.2;
                     }
                         table {
                             width: 100%;

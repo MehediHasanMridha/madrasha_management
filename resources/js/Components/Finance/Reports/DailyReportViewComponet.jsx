@@ -1,3 +1,4 @@
+import Logo from '@/assets/images/logo.png';
 import LoadingUI from '@/Components/UI/LoadingUI';
 import ModalUI from '@/Components/UI/ModalUI';
 import { forwardRef } from 'react';
@@ -17,15 +18,22 @@ const DailyReportViewComponent = forwardRef(({ reportViewModal, setReportViewMod
                 <>
                     <div className="max-h-[60vh] overflow-y-scroll p-4 print:max-h-[100vh] print:overflow-y-auto print:p-0" ref={printViewDom}>
                         {/* Header */}
-                        <div className="mb-4 text-center">
-                            <h1 className="text-xl font-bold">মাদরাসাতুল হেরা</h1>
-                            <p className="text-sm">মোনোয়ারা রসিদ ভিলা,রহমান ভবন, কোদালিয়া, টাংগাইল</p>
+                        <div className="mb-4 flex items-center justify-between border-b-2 border-b-black pb-4">
+                            <div className="flex items-center gap-4">
+                                <img src={Logo} alt="School Logo" className="h-12 print:h-[37px]" />
+                                <div>
+                                    <h1 className="text-lg font-bold print:text-[20px]">মাদরাসাতুল হেরা টাঙ্গাইল</h1>
+                                    <p className="text-sm text-black print:text-[12px]">মনোয়ারা রশিদ ভিলা, রহমান ভবন, কোদালিয়া, টাঙ্গাইল</p>
+                                </div>
+                            </div>
+                            <div className="text-right text-sm print:text-[15px]">
+                                <div className="prtint:w-[100px] flex w-fit items-center justify-between gap-2 font-bold">দৈনিক হিসাব রিপোর্ট</div>
+                                <div className="prtint:w-[100px] flex w-fit items-center justify-between gap-2">
+                                    তারিখ: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                                </div>
+                            </div>
                         </div>
-                        {/* Date and Time */}
-                        <div className="mb-4 flex justify-between">
-                            <div>তারিখ: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
-                            <div>সময়: {new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}</div>
-                        </div>
+
                         {/* Income Section */}
                         <div className="mb-4">
                             <h2 className="mb-2 font-bold">আজকের আয়</h2>
@@ -77,7 +85,7 @@ const DailyReportViewComponent = forwardRef(({ reportViewModal, setReportViewMod
                             </table>
                         </div>
                         {/* সারসংক্ষেপ অংশ */}
-                        <div className="mb-4">
+                        <div className="mb-4 space-y-2">
                             <div className="flex justify-between">
                                 <span>আজকের মোট আয়:</span>
                                 <span>
@@ -102,10 +110,10 @@ const DailyReportViewComponent = forwardRef(({ reportViewModal, setReportViewMod
                         {/* মন্তব্য অংশ*/}
                         <div className="mb-4">
                             <h2 className="mb-2 font-bold">মন্তব্য</h2>
-                            <textarea className="min-h-[100px] w-full border p-2" placeholder="এখানে মন্তব্য লিখুন" />
+                            <textarea className="min-h-[100px] w-full border border-black p-2" placeholder="এখানে মন্তব্য লিখুন" />
                         </div>
                         {/* স্বাক্ষর */}
-                        <div className="mt-8 flex justify-between">
+                        <div className="absolute bottom-5 hidden w-full justify-between print:flex">
                             <div className="text-center">
                                 <div className="w-32 border-t border-black">বিভাগীয় প্রধান</div>
                             </div>
@@ -114,8 +122,12 @@ const DailyReportViewComponent = forwardRef(({ reportViewModal, setReportViewMod
                             </div>
                         </div>
                         {/* ফুটার */}
-                        <div className="mt-8 text-center text-sm">
-                            এই রিপোর্টটি প্রিন্ট করেছেন © {user?.name} আইডি:{user?.unique_id}{' '}
+                        <div className="absolute bottom-0 hidden w-full items-center justify-between text-[10px] print:flex">
+                            <div>প্রিন্টের তারিখ: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
+                            <div className="text-center">
+                                এই রিপোর্টটি প্রিন্ট করেছেন © {user?.name} আইডি:{user?.unique_id}{' '}
+                            </div>
+                            <div>প্রিন্টের সময়: {new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}</div>
                         </div>
                     </div>
                     <div className="mt-4 flex justify-end">
