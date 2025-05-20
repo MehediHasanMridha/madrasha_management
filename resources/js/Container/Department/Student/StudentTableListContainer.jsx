@@ -101,6 +101,7 @@ const StudentTableListContainer = ({ department, data, setIsLoading, isLoading }
             align: 'center',
             render: (text, record) => (
                 <div className="flex justify-center gap-2">
+                    <Icons name="eye" className="text-fuchsia-600 hover:text-fuchsia-900" />
                     <Icons
                         name="edit"
                         onClick={() => {
