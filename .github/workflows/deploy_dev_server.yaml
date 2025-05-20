@@ -36,9 +36,10 @@ jobs:
               uses: SamKirkland/FTP-Deploy-Action@v4.3.4
               with:
                   server: ${{ secrets.SFTP_HOST }}
+                  port: 21
                   username: ${{ secrets.SFTP_USER }}
                   password: ${{ secrets.SFTP_PASS }}
-                  server-dir: madrasha.${{secrets.SFTP_HOST}}/
+                  server-dir: madrasha.om-qrcode.com/
                   exclude: |
                       **/.git*
                       **/.git*/**
