@@ -1,6 +1,8 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Actions\Finance\Due\DueFilterGroup;
+use App\Actions\Finance\Due\DueList;
 use App\Actions\Finance\Expense\AddOthersVoucher;
 use App\Actions\Finance\Expense\AddSalaryVoucher;
 use App\Actions\Finance\Expense\Expense;
@@ -318,6 +320,21 @@ class FinanceController extends Controller
             return to_route('finance.outgoings')->with('success', 'Voucher deleted successfully');
         }
         return response()->json(['error' => 'Voucher not found'], 404);
+    }
+
+    public function due_list()
+    {
+        $year       = request()->input('year') ?? date('Y');
+        $gender     = request()->input('gender');
+        $class      = request()->input('class');
+        $department = request()->input('department');
+
+        $data        = DueList::run($year, $gender, $class, $department);
+        $filterGroup = DueFilterGroup::run($year);
+        return Inertia::render('admin::finance/dueList', [
+            'data'       => $data,
+            'filterData' => $filterGroup,
+        ]);
     }
 
 }
