@@ -188,4 +188,9 @@ class StudentController extends Controller
         ]);
 
     }
+
+    public function show_student_info($department_slug, $student_id)
+    {
+        return "student info";
+    }
 }

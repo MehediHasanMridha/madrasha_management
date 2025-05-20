@@ -21,11 +21,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Department
     Route::prefix('department')->group(function () {
-        Route::get('/students/{department_slug}', [DepartmentController::class, 'students_show'])->name('department.students_show');
         Route::get('/teachers/{department_slug}', [DepartmentController::class, 'teachers_show'])->name('department.teachers_show');
 
         // Student
-        Route::prefix('student')->group(function () {
+        Route::prefix('students')->group(function () {
+            Route::get('{department_slug}', [DepartmentController::class, 'students_show'])->name('department.students_show');
+            Route::get('{department_slug}/{student_id}', [StudentController::class, 'show_student_info'])->name('show_student_info');
             Route::post('{department_slug}/add_student', [StudentController::class, 'add_student'])->name('student.add_student');
             Route::post('{student_id}/update', [StudentController::class, 'update_student'])->name('student.update_student');
         });
