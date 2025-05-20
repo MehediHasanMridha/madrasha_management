@@ -33,9 +33,9 @@ jobs:
               run: npm run build
             # deploy to server without vendor & node_modules folder
             - name: 📂 Sync files
-              uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+              uses: SamKirkland/FTP-Deploy-Action@v4.3.5
               with:
-                  server: ${{ secrets.SFTP_HOST }}
+                  server: 78.47.15.217
                   port: 21
                   username: ${{ secrets.SFTP_USER }}
                   password: ${{ secrets.SFTP_PASS }}
