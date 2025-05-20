@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import { ArrowLeft, Eye, FilePenLine, Trash2 } from 'lucide-react';
+import { ArrowLeft, Eye, FilePenLine, LayoutList, Trash2 } from 'lucide-react';
 
 const Icons = ({ name, className, ...props }) => {
     switch (name) {
@@ -38,6 +38,15 @@ const Icons = ({ name, className, ...props }) => {
                 <Eye strokeWidth={1.5} absoluteStrokeWidth className={cn('cursor-pointer text-black hover:text-gray-500', className)} {...props} />
             );
             break;
+        case 'list':
+            return (
+                <LayoutList
+                    strokeWidth={1.5}
+                    absoluteStrokeWidth
+                    className={cn('cursor-pointer text-black hover:text-gray-500', className)}
+                    {...props}
+                />
+            );
         default:
             break;
     }
