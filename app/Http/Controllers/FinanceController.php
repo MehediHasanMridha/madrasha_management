@@ -35,7 +35,7 @@ class FinanceController extends Controller
 
         $data = Summary::run($month, $year);
 
-        return Inertia::render('Finance/Summary', [
+        return Inertia::render('admin::finance/summary', [
             'data' => $data,
         ]);
     }
@@ -47,7 +47,7 @@ class FinanceController extends Controller
      */
     public function earnings()
     {
-        return Inertia::render('Finance/Earnings');
+        return Inertia::render('admin::finance/earnings');
     }
 
     /**
@@ -63,7 +63,7 @@ class FinanceController extends Controller
         $outgoings   = Expense::run($month, $year);
         $voucherList = VoucherList::run($month, $year);
 
-        return Inertia::render('Finance/Outgoings',
+        return Inertia::render('admin::finance/outgoings',
             [
                 'outgoings'   => $outgoings,
                 'voucherList' => $voucherList,
@@ -80,7 +80,7 @@ class FinanceController extends Controller
     {
         $monthly = MonthlyGroupReport::make();
         // dd($monthly->handle());
-        return Inertia::render('Finance/Reports/index');
+        return Inertia::render('admin::finance/reports/index');
     }
     public function daily_report()
     {
@@ -88,7 +88,7 @@ class FinanceController extends Controller
         $year  = request()->input('year');
         // $day   = MonthlyDailyReport::run($month, $year);
         // dd($monthly->handle());
-        return Inertia::render('Finance/Reports/DailyReport');
+        return Inertia::render('admin::finance/reports/dailyReport');
     }
 
     public function get_user_data($user_id)

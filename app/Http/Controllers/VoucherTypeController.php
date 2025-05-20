@@ -26,7 +26,7 @@ class VoucherTypeController extends Controller
         } else {
             $voucherTypes->orderBy($sortField, 'desc');
         }
-        return Inertia::render('Voucher/Index', [
+        return Inertia::render('admin::voucher/index', [
             'voucherTypes' => $voucherTypes->paginate($per_page, ['*'], 'page', $page)->withQueryString(),
         ]);
     }

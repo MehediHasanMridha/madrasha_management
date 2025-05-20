@@ -57,7 +57,7 @@ class DepartmentController extends Controller
 
         $departments = $query->paginate($per_page, ['*'], 'page', $page)->withQueryString();
 
-        return Inertia::render('Department/DepartmentView', [
+        return Inertia::render('admin::department/show', [
             'departments' => $departments,
         ]);
     }
@@ -91,7 +91,7 @@ class DepartmentController extends Controller
 
             $students = $studentsQuery->paginate($per_page, ['*'], 'page', $page)->withQueryString();
 
-            return Inertia::render('Department/Students', [
+            return Inertia::render('admin::department/students', [
                 'department' => $department,
                 'students'   => Inertia::defer(fn() => showStudentData::collection(
                     $students ?? [],
@@ -134,7 +134,7 @@ class DepartmentController extends Controller
 
             $staffs = $staffQuery->paginate($per_page, ['*'], 'page', $page)->withQueryString();
 
-            return Inertia::render('Department/Teachers', [
+            return Inertia::render('admin::department/teachers', [
                 'department' => $department,
                 'staffs'     => Inertia::defer(fn() => showStaffData::collection(
                     $staffs ?? [],
@@ -169,7 +169,7 @@ class DepartmentController extends Controller
 
     public function departmentCreateView()
     {
-        return Inertia::render('Department/AddDepartment');
+        return Inertia::render('admin::department/create');
     }
 
     public function departmentStore(Request $request)
@@ -198,7 +198,7 @@ class DepartmentController extends Controller
     public function departmentEditView($slug)
     {
         $department = Department::where('slug', $slug)->firstOrFail();
-        return Inertia::render('Department/EditDepartment', [
+        return Inertia::render('admin::department/editDepartment', [
             'department' => $department,
         ]);
     }

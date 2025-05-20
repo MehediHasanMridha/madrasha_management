@@ -55,7 +55,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Settings
     Route::prefix('settings')->group(function () {
 
-        Route::get('/', fn() => Inertia::render('settings/settingDashboard'))->name('settings');
+        Route::get('/', fn() => Inertia::render('admin::settings/index'))->name('settings');
 
         // Department Settings
         Route::prefix('department')->group(function () {

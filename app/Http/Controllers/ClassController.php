@@ -39,7 +39,7 @@ class ClassController extends Controller
         $classes     = $classes->paginate($per_page, ['*'], 'page', $page)->withQueryString();
         $departments = Department::all();
 
-        return Inertia::render('Class/index', [
+        return Inertia::render('admin::class/index', [
             'classes'     => $classes,
             'filters'     => $filters,
             'departments' => $departments,

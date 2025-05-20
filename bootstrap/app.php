@@ -23,10 +23,10 @@ return Application::configure(basePath: dirname(__DIR__))
         // if (! config('app.debug')) {
         //     $exceptions->respond(using: function (Response $response) {
         //         if ($response->getStatusCode() === 404) {
-        //             return Inertia::render("Errors/404");
+        //             return Inertia::render("errors/404");
         //         } elseif ($response->getStatusCode() === 500) {
         //             $exception = $response->exception;
-        //             return Inertia::render("Errors/500", [
+        //             return Inertia::render("errors/500", [
         //                 'message' => $exception ? $exception->getMessage() : 'An error occurred',
         //             ]);
         //         }

@@ -26,14 +26,14 @@ class FeeTypeController extends Controller
         } else {
             $feeTypes->orderBy($sortField, 'desc');
         }
-        return Inertia::render('FeeTypes/Index', [
+        return Inertia::render('admin::feeTypes/index', [
             'feeTypes' => $feeTypes->paginate($per_page, ['*'], 'page', $page)->withQueryString(),
         ]);
     }
 
     public function create()
     {
-        return Inertia::render('FeeTypes/Create');
+        return Inertia::render('admin::feeTypes/create');
     }
 
     public function store(Request $request)
@@ -59,7 +59,7 @@ class FeeTypeController extends Controller
 
     public function edit(FeeType $feeType)
     {
-        return Inertia::render('Settings/FeeTypes/Edit', [
+        return Inertia::render('admin::settings/feeTypes/edit', [
             'feeType' => $feeType,
         ]);
     }

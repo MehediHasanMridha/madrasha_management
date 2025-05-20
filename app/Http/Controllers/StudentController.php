@@ -181,7 +181,7 @@ class StudentController extends Controller
         }
 
         $user = $query->paginate($per_page, ['*'], 'page', $page);
-        return Inertia::render('Department/Dashboard', [
+        return Inertia::render('admin::department/dashboard', [
             'students'  => Inertia::defer(fn() => $user)->merge(),
             'filters'   => $filters,
             'sortOrder' => $order,
