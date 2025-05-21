@@ -329,8 +329,10 @@ class FinanceController extends Controller
         $class      = request()->input('class');
         $department = request()->input('department');
 
-        $data        = DueList::run($year, $gender, $class, $department);
-        $filterGroup = DueFilterGroup::run($year);
+        $date = date('Y-m');
+
+        $data        = DueList::run($date, $gender, $class, $department);
+        $filterGroup = DueFilterGroup::make()->handle();
         return Inertia::render('admin::finance/dueList', [
             'data'       => $data,
             'filterData' => $filterGroup,

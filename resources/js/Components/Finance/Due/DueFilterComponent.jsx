@@ -1,3 +1,5 @@
+import MonthYearContainer from '@/Container/Shared/MonthYearContainer';
+
 const DueFilterComponent = ({ classData, department, gender, handleFilterChange }) => {
     return (
         <div className="flex items-center gap-4 rounded-lg p-4">
@@ -39,6 +41,7 @@ const DueFilterComponent = ({ classData, department, gender, handleFilterChange 
                     </option>
                 ))}
             </select>
+            <MonthYearContainer className="filter-dropdown rounded border border-gray-400 px-2 py-2 focus:outline-none" />
         </div>
     );
 };

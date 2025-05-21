@@ -1,6 +1,7 @@
 import TableUI from '@/Components/UI/TableUI';
 
 const DueTableListContainer = ({ data }) => {
+    console.log('🚀 ~ DueTableListContainer ~ data:', data);
     const dataSource =
         data?.data?.map((item) => ({
             key: item.id,
@@ -12,8 +13,6 @@ const DueTableListContainer = ({ data }) => {
             studentID: item.unique_id,
             class: item.class,
             department: item.department,
-            feeType: item.fee_type,
-            month: item.period,
         })) || [];
 
     const columns = [
@@ -21,11 +20,6 @@ const DueTableListContainer = ({ data }) => {
             title: 'Name',
             dataIndex: 'name',
             key: 'name',
-        },
-        {
-            title: 'Month',
-            dataIndex: 'month',
-            key: 'month',
         },
         {
             title: 'Phone',
@@ -36,11 +30,6 @@ const DueTableListContainer = ({ data }) => {
             title: 'Gender',
             dataIndex: 'gender',
             key: 'gender',
-        },
-        {
-            title: 'Fee Type',
-            dataIndex: 'feeType',
-            key: 'feeType',
         },
         {
             title: 'Due',
