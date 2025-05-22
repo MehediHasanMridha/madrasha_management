@@ -73,13 +73,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('store', [ClassController::class, 'classStore'])->name('class.store');
             Route::post('{class_slug}/update', [ClassController::class, 'update'])->name('class.update');
             Route::delete('{class_slug}/delete', [ClassController::class, 'destroy'])->name('class.delete');
+            Route::get('department-wise-class/{department_slug}', [ClassController::class, 'departmentWiseClass'])->name('department_wise_class');
         });
         // Fee Settings
         Route::prefix('fee-categories')->group(function () {
             Route::get('/', [FeeController::class, 'index'])->name('fee.fee_categories');
             Route::get('/fee', [FeeController::class, 'feeIndex'])->name('fee.fee_index');
             Route::get('create', [FeeController::class, 'create'])->name('settings.fee-types.create');
-            Route::post('/', [FeeController::class, 'store'])->name('settings.fee-types.store');
+            Route::post('/store', [FeeController::class, 'store'])->name('fee.fee-types.store');
             Route::get('{fee}/edit', [FeeController::class, 'edit'])->name('settings.fee-types.edit');
             Route::put('{fee}', [FeeController::class, 'update'])->name('settings.fee-types.update');
             Route::delete('{fee}', [FeeController::class, 'destroy'])->name('settings.fee-types.destroy');

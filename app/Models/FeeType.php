@@ -11,7 +11,7 @@ class FeeType extends Model
     protected $fillable = [
         'name',
         'slug',
-        'default_amount',
+        'amount',
         'fee_category_id',
         'class_id',
         'department_id',

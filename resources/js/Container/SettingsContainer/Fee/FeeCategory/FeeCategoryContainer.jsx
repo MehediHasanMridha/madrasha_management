@@ -1,4 +1,5 @@
 import FeeCategoryComponent from '@/Components/SettingsComponent/Fee/FeeCategory/FeeCategoryComponent';
+import { useBoundStore } from '@/stores';
 import { notification } from 'antd';
 import { useState } from 'react';
 import AddFeeCategoryModalFormContainer from './AddFeeCategoryModalFormContainer';
@@ -10,11 +11,18 @@ const FeeCategoryContainer = ({ fee }) => {
     const [addFeeModal, setAddFeeModal] = useState(false);
     const [editFeeModal, setEditFeeModal] = useState(false);
     const [editData, setEditData] = useState(null);
+    const { manageFeeData, setManageFeeData } = useBoundStore((state) => state);
 
     return (
         <>
             {contextHolder}
-            <FeeCategoryComponent fee={fee} setAddFeeModal={setAddFeeModal} setEditFeeModal={setEditFeeModal} setEditData={setEditData} />
+            <FeeCategoryComponent
+                fee={fee}
+                setManageFeeData={setManageFeeData}
+                setAddFeeModal={setAddFeeModal}
+                setEditFeeModal={setEditFeeModal}
+                setEditData={setEditData}
+            />
             <AddFeeCategoryModalFormContainer addFeeModal={addFeeModal} setAddFeeModal={setAddFeeModal} />
             <EditFeeCategoryModalFormContainer editFeeModal={editFeeModal} setEditFeeModal={setEditFeeModal} data={editData} />
         </>

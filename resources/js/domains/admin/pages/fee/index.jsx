@@ -2,11 +2,11 @@ import FeeContainer from '@/Container/SettingsContainer/Fee/FeeContainer';
 import SettingsLayout from '@/layouts/settings/SettingsLayout';
 import { Head } from '@inertiajs/react';
 
-const index = () => {
+const index = ({ fee }) => {
     return (
         <SettingsLayout>
             <Head title="Fee" />
-            <FeeContainer />
+            <FeeContainer fee={fee} />
         </SettingsLayout>
     );
 };

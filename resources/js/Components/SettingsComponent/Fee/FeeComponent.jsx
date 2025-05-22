@@ -1,28 +1,22 @@
 import BreadcrumbUI from '@/Components/UI/BreadcrumbUI';
 import FeeClassSectionContainer from '@/Container/SettingsContainer/Fee/FeeClassSectionContainer';
+import FeeDepartmentDropdownContainer from '@/Container/SettingsContainer/Fee/FeeDepartmentDropdownContainer';
 import FeeTableListContainer from '@/Container/SettingsContainer/Fee/FeeTableListContainer';
 import { Link } from '@inertiajs/react';
 import { Plus } from 'lucide-react';
 
-const FeeComponent = ({ fee = [], setAddFeeModal, setEditFeeModal, setEditData, departments }) => {
+const FeeComponent = ({ fee = [], manageFeeData }) => {
     return (
         <div className="min-h-screen bg-gray-50 p-6">
             {/* Breadcrumb */}
-            <BreadcrumbUI items={[{ title: <Link href={route('fee.fee_categories')}>Manage fee</Link> }, { title: 'Islamic school' }]} />
+            <BreadcrumbUI
+                items={[{ title: <Link href={route('fee.fee_categories')}>{manageFeeData?.category}</Link> }, { title: 'Islamic school' }]}
+            />
 
             {/* Header with Add Class and Assign Teacher buttons */}
             <div className="my-6 flex items-center justify-between">
                 <div className="flex w-full items-center justify-between">
-                    <select className="appearance-none rounded border bg-white px-4 py-1 pr-8 text-sm">
-                        <option>Select campus</option>
-                        {/* Add options here */}
-                        {departments.map((department) => (
-                            <option key={department.id} value={department.id}>
-                                {department.name}
-                            </option>
-                        ))}
-                    </select>
-
+                    <FeeDepartmentDropdownContainer />
                     <div className="flex items-center">
                         <button className="ml-3 flex items-center text-sm font-medium text-blue-500">
                             <svg className="mr-1 h-4 w-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -43,7 +37,7 @@ const FeeComponent = ({ fee = [], setAddFeeModal, setEditFeeModal, setEditData, 
                 <div className="w-2/3">
                     <div className="overflow-hidden rounded-lg bg-white shadow-sm">
                         {/* Table Header */}
-                        <FeeTableListContainer />
+                        <FeeTableListContainer fee={fee} />
 
                         {/* Add Fee Button */}
                         <div className="p-4">

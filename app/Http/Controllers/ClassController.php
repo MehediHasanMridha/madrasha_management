@@ -127,4 +127,18 @@ class ClassController extends Controller
                 ->with('error', 'An error occurred while deleting the Class.');
         }
     }
+
+
+    public function departmentWiseClass($department_slug)
+    {
+        $department = Department::where('slug', $department_slug)->firstOrFail();
+        $classes    = Classes::where('department_id', $department->id)->get();
+
+        return response()->json([
+            'classes' => $classes,
+        ]);
+    }
+
+
+
 }

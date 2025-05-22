@@ -3,7 +3,7 @@ import FeeCategoryActionContainer from '@/Container/SettingsContainer/Fee/FeeCat
 import { PlusOutlined } from '@ant-design/icons';
 import { Link } from '@inertiajs/react';
 
-const FeeCategoryComponent = ({ fee = [], setAddFeeModal, setEditFeeModal, setEditData }) => {
+const FeeCategoryComponent = ({ fee = [], setAddFeeModal, setEditFeeModal, setEditData, setManageFeeData }) => {
     return (
         <div className="min-h-screen bg-gray-50 p-6">
             <h1 className="mb-4 text-xl font-bold">Manage fee</h1>
@@ -19,6 +19,7 @@ const FeeCategoryComponent = ({ fee = [], setAddFeeModal, setEditFeeModal, setEd
                         key={fee.id}
                         className="flex w-full cursor-pointer items-center justify-between rounded-lg bg-white p-4 shadow-sm"
                         href={route('fee.fee_index')}
+                        onClick={() => setManageFeeData({ category: fee.slug })}
                     >
                         <span>{fee.name}</span>
                         <FeeCategoryActionContainer data={fee} setEditFeeModal={setEditFeeModal} setEditData={setEditData} />

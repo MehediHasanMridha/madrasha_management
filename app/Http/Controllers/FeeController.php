@@ -2,6 +2,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Classes;
+use App\Models\Department;
 use App\Models\FeeCategory;
 use App\Models\FeeType;
 use Illuminate\Http\Request;
@@ -34,8 +36,34 @@ class FeeController extends Controller
 
     public function feeIndex()
     {
-        // dd('mehedi');
-        return Inertia::render('admin::fee/index');
+        $page      = request()->input('page', 1);
+        $per_page  = request()->input('per_page', 10);
+        $sortField = request()->input('sort_field', 'created_at');
+        $classSlug     = request()->input('class', '');
+        $departmentSlug = request()->input('department', '');
+        $categorySlug    = request()->input('category', '');
+
+        $fee = FeeType::query();
+
+        if ($classSlug) {
+            $fee->whereHas('class', function ($query) use ($classSlug) {
+                $query->where('slug', $classSlug);
+            });
+        }
+        if ($departmentSlug) {
+            $fee->whereHas('department', function ($query) use ($departmentSlug) {
+                $query->where('slug', $departmentSlug);
+            });
+        }
+        if ($categorySlug) {
+            $fee->whereHas('feeCategory', function ($query) use ($categorySlug): void {
+                $query->where('slug', $categorySlug);
+            });
+        }
+
+        return Inertia::render('admin::fee/index', [
+            'fee' => $fee->get(),
+        ]);
     }
 
     public function createCategory(Request $request)
@@ -62,16 +90,24 @@ class FeeController extends Controller
     {
         $validated = $request->validate([
             'name'           => 'required|string|max:255',
-            'default_amount' => 'nullable|numeric|min:0',
-            'is_variable'    => 'boolean',
+            'amount' => 'required|numeric|min:0',
+            'department'=> 'required|exists:departments,slug',
+            'class'      => 'required|exists:classes,slug',
+            'category' => 'required|exists:fee_categories,slug',
         ]);
 
         $validated['slug'] = Str::slug($validated['name']);
 
         try {
+            $feeCategory = FeeCategory::where('slug', $validated['category'])->first();
+            $validated['fee_category_id'] = $feeCategory->id;
+            $class = Classes::where('slug', $validated['class'])->first();
+            $validated['class_id'] = $class->id;
+            $department = Department::where('slug', $validated['department'])->first();
+            $validated['department_id'] = $department->id;
             FeeType::create($validated);
 
-            return redirect()->route('settings.fee-types.index')
+            return redirect()->back()
                 ->with('success', 'Fee type created successfully.');
         } catch (\Exception $e) {
             return redirect()->back()
