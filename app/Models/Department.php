@@ -22,4 +22,11 @@ class Department extends Model
         return $this->hasMany(ClassAssign::class, 'dept_id');
     }
 
+    /**
+     * Get the fee types for the department.
+     */
+    public function feeTypes()
+    {
+        return $this->hasMany(FeeType::class, 'department_id');
+    }
 }

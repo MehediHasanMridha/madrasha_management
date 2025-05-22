@@ -12,12 +12,15 @@ class FeeType extends Model
         'name',
         'slug',
         'default_amount',
-        'is_variable',
+        'fee_category_id',
+        'class_id',
+        'department_id',
+        'status',
     ];
 
     protected $casts = [
-        'is_variable'    => 'boolean',
         'default_amount' => 'decimal:2',
+        'status'         => 'boolean',
     ];
 
     public function studentDues()
@@ -28,5 +31,29 @@ class FeeType extends Model
     public function incomeLogs()
     {
         return $this->hasMany(IncomeLog::class);
+    }
+
+    /**
+     * Get the fee category associated with the fee type.
+     */
+    public function feeCategory()
+    {
+        return $this->belongsTo(FeeCategory::class);
+    }
+
+    /**
+     * Get the class associated with the fee type.
+     */
+    public function class ()
+    {
+        return $this->belongsTo(Classes::class);
+    }
+
+    /**
+     * Get the department associated with the fee type.
+     */
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
     }
 }

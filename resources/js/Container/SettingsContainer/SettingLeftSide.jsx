@@ -39,11 +39,11 @@ const SettingLeftSide = () => {
             <SideBarUI.Item>
                 <SideBarUI.Text
                     className={cn('w-full items-center px-[32px] py-[9px] hover:bg-[#F2F2F2]', {
-                        'bg-[#F2F2F2]': route().current('settings.fee-types.*'),
+                        'bg-[#F2F2F2]': route().current('fee.*'),
                     })}
                 >
-                    <Link href={route('settings.fee-types.index')} as="button" className="cursor-pointer text-[16px] font-medium">
-                        Fee Types
+                    <Link href={route('fee.fee_categories')} as="button" className="cursor-pointer text-[16px] font-medium">
+                        Manage Fee
                     </Link>{' '}
                     <br /> <span className="text-[#AFAFAF]">Manage fee types</span>
                 </SideBarUI.Text>

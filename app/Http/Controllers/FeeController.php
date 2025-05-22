@@ -2,12 +2,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\FeeCategory;
 use App\Models\FeeType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 
-class FeeTypeController extends Controller
+class FeeController extends Controller
 {
     public function index()
     {
@@ -16,21 +17,42 @@ class FeeTypeController extends Controller
         $sortField = request()->input('sort_field', 'created_at');
         $filters   = request()->input('filters', []);
         $search    = request()->input('search', '');
-        $feeTypes  = FeeType::query();
+        $fee       = FeeCategory::query();
         if ($search) {
-            $feeTypes->where('name', 'like', '%' . $search . '%');
+            $fee->where('name', 'like', '%' . $search . '%');
         }
         if (request()->has('order')) {
             $order = request()->input('order');
-            $feeTypes->orderBy($sortField, $order === 'ascend' ? 'asc' : 'desc');
+            $fee->orderBy($sortField, $order === 'ascend' ? 'asc' : 'desc');
         } else {
-            $feeTypes->orderBy($sortField, 'desc');
+            $fee->orderBy($sortField, 'desc');
         }
-        return Inertia::render('admin::feeTypes/index', [
-            'feeTypes' => $feeTypes->paginate($per_page, ['*'], 'page', $page)->withQueryString(),
+        return Inertia::render('admin::fee/feeCategory/index', [
+            'fee' => $fee->paginate($per_page, ['*'], 'page', $page)->withQueryString(),
         ]);
     }
 
+    public function feeIndex()
+    {
+        // dd('mehedi');
+        return Inertia::render('admin::fee/index');
+    }
+
+    public function createCategory(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+        $validated['slug'] = Str::slug($validated['name']);
+        try {
+            FeeCategory::create($validated);
+            return redirect()->back()
+                ->with('success', 'Fee category created successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', $e->getCode() === '23000' ? 'Fee category name or slug already exists.' : 'An error occurred while creating the Fee category: ');
+        }
+    }
     public function create()
     {
         return Inertia::render('admin::feeTypes/create');
@@ -99,4 +121,33 @@ class FeeTypeController extends Controller
                 ->with('error', $e->getCode() === '23000' ? 'Fee type cannot be deleted as it is being used in other records.' : 'An error occurred while deleting the Fee type.');
         }
     }
+
+    public function deleteCategory(FeeCategory $category)
+    {
+        try {
+            $category->delete();
+            return redirect()->back()
+                ->with('success', 'Fee category deleted successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'An error occurred while deleting the Fee category: ' . $e->getMessage());
+        }
+    }
+
+    public function updateCategory(Request $request, FeeCategory $category)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+        $validated['slug'] = Str::slug($validated['name']);
+        try {
+            $category->update($validated);
+            return redirect()->back()
+                ->with('success', 'Fee category updated successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'An error occurred while updating the Fee category: ' . $e->getMessage());
+        }
+    }
+
 }
