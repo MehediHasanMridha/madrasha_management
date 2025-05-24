@@ -3,7 +3,7 @@ import { School } from 'lucide-react';
 
 const DepartmentListComponent = ({ departments }) => {
     return departments.map((campus, index) => (
-        <div key={campus.id} className="rounded-xl bg-[#F2F2F2] p-8">
+        <div key={campus.id} className="cursor-pointer rounded-xl bg-[#F2F2F2] p-8 transition-all duration-300 ease-in-out hover:bg-gray-300">
             <div className="flex items-start justify-between">
                 <div className="flex items-start gap-4">
                     <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white">
