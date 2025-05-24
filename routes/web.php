@@ -66,32 +66,24 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('{department_slug}/edit', [DepartmentController::class, 'departmentUpdate'])->name('department.update');
             Route::delete('{department_slug}/delete', [DepartmentController::class, 'departmentDelete'])->name('department.delete');
             Route::get('classes/{department_slug}', [DepartmentController::class, 'departmentClasses'])->name('department.classes');
+            Route::post('class/store', [ClassController::class, 'classStore'])->name('class.store');
         });
 
         // Class Settings
         Route::prefix('class')->group(function () {
             Route::get('/', [ClassController::class, 'index'])->name('class');
-            Route::post('store', [ClassController::class, 'classStore'])->name('class.store');
             Route::post('{class_slug}/update', [ClassController::class, 'update'])->name('class.update');
             Route::delete('{class_slug}/delete', [ClassController::class, 'destroy'])->name('class.delete');
             Route::get('department-wise-class/{department_slug}', [ClassController::class, 'departmentWiseClass'])->name('department_wise_class');
         });
         // Fee Settings
         Route::prefix('fee-categories')->group(function () {
-            Route::get('/', [FeeController::class, 'index'])->name('fee.fee_categories');
             Route::get('/fee', [FeeController::class, 'feeIndex'])->name('fee.fee_index');
             Route::get('create', [FeeController::class, 'create'])->name('settings.fee-types.create');
             Route::post('/store', [FeeController::class, 'store'])->name('fee.fee-types.store');
             Route::get('{fee}/edit', [FeeController::class, 'edit'])->name('settings.fee-types.edit');
             Route::put('{fee}', [FeeController::class, 'update'])->name('settings.fee-types.update');
             Route::delete('{fee}', [FeeController::class, 'destroy'])->name('settings.fee-types.destroy');
-            // If you have a custom route for createCategory, define it here:
-            Route::post('/create-category', [FeeController::class, 'createCategory'])->name('fee_create_category');
-            // delete fee category route
-            Route::delete('/delete-category/{category}', [FeeController::class, 'deleteCategory'])->name('fee_delete_category');
-            // update fee category route
-            Route::put('/update-category/{category}', [FeeController::class, 'updateCategory'])->name('fee_update_category');
-
         });
 
         // Voucher Type Settings

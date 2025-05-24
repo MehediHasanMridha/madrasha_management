@@ -12,7 +12,6 @@ class FeeType extends Model
         'name',
         'slug',
         'amount',
-        'fee_category_id',
         'class_id',
         'department_id',
         'status',
@@ -31,14 +30,6 @@ class FeeType extends Model
     public function incomeLogs()
     {
         return $this->hasMany(IncomeLog::class);
-    }
-
-    /**
-     * Get the fee category associated with the fee type.
-     */
-    public function feeCategory()
-    {
-        return $this->belongsTo(FeeCategory::class);
     }
 
     /**

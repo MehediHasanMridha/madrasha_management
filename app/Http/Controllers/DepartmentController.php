@@ -57,7 +57,6 @@ class DepartmentController extends Controller
 
         $departments = $query->withCount('classes as total_classes')->get();
 
-
         return Inertia::render('admin::department/view', [
             'departments' => $departments,
         ]);
@@ -254,12 +253,10 @@ class DepartmentController extends Controller
         }
     }
 
-
     public function departmentClasses($department_slug)
     {
         try {
-            $department = Department::with('classes')->where('slug', $department_slug)->firstOrFail();
-
+            $department = Department::with(['classes', 'classes.feeTypes'])->where('slug', $department_slug)->firstOrFail();
             return Inertia::render('admin::department/classes', [
                 'department' => $department,
                 'classes'    => $department->classes,

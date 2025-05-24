@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Classes;
 use App\Models\Department;
-use App\Models\FeeCategory;
 use App\Models\FeeType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -14,34 +13,17 @@ class FeeController extends Controller
 {
     public function index()
     {
-        $page      = request()->input('page', 1);
-        $per_page  = request()->input('per_page', 10);
-        $sortField = request()->input('sort_field', 'created_at');
-        $filters   = request()->input('filters', []);
-        $search    = request()->input('search', '');
-        $fee       = FeeCategory::query();
-        if ($search) {
-            $fee->where('name', 'like', '%' . $search . '%');
-        }
-        if (request()->has('order')) {
-            $order = request()->input('order');
-            $fee->orderBy($sortField, $order === 'ascend' ? 'asc' : 'desc');
-        } else {
-            $fee->orderBy($sortField, 'desc');
-        }
-        return Inertia::render('admin::fee/feeCategory/index', [
-            'fee' => $fee->paginate($per_page, ['*'], 'page', $page)->withQueryString(),
-        ]);
+        return "hello";
     }
 
     public function feeIndex()
     {
-        $page      = request()->input('page', 1);
-        $per_page  = request()->input('per_page', 10);
-        $sortField = request()->input('sort_field', 'created_at');
-        $classSlug     = request()->input('class', '');
+        $page           = request()->input('page', 1);
+        $per_page       = request()->input('per_page', 10);
+        $sortField      = request()->input('sort_field', 'created_at');
+        $classSlug      = request()->input('class', '');
         $departmentSlug = request()->input('department', '');
-        $categorySlug    = request()->input('category', '');
+        $categorySlug   = request()->input('category', '');
 
         $fee = FeeType::query();
 
@@ -55,32 +37,12 @@ class FeeController extends Controller
                 $query->where('slug', $departmentSlug);
             });
         }
-        if ($categorySlug) {
-            $fee->whereHas('feeCategory', function ($query) use ($categorySlug): void {
-                $query->where('slug', $categorySlug);
-            });
-        }
 
         return Inertia::render('admin::fee/index', [
             'fee' => $fee->get(),
         ]);
     }
 
-    public function createCategory(Request $request)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-        ]);
-        $validated['slug'] = Str::slug($validated['name']);
-        try {
-            FeeCategory::create($validated);
-            return redirect()->back()
-                ->with('success', 'Fee category created successfully.');
-        } catch (\Exception $e) {
-            return redirect()->back()
-                ->with('error', $e->getCode() === '23000' ? 'Fee category name or slug already exists.' : 'An error occurred while creating the Fee category: ');
-        }
-    }
     public function create()
     {
         return Inertia::render('admin::feeTypes/create');
@@ -89,21 +51,19 @@ class FeeController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name'           => 'required|string|max:255',
-            'amount' => 'required|numeric|min:0',
-            'department'=> 'required|exists:departments,slug',
+            'name'       => 'required|string|max:255',
+            'amount'     => 'required|numeric|min:0',
+            'department' => 'required|exists:departments,slug',
             'class'      => 'required|exists:classes,slug',
-            'category' => 'required|exists:fee_categories,slug',
+            'category'   => 'required|exists:fee_categories,slug',
         ]);
 
         $validated['slug'] = Str::slug($validated['name']);
 
         try {
-            $feeCategory = FeeCategory::where('slug', $validated['category'])->first();
-            $validated['fee_category_id'] = $feeCategory->id;
-            $class = Classes::where('slug', $validated['class'])->first();
-            $validated['class_id'] = $class->id;
-            $department = Department::where('slug', $validated['department'])->first();
+            $class                      = Classes::where('slug', $validated['class'])->first();
+            $validated['class_id']      = $class->id;
+            $department                 = Department::where('slug', $validated['department'])->first();
             $validated['department_id'] = $department->id;
             FeeType::create($validated);
 
@@ -155,34 +115,6 @@ class FeeController extends Controller
         } catch (\Exception $e) {
             return redirect()->back()
                 ->with('error', $e->getCode() === '23000' ? 'Fee type cannot be deleted as it is being used in other records.' : 'An error occurred while deleting the Fee type.');
-        }
-    }
-
-    public function deleteCategory(FeeCategory $category)
-    {
-        try {
-            $category->delete();
-            return redirect()->back()
-                ->with('success', 'Fee category deleted successfully.');
-        } catch (\Exception $e) {
-            return redirect()->back()
-                ->with('error', 'An error occurred while deleting the Fee category: ' . $e->getMessage());
-        }
-    }
-
-    public function updateCategory(Request $request, FeeCategory $category)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-        ]);
-        $validated['slug'] = Str::slug($validated['name']);
-        try {
-            $category->update($validated);
-            return redirect()->back()
-                ->with('success', 'Fee category updated successfully.');
-        } catch (\Exception $e) {
-            return redirect()->back()
-                ->with('error', 'An error occurred while updating the Fee category: ' . $e->getMessage());
         }
     }
 
