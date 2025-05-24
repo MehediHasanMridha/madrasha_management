@@ -55,9 +55,10 @@ class DepartmentController extends Controller
             $query->latest($sortField);
         }
 
-        $departments = $query->paginate($per_page, ['*'], 'page', $page)->withQueryString();
+        $departments = $query->withCount('classes as total_classes')->get();
 
-        return Inertia::render('admin::department/show', [
+
+        return Inertia::render('admin::department/view', [
             'departments' => $departments,
         ]);
     }

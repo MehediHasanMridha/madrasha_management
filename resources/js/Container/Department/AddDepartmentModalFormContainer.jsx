@@ -80,7 +80,7 @@ const AddDepartmentModalFormContainer = ({ isModalOpen, setIsModalOpen }) => {
             )}
         >
             <form className="max-h-[70vh] overflow-y-scroll">
-                <FieldSet label={'Department Information'} labelClassName="text-[16px] font-bold" hr={true}>
+                <FieldSet label={'Department Information'} className="md:grid-cols-1" labelClassName="text-[16px] font-bold" hr={true}>
                     <Field error={errors.name} label={'Department Name'}>
                         <input
                             type="text"
