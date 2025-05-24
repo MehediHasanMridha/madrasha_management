@@ -52,6 +52,7 @@ const DepartmentActionContainer = ({ data }) => {
             key: 'edit',
             icon: '✏️',
             onClick: (e) => {
+                e.domEvent.stopPropagation();
                 setModal({ edit: true, data });
             },
         },
@@ -62,7 +63,7 @@ const DepartmentActionContainer = ({ data }) => {
             danger: true,
             onClick: (e) => {
                 // Handle delete action
-                // e.domEvent.stopPropagation();
+                e.domEvent.stopPropagation();
                 handleDelete(data);
             },
         },
