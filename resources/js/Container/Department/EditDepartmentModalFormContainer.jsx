@@ -77,36 +77,34 @@ const EditDepartmentModalFormContainer = () => {
             isModalOpen={modal.edit}
             handleCancel={handleCancel}
             width={'80%'}
-            title="Edit Department"
+            title="Edit Campus"
             footer={() => (
                 <SubmitBtn
                     loadingIndicator={isLoading}
-                    btnText={'Update Department'}
+                    btnText={'Update Campus'}
                     className="cursor-pointer bg-blue-400"
                     onClick={handleSubmit(onSubmit)}
                 />
             )}
         >
-            <form className="max-h-[70vh] overflow-y-scroll">
-                <FieldSet className="md:grid-cols-1" label={'Department Information'} labelClassName="text-[16px] font-bold" hr={true}>
-                    <Field error={errors.name} label={'Department Name'}>
-                        <input
-                            type="text"
-                            className="rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
-                            placeholder="Enter Department Name"
-                            {...register('name', { required: 'Department Name is required' })}
-                        />
-                    </Field>
-                    <Field label={'Description'}>
-                        <textarea
-                            className="rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
-                            placeholder="Enter Description"
-                            {...register('description')}
-                            rows={4}
-                        />
-                    </Field>
-                </FieldSet>
-            </form>
+            <FieldSet className="md:grid-cols-1" label={'Campus Information'} labelClassName="text-[16px] font-bold" hr={true}>
+                <Field error={errors.name} label={'Campus Name'}>
+                    <input
+                        type="text"
+                        className="rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
+                        placeholder="Enter Campus Name"
+                        {...register('name', { required: 'Campus Name is required' })}
+                    />
+                </Field>
+                <Field label={'Description'}>
+                    <textarea
+                        className="rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
+                        placeholder="Enter Description"
+                        {...register('description')}
+                        rows={4}
+                    />
+                </Field>
+            </FieldSet>
         </ModalUI>
     );
 };
