@@ -59,12 +59,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Department Settings
         Route::prefix('department')->group(function () {
-            Route::get('/', [DepartmentController::class, 'index'])->name('department');
+            Route::get('/', [DepartmentController::class, 'index'])->name('department.index');
             Route::get('add', [DepartmentController::class, 'departmentCreateView'])->name('department.create');
             Route::post('add', [DepartmentController::class, 'departmentStore'])->name('department.store');
             Route::get('{department_slug}/edit', [DepartmentController::class, 'departmentEditView'])->name('department.edit');
             Route::post('{department_slug}/edit', [DepartmentController::class, 'departmentUpdate'])->name('department.update');
             Route::delete('{department_slug}/delete', [DepartmentController::class, 'departmentDelete'])->name('department.delete');
+            Route::get('classes/{department_slug}', [DepartmentController::class, 'departmentClasses'])->name('department.classes');
         });
 
         // Class Settings

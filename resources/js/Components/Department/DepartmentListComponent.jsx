@@ -1,9 +1,17 @@
 import DepartmentActionContainer from '@/Container/Department/DepartmentActionContainer';
+import { Link } from '@inertiajs/react';
 import { School } from 'lucide-react';
 
 const DepartmentListComponent = ({ departments }) => {
     return departments.map((campus, index) => (
-        <div key={campus.id} className="cursor-pointer rounded-xl bg-[#F2F2F2] p-8 transition-all duration-300 ease-in-out hover:bg-gray-300">
+        <Link
+            as="button"
+            href={route('department.classes', {
+                department_slug: campus.slug,
+            })}
+            key={campus.id}
+            className="cursor-pointer rounded-xl bg-[#F2F2F2] p-8 transition-all duration-300 ease-in-out hover:bg-gray-300"
+        >
             <div className="flex items-start justify-between">
                 <div className="flex items-start gap-4">
                     <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white">
@@ -18,7 +26,7 @@ const DepartmentListComponent = ({ departments }) => {
                 </div>
                 <DepartmentActionContainer data={campus} />
             </div>
-        </div>
+        </Link>
     ));
 };
 
