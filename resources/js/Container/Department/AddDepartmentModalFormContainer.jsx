@@ -2,13 +2,15 @@ import Field from '@/Components/UI/Field';
 import FieldSet from '@/Components/UI/FieldSet';
 import ModalUI from '@/Components/UI/ModalUI';
 import SubmitBtn from '@/Components/UI/SubmitBtn';
+import { useDepartmentStore } from '@/stores';
 import { router } from '@inertiajs/react';
 import { notification } from 'antd';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-const AddDepartmentModalFormContainer = ({ isModalOpen, setIsModalOpen }) => {
+const AddDepartmentModalFormContainer = () => {
     const [isLoading, setIsLoading] = useState(false);
+    const { modal, setModal } = useDepartmentStore((state) => state);
     const {
         register,
         handleSubmit,
@@ -19,7 +21,7 @@ const AddDepartmentModalFormContainer = ({ isModalOpen, setIsModalOpen }) => {
     } = useForm();
 
     const handleCancel = () => {
-        setIsModalOpen(false);
+        setModal({ add: false });
         reset();
     };
 
@@ -44,7 +46,7 @@ const AddDepartmentModalFormContainer = ({ isModalOpen, setIsModalOpen }) => {
                     });
                 }
                 reset();
-                setIsModalOpen(false);
+                setModal({ add: false });
                 setIsLoading(false);
             },
             onError: (errors) => {
@@ -66,7 +68,7 @@ const AddDepartmentModalFormContainer = ({ isModalOpen, setIsModalOpen }) => {
 
     return (
         <ModalUI
-            isModalOpen={isModalOpen}
+            isModalOpen={modal.add}
             handleCancel={handleCancel}
             width={'80%'}
             title="Add Department"

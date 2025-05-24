@@ -1,9 +1,12 @@
 import DropdownUI from '@/Components/UI/DropdownUI';
+import { useDepartmentStore } from '@/stores';
 import { EllipsisOutlined } from '@ant-design/icons';
 import { router } from '@inertiajs/react';
 import { notification } from 'antd';
 
 const DepartmentActionContainer = ({ data }) => {
+    const { modal, setModal } = useDepartmentStore((state) => state);
+
     const themeComponents = {
         Dropdown: {
             paddingBlock: 6,
@@ -49,10 +52,7 @@ const DepartmentActionContainer = ({ data }) => {
             key: 'edit',
             icon: '✏️',
             onClick: (e) => {
-                // Handle edit action
-                e.domEvent.stopPropagation();
-                // setEditFeeModal(true);
-                // setEditData(data);
+                setModal({ edit: true, data });
             },
         },
         {
