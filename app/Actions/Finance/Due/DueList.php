@@ -32,8 +32,8 @@ class DueList
                 $query->whereDoesntHave('incomeLogs', function ($q) use ($date) {
                     $q->where('payment_period', $date)
                         ->whereHas('feeType', function ($feeTypeQuery) {
-                            $feeTypeQuery->where('slug', 'academic-fee')
-                                ->orWhere('slug', 'boarding-fee');
+                            $feeTypeQuery->where('slug', 'like', '%academic-fee%')
+                                ->orWhere('slug', 'like', '%boarding-fee%');
                         });
                 })
                 // Or users who have a due for the current month
