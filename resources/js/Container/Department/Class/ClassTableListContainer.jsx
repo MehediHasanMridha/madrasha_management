@@ -1,8 +1,40 @@
 import { useDepartmentStore } from '@/stores';
+import { router } from '@inertiajs/react';
+import { notification } from 'antd';
 import { Edit, PlusSquare, Trash2 } from 'lucide-react';
 
 const ClassTableListContainer = ({ classes = [], department }) => {
     const { setModal } = useDepartmentStore((state) => state);
+
+    const handleDelete = (classItem) => {
+        if (window.confirm(`Are you sure you want to delete ${classItem.name}?`)) {
+            router.delete(route('department.class_delete', { class_slug: classItem?.slug }), {
+                onSuccess: (res) => {
+                    if (res.props?.flash?.error) {
+                        notification.error({
+                            message: 'Error',
+                            description: res.props?.flash?.error,
+                            placement: 'bottomRight',
+                        }); // Replace with your error handling logic
+                    }
+                    if (res.props?.flash?.success) {
+                        notification.success({
+                            message: 'Success',
+                            description: res.props?.flash?.success,
+                            placement: 'bottomRight',
+                        }); // Replace with your success handling logic
+                    }
+                },
+                onError: (error) => {
+                    notification.error({
+                        message: 'Error',
+                        description: 'Failed to delete class. Please try again.',
+                        placement: 'bottomRight',
+                    });
+                },
+            });
+        }
+    };
     return (
         <table className="min-w-full divide-y divide-gray-300 border">
             <thead>
@@ -27,10 +59,16 @@ const ClassTableListContainer = ({ classes = [], department }) => {
                             <td className="border p-4 text-right text-gray-700">{session_fee} BDT</td>
                             <td className="border p-4">
                                 <div className="flex items-center justify-center gap-3">
-                                    <button className="cursor-pointer rounded-lg p-[6px] text-gray-400 hover:bg-gray-200 hover:text-gray-600">
+                                    <button
+                                        onClick={() => setModal({ edit: true, data: classItem })}
+                                        className="cursor-pointer rounded-lg p-[6px] text-gray-400 hover:bg-gray-200 hover:text-gray-600"
+                                    >
                                         <Edit size={16} />
                                     </button>
-                                    <button className="cursor-pointer rounded-lg p-[6px] text-gray-400 hover:bg-gray-200 hover:text-red-600">
+                                    <button
+                                        onClick={() => handleDelete(classItem)}
+                                        className="cursor-pointer rounded-lg p-[6px] text-gray-400 hover:bg-gray-200 hover:text-red-600"
+                                    >
                                         <Trash2 size={16} />
                                     </button>
                                 </div>

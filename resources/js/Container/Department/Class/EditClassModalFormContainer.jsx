@@ -8,7 +8,7 @@ import { notification } from 'antd';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-const AddClassModalFormContainer = () => {
+const EditClassModalFormContainer = () => {
     const [isLoading, setIsLoading] = useState(false);
     const { modal, setModal } = useDepartmentStore((state) => state);
 
@@ -20,23 +20,32 @@ const AddClassModalFormContainer = () => {
         reset,
         setFocus,
         setError,
+        setValue,
     } = useForm();
 
+    if (modal.edit && modal.data) {
+        setValue('name', modal.data.name);
+        setValue('boarding_fee', modal?.data?.fee_types?.find((fee) => fee.name === 'Boarding Fee')?.amount);
+        setValue('academic_fee', modal?.data?.fee_types?.find((fee) => fee.name === 'Academic Fee')?.amount);
+        setValue('admission_fee', modal?.data?.fee_types?.find((fee) => fee.name === 'Admission Fee')?.amount);
+    }
+
     const handleCancel = () => {
-        setModal({ add: false });
+        setModal({ edit: false });
         reset();
     };
 
     const onSubmit = (data) => {
-        router.post(
-            route('class.store'),
-            { ...data, department: modal?.data?.slug },
+        router.put(
+            route('class.update', { class_slug: modal.data?.slug }),
+            {
+                ...data,
+            },
             {
                 onStart: () => {
                     setIsLoading(true);
                 },
                 onSuccess: (res) => {
-                    console.log('🚀 ~ router.post ~ res:', res);
                     if (res.props?.flash?.error) {
                         notification.error({
                             message: 'Error',
@@ -52,11 +61,10 @@ const AddClassModalFormContainer = () => {
                         });
                     }
                     reset();
-                    setModal({ add: false });
+                    setModal({ edit: false });
                     setIsLoading(false);
                 },
                 onError: (errors) => {
-                    console.log('🚀 ~ router.post ~ errors:', errors);
                     Object.keys(errors).forEach((field) => {
                         if (field !== 'message') {
                             setError(field, {
@@ -76,15 +84,15 @@ const AddClassModalFormContainer = () => {
 
     return (
         <ModalUI
-            isModalOpen={modal.add}
+            isModalOpen={modal.edit}
             handleCancel={handleCancel}
             width={'50%'}
-            title="Add New Class"
+            title="Edit Class"
             style={{ top: 0 }}
             footer={() => (
                 <SubmitBtn
                     loadingIndicator={isLoading}
-                    btnText={'Create Class'}
+                    btnText={'Update Class'}
                     className="cursor-pointer bg-blue-400"
                     onClick={handleSubmit(onSubmit)}
                 />
@@ -160,4 +168,4 @@ const AddClassModalFormContainer = () => {
     );
 };
 
-export default AddClassModalFormContainer;
+export default EditClassModalFormContainer;

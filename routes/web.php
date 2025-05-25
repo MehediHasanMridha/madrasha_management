@@ -67,13 +67,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::delete('{department_slug}/delete', [DepartmentController::class, 'departmentDelete'])->name('department.delete');
             Route::get('classes/{department_slug}', [DepartmentController::class, 'departmentClasses'])->name('department.classes');
             Route::post('class/store', [ClassController::class, 'classStore'])->name('class.store');
+            Route::put('{class_slug}/update', [ClassController::class, 'update'])->name(name: 'class.update');
+            Route::delete('classes/{class_slug}/delete', [ClassController::class, 'destroyClass'])->name('department.class_delete');
         });
 
         // Class Settings
         Route::prefix('class')->group(function () {
             Route::get('/', [ClassController::class, 'index'])->name('class');
-            Route::post('{class_slug}/update', [ClassController::class, 'update'])->name('class.update');
-            Route::delete('{class_slug}/delete', [ClassController::class, 'destroy'])->name('class.delete');
             Route::get('department-wise-class/{department_slug}', [ClassController::class, 'departmentWiseClass'])->name('department_wise_class');
         });
         // Fee Settings

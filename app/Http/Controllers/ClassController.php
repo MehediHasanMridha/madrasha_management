@@ -115,13 +115,19 @@ class ClassController extends Controller
 
     public function update(Request $request, $class_slug)
     {
+
         $request->validate([
-            'name'        => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'icon'        => 'nullable|string',
+            'name'          => 'required|string|max:255',
+            'description'   => 'nullable|string',
+            'icon'          => 'nullable|string',
+            'boarding_fee'  => 'required|numeric|min:0',
+            'academic_fee'  => 'required|numeric|min:0',
+            'admission_fee' => 'required|numeric|min:0',
         ]);
 
         try {
+            DB::beginTransaction();
+
             $class       = Classes::where('slug', $class_slug)->firstOrFail();
             $class->name = $request->input('name');
             $class->slug = Str::slug($request->input('name')) . '-' . $class->department->slug ?? uniqid();
@@ -130,36 +136,79 @@ class ClassController extends Controller
 
             $class->save();
 
+            // Update fees for the class
+            $feeTypes = [
+                [
+                    'name'   => 'Boarding Fee',
+                    'slug'   => 'boarding-fee' . '-' . $class->slug,
+                    'amount' => $request->input('boarding_fee'),
+                ],
+                [
+                    'name'   => 'Academic Fee',
+                    'slug'   => 'academic-fee' . '-' . $class->slug,
+                    'amount' => $request->input('academic_fee'),
+                ],
+                [
+                    'name'   => 'Admission Fee',
+                    'slug'   => 'admission-fee' . '-' . $class->slug,
+                    'amount' => $request->input('admission_fee'),
+                ],
+            ];
+
+            foreach ($feeTypes as $feeType) {
+                FeeType::updateOrCreate(
+                    [
+                        'class_id' => $class->id,
+                        'name'     => $feeType['name'],
+                    ],
+                    [
+                        'slug'          => $feeType['slug'],
+                        'amount'        => $feeType['amount'],
+                        'department_id' => $class->department_id,
+                    ]
+                );
+            }
+
+            DB::commit();
             return redirect()->back()->with('success', 'Class updated successfully.');
 
-        } catch (\Throwable $th) {
-            if ($th->getCode() === '23000') {
+        } catch (QueryException $e) {
+            DB::rollBack();
+            if ($e->getCode() === '23000') {
                 return redirect()
                     ->back()
                     ->with('error', 'Class name or slug already exists.');
             }
-
+            return redirect()
+                ->back()
+                ->with('error', 'An error occurred while updating the Class.');
+        } catch (\Throwable $th) {
+            DB::rollBack();
             return redirect()
                 ->back()
                 ->with('error', 'An error occurred while updating the Class.');
         }
     }
 
-    public function destroy($class_slug)
+    public function destroyClass($class_slug)
     {
         try {
+            DB::beginTransaction();
+
             $class = Classes::where('slug', $class_slug)->firstOrFail();
+
             $class->delete();
 
-            return redirect()->route('class')->with('success', 'Class deleted successfully.');
+            DB::commit();
+            return redirect()->back()->with('success', 'Class and associated fees deleted successfully.');
 
         } catch (QueryException $e) {
+            DB::rollBack();
             if ($e->errorInfo[1] === 1451) {
                 return redirect()
                     ->back()
                     ->with('error', 'Cannot delete this Class because it has associated students or staff. Please remove all students and staff from this Class first.');
             }
-
             return redirect()
                 ->back()
                 ->with('error', 'An error occurred while deleting the Class.');
