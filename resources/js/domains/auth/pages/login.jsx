@@ -1,5 +1,5 @@
-import loginImg1 from '@/assets/images/loginImg1.png';
-import loginImg2 from '@/assets/images/loginImg2.png';
+import loginImg1 from '@/assets/images/loginImg1.webp';
+import loginImg2 from '@/assets/images/loginImg2.webp';
 import LoginComponent from '@/Components/Auth/LoginComponent';
 import { useForm, usePage } from '@inertiajs/react';
 import { notification } from 'antd';
