@@ -2,32 +2,44 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Classes;
+use App\Models\Department;
 use App\Models\FeeType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 
-class FeeTypeController extends Controller
+class FeeController extends Controller
 {
     public function index()
     {
-        $page      = request()->input('page', 1);
-        $per_page  = request()->input('per_page', 10);
-        $sortField = request()->input('sort_field', 'created_at');
-        $filters   = request()->input('filters', []);
-        $search    = request()->input('search', '');
-        $feeTypes  = FeeType::query();
-        if ($search) {
-            $feeTypes->where('name', 'like', '%' . $search . '%');
+        return "hello";
+    }
+
+    public function feeIndex()
+    {
+        $page           = request()->input('page', 1);
+        $per_page       = request()->input('per_page', 10);
+        $sortField      = request()->input('sort_field', 'created_at');
+        $classSlug      = request()->input('class', '');
+        $departmentSlug = request()->input('department', '');
+        $categorySlug   = request()->input('category', '');
+
+        $fee = FeeType::query();
+
+        if ($classSlug) {
+            $fee->whereHas('class', function ($query) use ($classSlug) {
+                $query->where('slug', $classSlug);
+            });
         }
-        if (request()->has('order')) {
-            $order = request()->input('order');
-            $feeTypes->orderBy($sortField, $order === 'ascend' ? 'asc' : 'desc');
-        } else {
-            $feeTypes->orderBy($sortField, 'desc');
+        if ($departmentSlug) {
+            $fee->whereHas('department', function ($query) use ($departmentSlug) {
+                $query->where('slug', $departmentSlug);
+            });
         }
-        return Inertia::render('admin::feeTypes/index', [
-            'feeTypes' => $feeTypes->paginate($per_page, ['*'], 'page', $page)->withQueryString(),
+
+        return Inertia::render('admin::fee/index', [
+            'fee' => $fee->get(),
         ]);
     }
 
@@ -39,17 +51,23 @@ class FeeTypeController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name'           => 'required|string|max:255',
-            'default_amount' => 'nullable|numeric|min:0',
-            'is_variable'    => 'boolean',
+            'name'       => 'required|string|max:255',
+            'amount'     => 'required|numeric|min:0',
+            'department' => 'required|exists:departments,slug',
+            'class'      => 'required|exists:classes,slug',
+            'category'   => 'required|exists:fee_categories,slug',
         ]);
 
         $validated['slug'] = Str::slug($validated['name']);
 
         try {
+            $class                      = Classes::where('slug', $validated['class'])->first();
+            $validated['class_id']      = $class->id;
+            $department                 = Department::where('slug', $validated['department'])->first();
+            $validated['department_id'] = $department->id;
             FeeType::create($validated);
 
-            return redirect()->route('settings.fee-types.index')
+            return redirect()->back()
                 ->with('success', 'Fee type created successfully.');
         } catch (\Exception $e) {
             return redirect()->back()
@@ -99,4 +117,5 @@ class FeeTypeController extends Controller
                 ->with('error', $e->getCode() === '23000' ? 'Fee type cannot be deleted as it is being used in other records.' : 'An error occurred while deleting the Fee type.');
         }
     }
+
 }

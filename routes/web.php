@@ -3,7 +3,7 @@
 use App\Http\Controllers\ClassController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepartmentController;
-use App\Http\Controllers\FeeTypeController;
+use App\Http\Controllers\FeeController;
 use App\Http\Controllers\FinanceController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\StudentController;
@@ -59,30 +59,32 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Department Settings
         Route::prefix('department')->group(function () {
-            Route::get('/', [DepartmentController::class, 'index'])->name('department');
+            Route::get('/', [DepartmentController::class, 'index'])->name('department.index');
             Route::get('add', [DepartmentController::class, 'departmentCreateView'])->name('department.create');
             Route::post('add', [DepartmentController::class, 'departmentStore'])->name('department.store');
             Route::get('{department_slug}/edit', [DepartmentController::class, 'departmentEditView'])->name('department.edit');
             Route::post('{department_slug}/edit', [DepartmentController::class, 'departmentUpdate'])->name('department.update');
             Route::delete('{department_slug}/delete', [DepartmentController::class, 'departmentDelete'])->name('department.delete');
+            Route::get('classes/{department_slug}', [DepartmentController::class, 'departmentClasses'])->name('department.classes');
+            Route::post('class/store', [ClassController::class, 'classStore'])->name('class.store');
+            Route::put('{class_slug}/update', [ClassController::class, 'update'])->name(name: 'class.update');
+            Route::delete('classes/{class_slug}/delete', [ClassController::class, 'destroyClass'])->name('department.class_delete');
         });
 
         // Class Settings
         Route::prefix('class')->group(function () {
             Route::get('/', [ClassController::class, 'index'])->name('class');
-            Route::post('store', [ClassController::class, 'classStore'])->name('class.store');
-            Route::post('{class_slug}/update', [ClassController::class, 'update'])->name('class.update');
-            Route::delete('{class_slug}/delete', [ClassController::class, 'destroy'])->name('class.delete');
+            Route::get('department-wise-class/{department_slug}', [ClassController::class, 'departmentWiseClass'])->name('department_wise_class');
         });
-        // Fee Type Settings
-        Route::resource('fee-types', FeeTypeController::class)->names([
-            'index'   => 'settings.fee-types.index',
-            'create'  => 'settings.fee-types.create',
-            'store'   => 'settings.fee-types.store',
-            'edit'    => 'settings.fee-types.edit',
-            'update'  => 'settings.fee-types.update',
-            'destroy' => 'settings.fee-types.destroy',
-        ]);
+        // Fee Settings
+        Route::prefix('fee-categories')->group(function () {
+            Route::get('/fee', [FeeController::class, 'feeIndex'])->name('fee.fee_index');
+            Route::get('create', [FeeController::class, 'create'])->name('settings.fee-types.create');
+            Route::post('/store', [FeeController::class, 'store'])->name('fee.fee-types.store');
+            Route::get('{fee}/edit', [FeeController::class, 'edit'])->name('settings.fee-types.edit');
+            Route::put('{fee}', [FeeController::class, 'update'])->name('settings.fee-types.update');
+            Route::delete('{fee}', [FeeController::class, 'destroy'])->name('settings.fee-types.destroy');
+        });
 
         // Voucher Type Settings
         Route::resource('voucher-types', VoucherTypeController::class)->names([

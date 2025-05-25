@@ -146,8 +146,8 @@ class FinanceController extends Controller
             'image'        => $user->img,
             'unique_id'    => $user->unique_id,
             'department'   => $user->academics->department->name ?? null,
-            'boarding_fee' => round(getStudentFee($user->id, 'boarding'), 2),
-            'academic_fee' => round(getStudentFee($user->id, 'academic'), 2),
+            'boarding_fee' => round(getStudentFee($user->academics, 'boarding'), 2),
+            'academic_fee' => round(getStudentFee($user->academics, 'academic'), 2),
             'income_logs'  => $user->incomeLogs->map(function ($item) {
                 return [
                     'amount' => round($item->amount, 2),
@@ -202,8 +202,8 @@ class FinanceController extends Controller
                     $discount->amount  = $request->discount;
                     $discount->save();
                 }
-                $academic_fee_base = getStudentFee($student->id, 'academic');
-                $boarding_fee_base = getStudentFee($student->id, 'boarding');
+                $academic_fee_base = getStudentFee($student->academics, 'academic');
+                $boarding_fee_base = getStudentFee($student->academics, 'boarding');
                 $academic_divider  = ($academic_fee_base > 0) ? intval($request->academic_fee / $academic_fee_base) : 0;
                 $academic_division = ($academic_fee_base > 0) ? ($request->academic_fee % $academic_fee_base) : 0;
 

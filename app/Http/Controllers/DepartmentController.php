@@ -55,9 +55,9 @@ class DepartmentController extends Controller
             $query->latest($sortField);
         }
 
-        $departments = $query->paginate($per_page, ['*'], 'page', $page)->withQueryString();
+        $departments = $query->withCount('classes as total_classes')->get();
 
-        return Inertia::render('admin::department/show', [
+        return Inertia::render('admin::department/view', [
             'departments' => $departments,
         ]);
     }
@@ -250,6 +250,19 @@ class DepartmentController extends Controller
             return redirect()
                 ->back()
                 ->with('error', 'An error occurred while deleting the department.');
+        }
+    }
+
+    public function departmentClasses($department_slug)
+    {
+        try {
+            $department = Department::with(['classes', 'classes.feeTypes'])->where('slug', $department_slug)->firstOrFail();
+            return Inertia::render('admin::department/classes', [
+                'department' => $department,
+                'classes'    => $department->classes,
+            ]);
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', 'Department not found.');
         }
     }
 }
