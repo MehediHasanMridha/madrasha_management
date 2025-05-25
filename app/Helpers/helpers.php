@@ -73,7 +73,12 @@ if (! function_exists('getStudentFee')) {
     {
 
         if ($academicInfo && $feeSlug) {
-            $name    = $feeSlug === 'academic' ? 'Academic Fee' : 'Boarding Fee';
+            $name = $feeSlug === 'academic' ? 'Academic Fee' : 'Boarding Fee';
+            if ($feeSlug === 'academic') {
+                return intval($academicInfo->academic_fee);
+            } elseif ($feeSlug === 'boarding') {
+                return intval($academicInfo->boarding_fee);
+            }
             $feeType = FeeType::firstOrCreate(
                 [
                     'class_id' => $academicInfo->class_id,
