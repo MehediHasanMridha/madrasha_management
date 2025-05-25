@@ -31,15 +31,18 @@ class MonthlyDailyReport
         $incoming = IncomeLog::with('feeType')
             ->where('status', 'paid')
             ->where('created_at', 'like', '%' . $period . '%')
-            ->groupBy('fee_type_id')
-            ->selectRaw('fee_type_id, sum(amount) as amount')
             ->get()
             ->map(function ($item) {
                 return [
                     'type'   => $item->feeType->name ?? 'Unknown',
                     'amount' => $item->amount,
                 ];
-            });
+            })->groupBy('type')->map(function ($group, $type) {
+            return [
+                'type'   => $type,
+                'amount' => $group->sum('amount'),
+            ];
+        })->values();
 
         return [
             'outgoings' => $outgoing,
