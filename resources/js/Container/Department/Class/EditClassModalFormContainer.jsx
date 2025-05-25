@@ -17,7 +17,6 @@ const EditClassModalFormContainer = () => {
         handleSubmit,
         formState: { errors },
         control,
-        reset,
         setFocus,
         setError,
         setValue,
@@ -28,16 +27,21 @@ const EditClassModalFormContainer = () => {
         setValue('boarding_fee', modal?.data?.fee_types?.find((fee) => fee.name === 'Boarding Fee')?.amount);
         setValue('academic_fee', modal?.data?.fee_types?.find((fee) => fee.name === 'Academic Fee')?.amount);
         setValue('admission_fee', modal?.data?.fee_types?.find((fee) => fee.name === 'Admission Fee')?.amount);
+        setValue('slug', modal.data.slug);
     }
 
     const handleCancel = () => {
-        setModal({ edit: false });
-        reset();
+        setModal({ edit: false, data: null });
     };
 
     const onSubmit = (data) => {
+        setValue('name', data.name);
+        setValue('boarding_fee', data.boarding_fee);
+        setValue('academic_fee', data.academic_fee);
+        setValue('admission_fee', data.admission_fee);
+        setModal({ data: null });
         router.put(
-            route('class.update', { class_slug: modal.data?.slug }),
+            route('class.update', { class_slug: data.slug }),
             {
                 ...data,
             },
@@ -60,9 +64,6 @@ const EditClassModalFormContainer = () => {
                             placement: 'bottomRight',
                         });
                     }
-                    reset();
-                    setModal({ edit: false });
-                    setIsLoading(false);
                 },
                 onError: (errors) => {
                     Object.keys(errors).forEach((field) => {
@@ -77,6 +78,10 @@ const EditClassModalFormContainer = () => {
                         }
                     });
                     setIsLoading(false);
+                },
+                onFinish: () => {
+                    setIsLoading(false);
+                    setModal({ edit: false });
                 },
             },
         );
