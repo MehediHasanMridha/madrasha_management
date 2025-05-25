@@ -92,9 +92,17 @@ class ClassController extends Controller
         try {
             DB::beginTransaction();
 
-            $class       = Classes::where('slug', $class_slug)->firstOrFail();
+            if (! $class_slug) {
+                return redirect()->back()->with('error', 'Class slug is required.');
+            }
+
+            $class = Classes::where('slug', $class_slug)->first();
+            if (! $class) {
+                return throw new \Exception('Class not found.');
+            }
+
             $class->name = $request->input('name');
-            $class->slug = Str::slug($request->input('name')) . '-' . $class->department->slug ?? uniqid();
+            $class->slug = Str::slug($request->input('name')) . '-' . ($class->department->slug ?? uniqid());
             $class->des  = $request->input('description') ?? null;
             $class->img  = $request->input('icon') ?? null;
 
@@ -104,17 +112,17 @@ class ClassController extends Controller
             $feeTypes = [
                 [
                     'name'   => 'Boarding Fee',
-                    'slug'   => 'boarding-fee' . '-' . $class->slug,
+                    'slug'   => "boarding-fee-{$class->slug}",
                     'amount' => $request->input('boarding_fee'),
                 ],
                 [
                     'name'   => 'Academic Fee',
-                    'slug'   => 'academic-fee' . '-' . $class->slug,
+                    'slug'   => "academic-fee-{$class->slug}",
                     'amount' => $request->input('academic_fee'),
                 ],
                 [
                     'name'   => 'Admission Fee',
-                    'slug'   => 'admission-fee' . '-' . $class->slug,
+                    'slug'   => "admission-fee-{$class->slug}",
                     'amount' => $request->input('admission_fee'),
                 ],
             ];
