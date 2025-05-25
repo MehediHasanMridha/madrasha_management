@@ -1,7 +1,6 @@
 import TableUI from '@/Components/UI/TableUI';
 
 const DueTableListContainer = ({ data }) => {
-    console.log('🚀 ~ DueTableListContainer ~ data:', data);
     const dataSource =
         data?.data?.map((item) => ({
             key: item.id,
