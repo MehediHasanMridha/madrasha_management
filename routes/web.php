@@ -71,11 +71,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::delete('classes/{class_slug}/delete', [ClassController::class, 'destroyClass'])->name('department.class_delete');
         });
 
-        // Class Settings
-        Route::prefix('class')->group(function () {
-            Route::get('/', [ClassController::class, 'index'])->name('class');
-            Route::get('department-wise-class/{department_slug}', [ClassController::class, 'departmentWiseClass'])->name('department_wise_class');
-        });
         // Fee Settings
         Route::prefix('fee-categories')->group(function () {
             Route::get('/fee', [FeeController::class, 'feeIndex'])->name('fee.fee_index');
