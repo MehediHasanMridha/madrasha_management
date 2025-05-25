@@ -5,7 +5,7 @@ import SubmitBtn from '@/Components/UI/SubmitBtn';
 import { useDepartmentStore } from '@/stores';
 import { router } from '@inertiajs/react';
 import { notification } from 'antd';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 const EditClassModalFormContainer = () => {
@@ -22,13 +22,15 @@ const EditClassModalFormContainer = () => {
         setValue,
     } = useForm();
 
-    if (modal.edit && modal.data) {
-        setValue('name', modal.data.name);
-        setValue('boarding_fee', modal?.data?.fee_types?.find((fee) => fee.name === 'Boarding Fee')?.amount);
-        setValue('academic_fee', modal?.data?.fee_types?.find((fee) => fee.name === 'Academic Fee')?.amount);
-        setValue('admission_fee', modal?.data?.fee_types?.find((fee) => fee.name === 'Admission Fee')?.amount);
-        setValue('slug', modal.data.slug);
-    }
+    useEffect(() => {
+        if (modal.edit && modal.data) {
+            setValue('name', modal.data.name);
+            setValue('boarding_fee', modal?.data?.fee_types?.find((fee) => fee.name === 'Boarding Fee')?.amount);
+            setValue('academic_fee', modal?.data?.fee_types?.find((fee) => fee.name === 'Academic Fee')?.amount);
+            setValue('admission_fee', modal?.data?.fee_types?.find((fee) => fee.name === 'Admission Fee')?.amount);
+            setValue('slug', modal.data.slug);
+        }
+    }, [modal.edit, modal.data, setValue]);
 
     const handleCancel = () => {
         setModal({ edit: false, data: null });
