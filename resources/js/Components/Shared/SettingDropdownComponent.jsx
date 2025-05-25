@@ -7,11 +7,12 @@ import DropdownUI from '../UI/DropdownUI';
 import ProgressbarUI from '../UI/ProgressbarUI';
 
 const SettingDropdownComponent = ({ items, user }) => {
-    const calculateCountdownPercent = (endDate) => {
-        const startDate = new Date();
-        const totalDuration = new Date(endDate) - startDate;
-        const elapsedDuration = totalDuration - (new Date(endDate) - new Date());
-        return Math.max(0, Math.min(100, (elapsedDuration / totalDuration) * 100));
+    const calculateCountdownPercent = (date1, date2) => {
+        const startDate = new Date(date1);
+        const endDate = new Date(date2);
+        const totalDuration = endDate - startDate;
+        const currentDuration = endDate - new Date();
+        return Math.ceil((currentDuration / totalDuration) * 100);
     };
 
     return (
@@ -21,9 +22,9 @@ const SettingDropdownComponent = ({ items, user }) => {
                 items={items}
                 boxShadow={'none'}
                 dropdownRender={(menu) => {
+                    const startDate = new Date('2025-05-05');
                     const endDate = new Date('2025-06-30');
-                    const percent = calculateCountdownPercent(endDate);
-
+                    const percent = calculateCountdownPercent(startDate, endDate);
                     return (
                         <div className="w-[400px] rounded-[8px] border border-[#E5E7EB] bg-white shadow-lg">
                             <div className="flex items-center border-b border-[#E5E7EB] px-[16px] py-[10px]">
@@ -44,7 +45,7 @@ const SettingDropdownComponent = ({ items, user }) => {
                                     </p>
                                 </span>
                                 <ProgressbarUI
-                                    percent={100 - percent}
+                                    percent={percent}
                                     strokeWidth={6}
                                     type="line"
                                     color={{ '0%': '#dc143c', '5%': '#ffd700', '100%': '#00A606' }}
