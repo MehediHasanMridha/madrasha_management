@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Academic;
 use App\Models\FeeType;
 use App\Models\User;
 use Illuminate\Support\Str;
@@ -70,31 +69,29 @@ if (! function_exists('generateUniqueId')) {
 
 // get student fee
 if (! function_exists('getStudentFee')) {
-    function getStudentFee($studentId, $feeSlug)
+    function getStudentFee($academicInfo = null, $feeSlug = null)
     {
-        $name = $feeSlug === 'academic' ? 'Academic Fee' : 'Boarding Fee';
-        // ছাত্রের একাডেমিক তথ্য এবং ফি টাইপের তথ্য একসাথে বের করা
-        $student = Academic::where('user_id', $studentId)->first();
-        $feeType = FeeType::where('slug', 'like', "%{$feeSlug}%", 'and')->first();
-        // যদি ফি টাইপ না পাওয়া যায়, তাহলে ডিফল্ট ফি নির্ধারণ করা হবে
-        if (! $feeType) {
-            FeeType::create([
-                'name'           => $name,
-                'slug'           => Str::slug($name),
-                'default_amount' => 0,
-            ]);
+
+        if ($academicInfo && $feeSlug) {
+            $name    = $feeSlug === 'academic' ? 'Academic Fee' : 'Boarding Fee';
+            $feeType = FeeType::firstOrCreate(
+                [
+                    'class_id' => $academicInfo->class_id,
+                    'slug'     => Str::slug($name) . '-' . $academicInfo->class->slug,
+                ],
+                [
+                    'name'          => $name,
+                    'amount'        => 0,
+                    'department_id' => $academicInfo->department_id,
+                ]
+            );
+            if ($feeType->amount === null) {
+                $feeType->amount = 0;
+                $feeType->save();
+            }
+            return intval($feeType->amount);
         }
 
-        // ফি নাম নির্ধারণ করা
-        $fieldName = match (true) {
-            in_array($feeSlug, ['academic_fee', 'academic', 'academic-fee']) => 'academic_fee',
-            in_array($feeSlug, ['boarding_fee', 'boarding', 'boarding-fee']) => 'boarding_fee',
-            default => null,
-        };
-
-        // ফি নির্ধারণ করা
-        $amount = $fieldName && $student ? ($student->$fieldName ?? $feeType->default_amount ?? 0) : $feeType->default_amount ?? 0;
-        return intval($amount);
     }
 
 }
