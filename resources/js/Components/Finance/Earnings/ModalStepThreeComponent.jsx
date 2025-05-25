@@ -32,14 +32,14 @@ const ModalStepThreeComponent = ({ data, loading, setStep, year, setYear, fee, s
             <div className="flex items-center justify-between border-b border-[#AFAFAF] pb-[12px]">
                 <span className="text-[16px] font-semibold">Monthly fee details</span>
                 <select
-                    className="w-[78px] rounded-[4px] border-[1px] border-[#AFAFAF] px-[8px] py-[4px] text-black focus:outline-0"
+                    className="w-[78px] cursor-pointer rounded-[4px] border-[1px] border-[#AFAFAF] px-[8px] py-[4px] text-black focus:outline-0"
                     value={year}
                     onChange={(e) => {
                         setYear(e.target.value);
                         getData(e.target.value);
                     }}
                 >
-                    <option value="">Year</option>
+                    <option disabled>Year</option>
                     {['2025', '2026', '2027', '2028', '2029', '2030'].map((item) => (
                         <option key={item} value={item}>
                             {item}

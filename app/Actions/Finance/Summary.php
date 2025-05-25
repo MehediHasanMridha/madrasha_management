@@ -22,15 +22,18 @@ class Summary
         $earnings = IncomeLog::with('feeType')
             ->where('status', 'paid')
             ->where('payment_period', $period)
-            ->groupBy('fee_type_id')
-            ->selectRaw('fee_type_id, sum(amount) as amount')
             ->get()
             ->map(function ($item) {
                 return [
                     'type'   => $item->feeType->name ?? 'Unknown',
                     'amount' => $item->amount,
                 ];
-            });
+            })->groupBy('type')->map(function ($group, $type) {
+            return [
+                'type'   => $type,
+                'amount' => $group->sum('amount'),
+            ];
+        })->values();
 
         $outgoings = ExpenseLog::with('voucherType')
             ->where('date', 'like', $period . '%') // get all vouchers for the month but date is "2025-04-22" format

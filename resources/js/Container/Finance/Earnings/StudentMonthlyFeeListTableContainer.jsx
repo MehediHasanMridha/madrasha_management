@@ -102,9 +102,11 @@ const StudentMonthlyFeeListTableContainer = ({ data, setFee, setSelectedRows, se
     const dataSource = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'].map(
         (month, index) => {
             const boardingFeeDue =
-                data?.income_logs?.find((item) => item?.month == month)?.fees?.find((item) => item?.type === 'boarding-fee')?.due || 0;
+                data?.income_logs?.find((item) => item?.month == month)?.fees?.find((item) => item?.type.toLowerCase().includes('boarding-fee'))
+                    ?.due || 0;
             const academicFeeDue =
-                data?.income_logs?.find((item) => item?.month == month)?.fees?.find((item) => item?.type === 'academic-fee')?.due || 0;
+                data?.income_logs?.find((item) => item?.month == month)?.fees?.find((item) => item?.type.toLowerCase().includes('academic-fee'))
+                    ?.due || 0;
             const boardingFee = data?.boarding_fee - boardingFeeDue;
 
             const academicFee = data?.academic_fee - academicFeeDue;
