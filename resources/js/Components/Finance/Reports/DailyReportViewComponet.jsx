@@ -16,9 +16,9 @@ const DailyReportViewComponent = forwardRef(({ reportViewModal, setReportViewMod
                 <LoadingUI />
             ) : (
                 <>
-                    <div className="max-h-[60vh] overflow-y-scroll p-4 print:max-h-[100vh] print:overflow-y-auto print:p-0" ref={printViewDom}>
+                    <div className="h-[60vh] overflow-y-auto p-4 print:max-h-[100vh] print:overflow-y-auto print:p-0" ref={printViewDom}>
                         {/* Header */}
-                        <div className="mb-4 flex items-center justify-between border-b-2 border-b-black pb-4">
+                        <div className="mb-4 flex items-center justify-between pb-4">
                             <div className="flex items-center gap-4">
                                 <img src={Logo} alt="School Logo" className="h-12 print:h-[37px]" />
                                 <div>
@@ -33,6 +33,8 @@ const DailyReportViewComponent = forwardRef(({ reportViewModal, setReportViewMod
                                 </div>
                             </div>
                         </div>
+
+                        <hr className="mb-4 border-1 border-black" />
 
                         {/* Income Section */}
                         <div className="mb-4">
@@ -49,7 +51,7 @@ const DailyReportViewComponent = forwardRef(({ reportViewModal, setReportViewMod
                                     {reportViewData?.incomings?.map((item, index) => (
                                         <tr key={index} className="border">
                                             <td className="border p-2">{Number(index + 1).toLocaleString('bn')}</td>
-                                            <td className="border p-2">{item.type}</td>
+                                            <td className="border p-2">{item.type === 'Academic Fee' ? 'একাডেমিক ফি' : 'বোর্ডিং ফি'}</td>
                                             <td className="border p-2 text-right">
                                                 {Number(item.amount).toLocaleString('bn', {
                                                     minimumFractionDigits: 0,
