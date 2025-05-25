@@ -8,45 +8,9 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use Inertia\Inertia;
 
 class ClassController extends Controller
 {
-    public function index()
-    {
-        $page      = request()->input('page', 1);
-        $per_page  = request()->input('per_page', 10);
-        $sortField = request()->input('sort_field', 'created_at');
-        $filters   = request()->input('filters', []);
-        $search    = request()->input('search', '');
-
-        $classes = Classes::with('department');
-
-        if ($search) {
-            $classes->where(function ($query) use ($search) {
-                $query->where('name', 'like', '%' . $search . '%')
-                    ->orWhereHas('department', function ($q) use ($search) {
-                        $q->where('name', 'like', '%' . $search . '%');
-                    });
-            });
-        }
-
-        if (request()->has('order')) {
-            $order = request()->input('order');
-            $classes->orderBy($sortField, $order === 'ascend' ? 'asc' : 'desc');
-        } else {
-            $classes->orderBy($sortField, 'desc');
-        }
-
-        $classes     = $classes->paginate($per_page, ['*'], 'page', $page)->withQueryString();
-        $departments = Department::all();
-
-        return Inertia::render('admin::class/index', [
-            'classes'     => $classes,
-            'filters'     => $filters,
-            'departments' => $departments,
-        ]);
-    }
 
     public function classStore(Request $request)
     {
@@ -213,16 +177,6 @@ class ClassController extends Controller
                 ->back()
                 ->with('error', 'An error occurred while deleting the Class.');
         }
-    }
-
-    public function departmentWiseClass($department_slug)
-    {
-        $department = Department::where('slug', $department_slug)->firstOrFail();
-        $classes    = Classes::where('department_id', $department->id)->get();
-
-        return response()->json([
-            'classes' => $classes,
-        ]);
     }
 
 }

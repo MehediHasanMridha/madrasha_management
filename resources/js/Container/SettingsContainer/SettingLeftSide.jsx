@@ -28,16 +28,6 @@ const SettingLeftSide = () => {
             </SideBarUI.Item>
             <SideBarUI.Item>
                 <SideBarUI.Text
-                    className={cn('w-full items-center px-[32px] py-[9px] hover:bg-[#F2F2F2]', { 'bg-[#F2F2F2]': route().current('class') })}
-                >
-                    <Link href={route('class')} as="button" className="cursor-pointer text-[16px] font-medium">
-                        Manage Class
-                    </Link>{' '}
-                    <br /> <span className="text-[#AFAFAF]">Add/Manage class</span>
-                </SideBarUI.Text>
-            </SideBarUI.Item>
-            <SideBarUI.Item>
-                <SideBarUI.Text
                     className={cn('w-full items-center px-[32px] py-[9px] hover:bg-[#F2F2F2]', {
                         'bg-[#F2F2F2]': route().current('settings.voucher-types.*'),
                     })}
