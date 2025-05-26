@@ -3,7 +3,7 @@ import { getAvatarImage } from '@/lib/avatarImageUrlUtils';
 import { cn } from '@/lib/utils';
 import { usePage } from '@inertiajs/react';
 
-const ModalStepFiveComponent = ({ data, loading, setStep, fee, setFee, submitData, setSelectedRows, selectedRows, setLoading, comments }) => {
+const ModalStepFiveComponent = ({ data, loading, setStep, fee, setFee, submitData, setSelectedRows, selectedRows, setLoading, comments, year }) => {
     const academic_divider = (fee?.academic_fee / data?.academic_fee) | 0;
     const academic_division = fee?.academic_fee % data?.academic_fee | 0;
     const boarding_divider = (fee?.boarding_fee / data?.boarding_fee) | 0;
@@ -32,12 +32,12 @@ const ModalStepFiveComponent = ({ data, loading, setStep, fee, setFee, submitDat
                         </span>
                     </div>
                 </div>
-                <div className="rounded-lg border border-[#AFAFAF]">
-                    <table className="w-full border-collapse overflow-hidden rounded-lg">
+                <div className="max-h-[200px] overflow-y-auto rounded-lg border border-[#AFAFAF]">
+                    <table className="w-full border-collapse rounded-lg">
                         <thead>
                             <tr className="bg-[#F2F2F2]">
                                 <th className="w-[56px] border-r border-[#AFAFAF] p-3 text-left text-sm font-normal text-[#131313]">S/N</th>
-                                <th className="border-r border-[#AFAFAF] p-3 text-left text-sm font-normal text-[#131313]">Month</th>
+                                <th className="border-r border-[#AFAFAF] p-3 text-left text-sm font-normal text-[#131313]">Month ({year})</th>
                                 <th className="border-r border-[#AFAFAF] p-3 text-left text-sm font-normal text-[#131313]">Boarding fee</th>
                                 <th className="border-r border-[#AFAFAF] p-3 text-left text-sm font-normal text-[#131313]">Academic fee</th>
                                 <th className="p-3 text-left text-sm font-normal text-[#131313]">Due</th>

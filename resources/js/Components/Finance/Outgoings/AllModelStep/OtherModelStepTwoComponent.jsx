@@ -99,6 +99,8 @@ const OtherModelStepTwoComponent = ({
                                         return newData;
                                     });
                                 }}
+                                type="number"
+                                min="0"
                             />
                             <Trash2 size={34} strokeWidth={1.5} className="mx-2 cursor-pointer text-red-500" onClick={() => remove(index)} />
                         </div>
