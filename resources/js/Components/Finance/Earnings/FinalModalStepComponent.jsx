@@ -8,6 +8,11 @@ import { FaPhone } from 'react-icons/fa';
 import { useReactToPrint } from 'react-to-print';
 
 const FinalModalStepComponent = ({ data, fee, selectedRows, handleClose, loading, setModal, setLoading, setStep, year, comments }) => {
+    const academic_divider = (fee?.academic_fee / data?.academic_fee) | 0;
+    const academic_division = fee?.academic_fee % data?.academic_fee | 0;
+    const boarding_divider = (fee?.boarding_fee / data?.boarding_fee) | 0;
+    const boarding_division = fee?.boarding_fee % data?.boarding_fee | 0;
+
     const printComponentRef = useRef(null);
     const currentDate = new Date();
     const { user } = usePage().props.auth;
@@ -117,27 +122,29 @@ const FinalModalStepComponent = ({ data, fee, selectedRows, handleClose, loading
                                 </tr>
                             </thead>
                             <tbody>
-                                {selectedRows.map((row, index) => (
-                                    <tr key={index}>
-                                        <td className="border-[0.5px] border-black px-4 py-2">{Number(index + 1).toLocaleString('bn')}</td>
-                                        <td className="border-[0.5px] border-black px-4 py-2">
-                                            {(() => {
-                                                const monthIndex =
-                                                    typeof row.month === 'number' ? row.month - 1 : new Date(`${row.month} 1, 2000`).getMonth();
-                                                return new Date(2000, monthIndex, 1).toLocaleString('bn-BD', { month: 'long' });
-                                            })()}
-                                        </td>
-                                        <td className="border-[0.5px] border-black px-4 py-2 text-right">
-                                            {formattedAmount(fee?.boarding_fee || 0)}
-                                        </td>
-                                        <td className="border-[0.5px] border-black px-4 py-2 text-right">
-                                            {formattedAmount(fee?.academic_fee || 0)}
-                                        </td>
-                                        <td className="border-[0.5px] border-black px-4 py-2 text-right">
-                                            {formattedAmount((fee?.boarding_fee || 0) + (fee?.academic_fee || 0))}
-                                        </td>
-                                    </tr>
-                                ))}
+                                {selectedRows.map((row, index) => {
+                                    const boarding_fee =
+                                        index < boarding_divider ? row?.boarding_fee : index === boarding_divider ? boarding_division : 0;
+                                    const academic_fee =
+                                        index < academic_divider ? row?.academic_fee : index === academic_divider ? academic_division : 0;
+                                    return (
+                                        <tr key={index}>
+                                            <td className="border-[0.5px] border-black px-4 py-2">{Number(index + 1).toLocaleString('bn')}</td>
+                                            <td className="border-[0.5px] border-black px-4 py-2">
+                                                {(() => {
+                                                    const monthIndex =
+                                                        typeof row.month === 'number' ? row.month - 1 : new Date(`${row.month} 1, 2000`).getMonth();
+                                                    return new Date(2000, monthIndex, 1).toLocaleString('bn-BD', { month: 'long' });
+                                                })()}
+                                            </td>
+                                            <td className="border-[0.5px] border-black px-4 py-2 text-right">{formattedAmount(boarding_fee || 0)}</td>
+                                            <td className="border-[0.5px] border-black px-4 py-2 text-right">{formattedAmount(academic_fee || 0)}</td>
+                                            <td className="border-[0.5px] border-black px-4 py-2 text-right">
+                                                {formattedAmount((boarding_fee || 0) + (academic_fee || 0))}
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
                             </tbody>
                         </table>
                     </div>
