@@ -40,7 +40,7 @@ const LeftSide = () => {
                 <SideBarUI.Text collapsed={collapsed}>Universal</SideBarUI.Text>
                 <hr className="h-[0.5px] w-full bg-[#AFAFAF]" />
             </div>
-            <Link href="/dashboard" as="button" className="w-full cursor-pointer">
+            <Link href="/dashboard" prefetch as="button" className="w-full cursor-pointer">
                 <SideBarUI.Item
                     collapsed={collapsed}
                     className={cn(
@@ -54,7 +54,7 @@ const LeftSide = () => {
                     <SideBarUI.Text collapsed={collapsed}>Dashboard</SideBarUI.Text>
                 </SideBarUI.Item>
             </Link>
-            <Link href={route('finance.summary')} as="button" className="w-full cursor-pointer" preserveState preserveScroll>
+            <Link href={route('finance.summary')} as="button" className="w-full cursor-pointer" preserveState preserveScroll prefetch>
                 <SideBarUI.Item
                     collapsed={collapsed}
                     className={cn(

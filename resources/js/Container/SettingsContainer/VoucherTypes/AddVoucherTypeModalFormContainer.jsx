@@ -66,7 +66,7 @@ const AddVoucherTypeModalFormContainer = () => {
         <ModalUI
             isModalOpen={modal?.add}
             handleCancel={handleCancel}
-            width={'80%'}
+            width={'30%'}
             title="Add Voucher Type"
             footer={() => (
                 <SubmitBtn
@@ -77,7 +77,7 @@ const AddVoucherTypeModalFormContainer = () => {
                 />
             )}
         >
-            <FieldSet labelClassName="text-[16px] font-bold" hr={true}>
+            <FieldSet labelClassName="text-[16px] font-bold" className="md:grid-cols-1" hr={true}>
                 <Field error={errors.name} label={'Voucher Type Name'}>
                     <input
                         type="text"
