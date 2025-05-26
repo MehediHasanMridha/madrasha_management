@@ -175,6 +175,7 @@ const AddMoneyContainer = ({ modal, setModal }) => {
                     selectedRows={selectedRows}
                     setLoading={setLoading}
                     comments={comments}
+                    year={year}
                 />
             );
             break;

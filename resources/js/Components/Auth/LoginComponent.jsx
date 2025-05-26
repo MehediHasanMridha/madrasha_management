@@ -44,7 +44,7 @@ const LoginComponent = ({ handleSubmit, setData, loginImg1, loginImg2 }) => {
                         {/* Login button */}
                         <Button
                             type="submit"
-                            className="font-16-medium h-14 w-full rounded-lg bg-[#4891ff] text-[length:var(--16-medium-font-size)] leading-[var(--16-medium-line-height)] font-[number:var(--16-medium-font-weight)] tracking-[var(--16-medium-letter-spacing)] [font-style:var(--16-medium-font-style)] hover:bg-[#3a7fe6]"
+                            className="font-16-medium h-14 w-full cursor-pointer rounded-lg bg-[#4891ff] text-[length:var(--16-medium-font-size)] leading-[var(--16-medium-line-height)] font-[number:var(--16-medium-font-weight)] tracking-[var(--16-medium-letter-spacing)] [font-style:var(--16-medium-font-style)] hover:bg-[#3a7fe6] hover:text-white"
                         >
                             Log in
                         </Button>

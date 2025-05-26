@@ -1,8 +1,10 @@
-const MonthYearComponent = ({ months, setMonth, years, setYear, month, year, getData }) => {
+import { cn } from '@/lib/utils';
+
+const MonthYearComponent = ({ months, setMonth, years, setYear, month, year, getData, className }) => {
     return (
         <span className="flex items-center gap-2">
             <select
-                className="w-fit rounded-[4px] border-[1px] border-[#AFAFAF] px-[8px] py-[4px] text-black focus:outline-0"
+                className={cn('w-fit rounded-[4px] border-[1px] border-[#AFAFAF] px-[8px] py-[4px] text-black focus:outline-0', className)}
                 value={month}
                 onChange={(e) => {
                     setMonth(e.target.value);
@@ -17,7 +19,7 @@ const MonthYearComponent = ({ months, setMonth, years, setYear, month, year, get
                 ))}
             </select>
             <select
-                className="w-fit rounded-[4px] border-[1px] border-[#AFAFAF] px-[8px] py-[4px] text-black focus:outline-0"
+                className={cn('w-fit rounded-[4px] border-[1px] border-[#AFAFAF] px-[8px] py-[4px] text-black focus:outline-0', className)}
                 value={year}
                 onChange={(e) => {
                     setYear(e.target.value);

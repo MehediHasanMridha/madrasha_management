@@ -18,34 +18,12 @@ const SettingLeftSide = () => {
             </div>
             <SideBarUI.Item>
                 <SideBarUI.Text
-                    className={cn('w-full items-center px-[32px] py-[9px] hover:bg-[#F2F2F2]', { 'bg-[#F2F2F2]': route().current('department') })}
+                    className={cn('w-full items-center px-[32px] py-[9px] hover:bg-[#F2F2F2]', { 'bg-[#F2F2F2]': route().current('department.*') })}
                 >
-                    <Link href={route('department')} as="button" className="cursor-pointer text-[16px] font-medium">
+                    <Link href={route('department.index')} as="button" className="cursor-pointer text-[16px] font-medium">
                         Manage Campus
                     </Link>{' '}
                     <br /> <span className="text-[#AFAFAF]">Add/Manage campus</span>
-                </SideBarUI.Text>
-            </SideBarUI.Item>
-            <SideBarUI.Item>
-                <SideBarUI.Text
-                    className={cn('w-full items-center px-[32px] py-[9px] hover:bg-[#F2F2F2]', { 'bg-[#F2F2F2]': route().current('class') })}
-                >
-                    <Link href={route('class')} as="button" className="cursor-pointer text-[16px] font-medium">
-                        Manage Class
-                    </Link>{' '}
-                    <br /> <span className="text-[#AFAFAF]">Add/Manage class</span>
-                </SideBarUI.Text>
-            </SideBarUI.Item>
-            <SideBarUI.Item>
-                <SideBarUI.Text
-                    className={cn('w-full items-center px-[32px] py-[9px] hover:bg-[#F2F2F2]', {
-                        'bg-[#F2F2F2]': route().current('settings.fee-types.*'),
-                    })}
-                >
-                    <Link href={route('settings.fee-types.index')} as="button" className="cursor-pointer text-[16px] font-medium">
-                        Fee Types
-                    </Link>{' '}
-                    <br /> <span className="text-[#AFAFAF]">Manage fee types</span>
                 </SideBarUI.Text>
             </SideBarUI.Item>
             <SideBarUI.Item>

@@ -2,15 +2,15 @@ import Field from '@/Components/UI/Field';
 import FieldSet from '@/Components/UI/FieldSet';
 import ModalUI from '@/Components/UI/ModalUI';
 import SubmitBtn from '@/Components/UI/SubmitBtn';
-import { useBoundStore } from '@/stores';
+import { useDepartmentStore } from '@/stores';
 import { router } from '@inertiajs/react';
 import { notification } from 'antd';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 const EditDepartmentModalFormContainer = () => {
     const [isLoading, setIsLoading] = useState(false);
-    const { modal, setModal, passData } = useBoundStore((state) => state);
+    const { modal, setModal } = useDepartmentStore((state) => state);
 
     const {
         register,
@@ -22,20 +22,17 @@ const EditDepartmentModalFormContainer = () => {
         setValue,
     } = useForm();
 
-    useEffect(() => {
-        if (passData) {
-            setValue('name', passData.name);
-            setValue('description', passData.des);
-        }
-    }, [passData, setValue]);
-
+    if (modal?.data) {
+        setValue('name', modal.data.name);
+        setValue('description', modal?.data?.des);
+    }
     const handleCancel = () => {
         setModal({ edit: false });
         reset();
     };
 
     const onSubmit = (data) => {
-        router.post(route('department.update', passData.slug), data, {
+        router.post(route('department.update', modal?.data?.slug), data, {
             onStart: () => {
                 setIsLoading(true);
             },
@@ -80,36 +77,34 @@ const EditDepartmentModalFormContainer = () => {
             isModalOpen={modal.edit}
             handleCancel={handleCancel}
             width={'80%'}
-            title="Edit Department"
+            title="Edit Campus"
             footer={() => (
                 <SubmitBtn
                     loadingIndicator={isLoading}
-                    btnText={'Update Department'}
+                    btnText={'Update Campus'}
                     className="cursor-pointer bg-blue-400"
                     onClick={handleSubmit(onSubmit)}
                 />
             )}
         >
-            <form className="max-h-[70vh] overflow-y-scroll">
-                <FieldSet label={'Department Information'} labelClassName="text-[16px] font-bold" hr={true}>
-                    <Field error={errors.name} label={'Department Name'}>
-                        <input
-                            type="text"
-                            className="rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
-                            placeholder="Enter Department Name"
-                            {...register('name', { required: 'Department Name is required' })}
-                        />
-                    </Field>
-                    <Field label={'Description'}>
-                        <textarea
-                            className="rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
-                            placeholder="Enter Description"
-                            {...register('description')}
-                            rows={4}
-                        />
-                    </Field>
-                </FieldSet>
-            </form>
+            <FieldSet className="md:grid-cols-1" label={'Campus Information'} labelClassName="text-[16px] font-bold" hr={true}>
+                <Field error={errors.name} label={'Campus Name'}>
+                    <input
+                        type="text"
+                        className="rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
+                        placeholder="Enter Campus Name"
+                        {...register('name', { required: 'Campus Name is required' })}
+                    />
+                </Field>
+                <Field label={'Description'}>
+                    <textarea
+                        className="rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
+                        placeholder="Enter Description"
+                        {...register('description')}
+                        rows={4}
+                    />
+                </Field>
+            </FieldSet>
         </ModalUI>
     );
 };

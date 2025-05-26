@@ -55,9 +55,9 @@ class DepartmentController extends Controller
             $query->latest($sortField);
         }
 
-        $departments = $query->paginate($per_page, ['*'], 'page', $page)->withQueryString();
+        $departments = $query->withCount('classes as total_classes')->get();
 
-        return Inertia::render('Department/DepartmentView', [
+        return Inertia::render('admin::department/view', [
             'departments' => $departments,
         ]);
     }
@@ -91,7 +91,7 @@ class DepartmentController extends Controller
 
             $students = $studentsQuery->paginate($per_page, ['*'], 'page', $page)->withQueryString();
 
-            return Inertia::render('Department/Students', [
+            return Inertia::render('admin::department/students', [
                 'department' => $department,
                 'students'   => Inertia::defer(fn() => showStudentData::collection(
                     $students ?? [],
@@ -134,7 +134,7 @@ class DepartmentController extends Controller
 
             $staffs = $staffQuery->paginate($per_page, ['*'], 'page', $page)->withQueryString();
 
-            return Inertia::render('Department/Teachers', [
+            return Inertia::render('admin::department/teachers', [
                 'department' => $department,
                 'staffs'     => Inertia::defer(fn() => showStaffData::collection(
                     $staffs ?? [],
@@ -169,7 +169,7 @@ class DepartmentController extends Controller
 
     public function departmentCreateView()
     {
-        return Inertia::render('Department/AddDepartment');
+        return Inertia::render('admin::department/create');
     }
 
     public function departmentStore(Request $request)
@@ -198,7 +198,7 @@ class DepartmentController extends Controller
     public function departmentEditView($slug)
     {
         $department = Department::where('slug', $slug)->firstOrFail();
-        return Inertia::render('Department/EditDepartment', [
+        return Inertia::render('admin::department/editDepartment', [
             'department' => $department,
         ]);
     }
@@ -250,6 +250,19 @@ class DepartmentController extends Controller
             return redirect()
                 ->back()
                 ->with('error', 'An error occurred while deleting the department.');
+        }
+    }
+
+    public function departmentClasses($department_slug)
+    {
+        try {
+            $department = Department::with(['classes', 'classes.feeTypes'])->where('slug', $department_slug)->firstOrFail();
+            return Inertia::render('admin::department/classes', [
+                'department' => $department,
+                'classes'    => $department->classes,
+            ]);
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', 'Department not found.');
         }
     }
 }

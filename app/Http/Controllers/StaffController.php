@@ -61,7 +61,7 @@ class StaffController extends Controller
 
         // return $staff->get();
 
-        return Inertia::render('Staff/StaffList', [
+        return Inertia::render('admin::staff/index', [
             'staff' => Inertia::defer(fn() => showStaffData::collection($staff->paginate($per_page, ['*'], 'page', $page))),
         ]);
     }

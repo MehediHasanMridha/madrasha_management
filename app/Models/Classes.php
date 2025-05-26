@@ -20,6 +20,14 @@ class Classes extends Model
         return $this->belongsTo(Department::class);
     }
 
+    /**
+     * Get the fee types for the class.
+     */
+    public function feeTypes(): HasMany
+    {
+        return $this->hasMany(FeeType::class, 'class_id');
+    }
+
     public function academics(): HasMany
     {
         return $this->hasMany(Academic::class, 'class_id');

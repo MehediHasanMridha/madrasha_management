@@ -1,4 +1,4 @@
-import VoucherBorder from '@/assets/images/VoucherBorder.png';
+import VoucherBorder from '@/assets/images/VoucherBorder.webp';
 import StaticBtn from '@/Components/UI/StaticBtn';
 import AddVoucherContainer from '@/Container/Finance/Outgoings/AddVoucherContainer';
 import VoucherModalContainer from '@/Container/Finance/Outgoings/VoucherModalContainer';

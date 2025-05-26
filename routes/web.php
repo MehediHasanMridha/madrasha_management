@@ -3,7 +3,7 @@
 use App\Http\Controllers\ClassController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepartmentController;
-use App\Http\Controllers\FeeTypeController;
+use App\Http\Controllers\FeeController;
 use App\Http\Controllers\FinanceController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\StudentController;
@@ -15,81 +15,84 @@ use Inertia\Inertia;
 Route::redirect('/', '/login');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', [DashboardController::class, "index"])->name('dashboard');
-    Route::prefix('department')->group(function () {
-        Route::get("/students/{department_slug}", [DepartmentController::class, "students_show"])->name("department.students_show");
-        Route::get("/teachers/{department_slug}", [DepartmentController::class, "teachers_show"])->name("department.teachers_show");
-    });
-    Route::post("/student/{department_slug}/add_student", [StudentController::class, "add_student"])->name("student.add_student");
-    Route::post("/student/{student_id}/update", [StudentController::class, "update_student"])->name("student.update_student");
 
-    // delete user
+    // Dashboard
+    Route::get('dashboard', [DashboardController::class, "index"])->name('dashboard');
+
+    // Department
+    Route::prefix('department')->group(function () {
+        Route::get('/teachers/{department_slug}', [DepartmentController::class, 'teachers_show'])->name('department.teachers_show');
+
+        // Student
+        Route::prefix('students')->group(function () {
+            Route::get('{department_slug}', [DepartmentController::class, 'students_show'])->name('department.students_show');
+            Route::get('{department_slug}/{student_id}', [StudentController::class, 'show_student_info'])->name('show_student_info');
+            Route::post('{department_slug}/add_student', [StudentController::class, 'add_student'])->name('student.add_student');
+            Route::post('{student_id}/update', [StudentController::class, 'update_student'])->name('student.update_student');
+        });
+
+        // Assign/Unassign Teacher to Department
+        Route::get('/get-assign-teacher', [StaffController::class, 'assign_staff'])->name('get_assign_staff_data');
+        Route::post('/assign-teacher-to-department', [StaffController::class, 'assign_staff_store'])->name('assign.staff.store');
+        Route::delete('/unassign-teacher-to-department', [StaffController::class, 'unassign_staff_store'])->name('unassign.staff.store');
+    });
+
+    // User
     Route::delete('/user/{id}', function ($id) {
         $user = User::find($id);
-        $user->delete();
+        $user?->delete();
         return back();
     })->name('user.delete');
 
-    //staff
-    Route::get("/staff", [StaffController::class, "index"])->name("staff.index");
-    Route::post("/staff/add", [StaffController::class, "store"])->name("staff.store");
-    Route::post("/staff/{id}/update", [StaffController::class, "update"])->name("staff.update");
-    Route::delete("/staff/{id}", [StaffController::class, "destroy"])->name("staff.delete");
+    // Staff
+    Route::prefix('staff')->group(function () {
+        Route::get('/', [StaffController::class, 'index'])->name('staff.index');
+        Route::post('add', [StaffController::class, 'store'])->name('staff.store');
+        Route::post('{id}/update', [StaffController::class, 'update'])->name('staff.update');
+        Route::delete('{id}', [StaffController::class, 'destroy'])->name('staff.delete');
+    });
 
-    //settings
-    Route::prefix("settings")->group(function () {
-        Route::get("/", function () {
-            return Inertia::render("settings/settingDashboard");
-        })->name("settings");
+    // Settings
+    Route::prefix('settings')->group(function () {
 
-        //department
+        Route::get('/', fn() => Inertia::render('admin::settings/index'))->name('settings');
+
+        // Department Settings
         Route::prefix('department')->group(function () {
-            Route::get('/', [DepartmentController::class, 'index'])->name('department');
+            Route::get('/', [DepartmentController::class, 'index'])->name('department.index');
             Route::get('add', [DepartmentController::class, 'departmentCreateView'])->name('department.create');
             Route::post('add', [DepartmentController::class, 'departmentStore'])->name('department.store');
             Route::get('{department_slug}/edit', [DepartmentController::class, 'departmentEditView'])->name('department.edit');
             Route::post('{department_slug}/edit', [DepartmentController::class, 'departmentUpdate'])->name('department.update');
             Route::delete('{department_slug}/delete', [DepartmentController::class, 'departmentDelete'])->name('department.delete');
+            Route::get('classes/{department_slug}', [DepartmentController::class, 'departmentClasses'])->name('department.classes');
+            Route::post('class/store', [ClassController::class, 'classStore'])->name('class.store');
+            Route::put('{class_slug}/update', [ClassController::class, 'update'])->name(name: 'class.update');
+            Route::delete('classes/{class_slug}/delete', [ClassController::class, 'destroyClass'])->name('department.class_delete');
         });
 
-        //class
-        Route::prefix('class')->group(function () {
-            Route::get('/', [ClassController::class, 'index'])->name('class');
-            Route::post('store', [ClassController::class, 'classStore'])->name('class.store');
-            Route::post('{class_slug}/update', [ClassController::class, 'update'])->name('class.update');
-            Route::delete('{class_slug}/delete', [ClassController::class, 'destroy'])->name('class.delete');
+        // Fee Settings
+        Route::prefix('fee-categories')->group(function () {
+            Route::get('/fee', [FeeController::class, 'feeIndex'])->name('fee.fee_index');
+            Route::get('create', [FeeController::class, 'create'])->name('settings.fee-types.create');
+            Route::post('/store', [FeeController::class, 'store'])->name('fee.fee-types.store');
+            Route::get('{fee}/edit', [FeeController::class, 'edit'])->name('settings.fee-types.edit');
+            Route::put('{fee}', [FeeController::class, 'update'])->name('settings.fee-types.update');
+            Route::delete('{fee}', [FeeController::class, 'destroy'])->name('settings.fee-types.destroy');
         });
 
-        // Fee Type Routes
-        Route::resource('fee-types', FeeTypeController::class)
-            ->names([
-                'index'   => 'settings.fee-types.index',
-                'create'  => 'settings.fee-types.create',
-                'store'   => 'settings.fee-types.store',
-                'edit'    => 'settings.fee-types.edit',
-                'update'  => 'settings.fee-types.update',
-                'destroy' => 'settings.fee-types.destroy',
-            ]);
-
-        // Voucher Type Routes
-        Route::resource('voucher-types', VoucherTypeController::class)
-            ->names([
-                'index'   => 'settings.voucher-types.index',
-                'create'  => 'settings.voucher-types.create',
-                'store'   => 'settings.voucher-types.store',
-                'edit'    => 'settings.voucher-types.edit',
-                'update'  => 'settings.voucher-types.update',
-                'destroy' => 'settings.voucher-types.destroy',
-            ]);
-
+        // Voucher Type Settings
+        Route::resource('voucher-types', VoucherTypeController::class)->names([
+            'index'   => 'settings.voucher-types.index',
+            'create'  => 'settings.voucher-types.create',
+            'store'   => 'settings.voucher-types.store',
+            'edit'    => 'settings.voucher-types.edit',
+            'update'  => 'settings.voucher-types.update',
+            'destroy' => 'settings.voucher-types.destroy',
+        ]);
     });
 
-    //assign teacher to department
-    Route::get('/assign-teacher', [StaffController::class, 'assign_staff'])->name('assign.staff');
-    Route::post('/assign-teacher-to-department', [StaffController::class, 'assign_staff_store'])->name('assign.staff.store');
-    Route::delete('/unassign-teacher-to-department', [StaffController::class, 'unassign_staff_store'])->name('unassign.staff.store');
-
-    //finance routes
+    // Finance
     Route::prefix('finance')->group(function () {
         Route::get('/summary', [FinanceController::class, 'summary'])->name('finance.summary');
         Route::get('/earnings', [FinanceController::class, 'earnings'])->name('finance.earnings');
@@ -100,9 +103,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/get_user_data/{user_id}', [FinanceController::class, 'get_user_data'])->name('finance.get_user_data');
         Route::post('/add_money', [FinanceController::class, 'add_money'])->name('finance.add_money');
         Route::post('/add_voucher', [FinanceController::class, 'add_voucher'])->name('finance.add_voucher');
-        // delete voucher
         Route::delete('/delete_voucher/{voucher_id}', [FinanceController::class, 'delete_voucher'])->name('finance.delete_voucher');
+        Route::get('/due-list', [FinanceController::class, 'due_list'])->name('finance.due_list');
     });
+
 });
 
 require __DIR__ . '/settings.php';

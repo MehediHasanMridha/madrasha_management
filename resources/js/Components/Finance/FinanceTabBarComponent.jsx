@@ -1,4 +1,5 @@
 import SettingDropdownContainer from '@/Container/Shared/SettingDropdownContainer';
+import Icons from '@/icons';
 import { cn } from '@/lib/utils';
 import { Link } from '@inertiajs/react';
 import { BanknoteArrowDown, BanknoteArrowUp, ChartPie, FileSpreadsheet } from 'lucide-react';
@@ -62,6 +63,20 @@ const FinanceTabBarComponent = ({ tab }) => {
                 >
                     <FileSpreadsheet strokeWidth={1.5} />
                     <span>Report</span>
+                </Link>
+                <Link
+                    href={route('finance.due_list')}
+                    className={cn(
+                        'flex w-fit cursor-pointer items-center space-x-[8px]',
+                        tab === 'due_list' ? 'border-b-[1px] border-[#4891FF] px-[8px] py-[6px] text-[#4891FF]' : 'text-[#4A4A4A]',
+                    )}
+                    preserveState
+                    preserveScroll
+                    as="button"
+                    prefetch
+                >
+                    <Icons name={'list'} className={cn(tab === 'due_list' ? 'text-[#4891FF]' : 'text-[#4A4A4A]')} />
+                    <span>Due list</span>
                 </Link>
             </div>
             <SettingDropdownContainer />

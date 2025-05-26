@@ -47,8 +47,8 @@ class DashboardController extends Controller
             },
         ])->get()->map(function ($item) {
             $total_tk = $item->academics->sum(function ($academic) {
-                return ($academic->academic_fee ?? getStudentFee($academic->id, 'academic')) +
-                    ($academic->boarding_fee ?? getStudentFee($academic->id, 'boarding'));
+                return ($academic->academic_fee ?? getStudentFee($academic, 'academic')) +
+                    ($academic->boarding_fee ?? getStudentFee($academic, 'boarding'));
             });
 
             $monthly_income = $item->academics->sum(function ($academic) {
@@ -69,6 +69,6 @@ class DashboardController extends Controller
             ];
         });
 
-        return Inertia::render('Dashboard', ['data' => $data]);
+        return Inertia::render('admin::dashboard', ['data' => $data]);
     }
 }

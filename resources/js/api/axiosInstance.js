@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-    baseURL: 'https://madrasha.test',
+    baseURL: 'https://madrasa.test',
     headers: {
         'Content-Type': 'application/json',
     },

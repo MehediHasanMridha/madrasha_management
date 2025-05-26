@@ -35,7 +35,6 @@ const AddVoucherContainer = ({ modal, setModal }) => {
                 }),
             );
             if (info) {
-                console.log('🚀 ~ getData ~ info:', info);
                 setData(info);
             }
         } catch (error) {
