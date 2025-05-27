@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import { Layout } from 'antd';
+import { ConfigProvider, Drawer, Layout } from 'antd';
 import { useState } from 'react';
 
 const SideBarUI = ({
@@ -10,6 +10,9 @@ const SideBarUI = ({
     className = 'h-screen',
     width = 200,
     collapsedWidth = 100,
+    drawerOpen,
+    onDrawerClose,
+    isMobile = false,
     ...props
 }) => {
     const { Sider } = Layout;
@@ -22,6 +25,33 @@ const SideBarUI = ({
         setInternalCollapsed(!internalCollapsed);
     };
 
+    // On mobile, render as Drawer
+    if (isMobile) {
+        return (
+            <ConfigProvider
+                theme={{
+                    token: {
+                        paddingLG: 0,
+                    },
+                }}
+            >
+                <Drawer
+                    placement="left"
+                    onClose={onDrawerClose}
+                    open={drawerOpen}
+                    width={width}
+                    bodyStyle={{ padding: 0 }}
+                    headerStyle={{ display: 'none' }}
+                    className="overflow-hidden bg-white p-0 transition-all duration-300"
+                    {...props}
+                >
+                    <div className={cn('h-full bg-white', className)}>{children}</div>
+                </Drawer>
+            </ConfigProvider>
+        );
+    }
+
+    // On desktop, render as Sider
     return (
         <Sider
             collapsible={collapsible}
@@ -51,7 +81,7 @@ const SideBarItemText = ({ children, className = '', collapsed, ...props }) => {
         <div
             className={cn(
                 'overflow-hidden whitespace-nowrap transition-all duration-700 ease-in-out',
-                collapsed ? 'w-0 opacity-0' : 'w-auto opacity-100',
+                !collapsed ? 'w-auto opacity-100' : 'w-0 opacity-0',
                 className,
             )}
             {...props}
@@ -67,7 +97,7 @@ const SideBarItem = ({ children, className = '', collapsed, ...props }) => {
             {...props}
             className={cn(
                 'flex cursor-pointer items-center p-4 transition-all duration-300 hover:bg-gray-100',
-                collapsed ? 'justify-center gap-0' : 'justify-start gap-4',
+                !collapsed ? 'justify-start gap-4' : 'justify-center gap-0',
                 className,
             )}
         >
@@ -84,7 +114,7 @@ const SideBarGroup = ({ children, label, collapsed, className = '', divider = fa
                 <div
                     className={cn(
                         'overflow-hidden px-3 py-2 text-xs font-semibold tracking-wider text-gray-500 uppercase transition-all duration-300',
-                        collapsed ? 'h-0 opacity-0' : 'h-auto opacity-100',
+                        !collapsed ? 'h-auto opacity-100' : 'h-0 opacity-0',
                     )}
                 >
                     {!collapsed && label}
