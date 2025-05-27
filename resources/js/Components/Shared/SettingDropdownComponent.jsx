@@ -26,18 +26,18 @@ const SettingDropdownComponent = ({ items, user }) => {
                     const endDate = new Date('2025-06-30');
                     const percent = calculateCountdownPercent(startDate, endDate);
                     return (
-                        <div className="w-[400px] rounded-[8px] border border-[#E5E7EB] bg-white shadow-lg">
-                            <div className="flex items-center border-b border-[#E5E7EB] px-[16px] py-[10px]">
+                        <div className="w-[300px] rounded-[8px] border border-[#E5E7EB] bg-white shadow-lg sm:w-[400px]">
+                            <div className="flex items-center border-b border-[#E5E7EB] px-3 py-[10px] sm:px-[16px]">
                                 <AvatarUI shape="square" size={40} src={getAvatarImage(user.image, 'staff_images', user.name)} />
-                                <div className="ml-3">
-                                    <p className="text-[16px] font-semibold">{user.name}</p>
-                                    <p className="text-[14px] text-[#6B7280]">{user.email}</p>
+                                <div className="ml-3 min-w-0 flex-1">
+                                    <p className="truncate text-sm font-semibold sm:text-[16px]">{user.name}</p>
+                                    <p className="truncate text-xs text-[#6B7280] sm:text-[14px]">{user.email}</p>
                                 </div>
                             </div>
-                            <div className="mt-1 w-full border-b border-[#E5E7EB] bg-white px-[16px] py-[18px]">
+                            <div className="mt-1 w-full border-b border-[#E5E7EB] bg-white px-3 py-[18px] sm:px-[16px]">
                                 <span className="flex items-center justify-between">
-                                    <p>Renew in</p>
-                                    <p className="text-[14px] font-medium text-[#00A606]">
+                                    <p className="text-sm">Renew in</p>
+                                    <p className="text-xs font-medium text-[#00A606] sm:text-[14px]">
                                         <Countdown
                                             date={endDate}
                                             renderer={({ days, hours, minutes, seconds }) => `${days}d ${hours}h ${minutes}m ${seconds}s`}
@@ -56,10 +56,10 @@ const SettingDropdownComponent = ({ items, user }) => {
                                 href={route('logout')}
                                 method="post"
                                 as="button"
-                                className="flex w-full cursor-pointer space-x-3 border-t border-[#E5E7EB] px-[16px] py-[16px] hover:bg-[#F3F4F6]"
+                                className="flex w-full cursor-pointer space-x-3 border-t border-[#E5E7EB] px-3 py-[16px] hover:bg-[#F3F4F6] sm:px-[16px]"
                             >
                                 <LogOut strokeWidth={1.5} className="text-red-500" />
-                                <span className="text-[14px] font-semibold text-red-500">Logout</span>
+                                <span className="text-xs font-semibold text-red-500 sm:text-[14px]">Logout</span>
                             </Link>
                         </div>
                     );
