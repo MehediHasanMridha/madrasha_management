@@ -88,7 +88,7 @@ const LeftSide = () => {
             {/* Mobile App Section */}
             <SideBarUI.Group label="Mobile app" collapsed={collapsed} divider />
 
-            <SideBarUI.Item collapsed={collapsed} className="flex h-[64px] items-center space-x-[12px] px-[20px] hover:bg-[#F2F2F2]">
+            <SideBarUI.Item collapsed={collapsed} className="h-[64px] hover:bg-[#F2F2F2]">
                 <SideBarUI.Icon>
                     <img src={Logo} alt="Mobile app" className="h-[24px] w-[24px]" />
                 </SideBarUI.Icon>
