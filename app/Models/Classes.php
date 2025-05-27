@@ -37,4 +37,9 @@ class Classes extends Model
     {
         return $this->hasMany(ClassAssign::class, 'class_id');
     }
+
+    public function subjects(): HasMany
+    {
+        return $this->hasMany(Subject::class, 'class_id');
+    }
 }
