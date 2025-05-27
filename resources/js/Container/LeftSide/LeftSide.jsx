@@ -20,33 +20,30 @@ const LeftSide = () => {
             collapsedWidth={100}
             theme="light"
         >
-            <SideBarUI.Item collapsed={collapsed} className="flex h-[80px] items-center space-x-[12px] px-[20px] hover:bg-[#F2F2F2]">
+            {/* Header with logo */}
+            <SideBarUI.Item collapsed={collapsed} className="h-[80px] hover:bg-[#F2F2F2]">
                 <SideBarUI.Icon>
                     <img src={Logo} alt="logo" className="h-[33.16px] w-[32px]" />
                 </SideBarUI.Icon>
-                <SideBarUI.Text collapsed={collapsed}>Madrasatul Hera</SideBarUI.Text>
+                <SideBarUI.Text collapsed={collapsed} className="text-lg font-semibold">
+                    Madrasatul Hera
+                </SideBarUI.Text>
             </SideBarUI.Item>
-            <SideBarUI.Item
-                onClick={handleCollapsed}
-                collapsed={collapsed}
-                className="flex h-[64px] cursor-pointer items-center space-x-[12px] px-[20px] hover:bg-[#F2F2F2]"
-            >
+
+            {/* Collapse toggle button */}
+            <SideBarUI.Item onClick={handleCollapsed} collapsed={collapsed} className="h-[64px] hover:bg-[#F2F2F2]">
                 <SideBarUI.Icon className="flex h-[32px] w-[32px] items-center justify-center rounded-[8px] bg-[#F2F2F2] p-1">
                     <PanelRight strokeWidth={1.5} size={20} className="text-[#4A4A4A]" />
                 </SideBarUI.Icon>
                 <SideBarUI.Text collapsed={collapsed}>Collapse</SideBarUI.Text>
             </SideBarUI.Item>
-            <div className={cn('my-2 flex items-center space-x-[12px]', collapsed ? 'pl-0' : 'pl-[16px]')}>
-                <SideBarUI.Text collapsed={collapsed}>Universal</SideBarUI.Text>
-                <hr className="h-[0.5px] w-full bg-[#AFAFAF]" />
-            </div>
+
+            {/* Universal Section */}
+            <SideBarUI.Group label="Universal" collapsed={collapsed} divider />
             <Link href="/dashboard" prefetch as="button" className="w-full cursor-pointer">
                 <SideBarUI.Item
                     collapsed={collapsed}
-                    className={cn(
-                        'flex h-[64px] items-center space-x-[12px] px-[20px] hover:bg-[#F2F2F2]',
-                        route().current('dashboard') && 'w-full bg-[#F2F2F2]',
-                    )}
+                    className={cn('h-[64px] hover:bg-[#F2F2F2]', route().current('dashboard') && 'w-full bg-[#F2F2F2]')}
                 >
                     <SideBarUI.Icon className="flex h-[32px] w-[32px] items-center justify-center rounded-[8px] bg-[#F2F2F2] p-1">
                         <ChartNoAxesCombined strokeWidth={1.5} size={20} className="text-[#4A4A4A]" />
@@ -57,10 +54,7 @@ const LeftSide = () => {
             <Link href={route('finance.summary')} as="button" className="w-full cursor-pointer" preserveState preserveScroll prefetch>
                 <SideBarUI.Item
                     collapsed={collapsed}
-                    className={cn(
-                        'flex h-[64px] items-center space-x-[12px] px-[20px] hover:bg-[#F2F2F2]',
-                        route().current('finance.*') && 'w-full bg-[#F2F2F2]',
-                    )}
+                    className={cn('h-[64px] hover:bg-[#F2F2F2]', route().current('finance.*') && 'w-full bg-[#F2F2F2]')}
                 >
                     <SideBarUI.Icon className="flex h-[32px] w-[32px] items-center justify-center rounded-[8px] bg-[#F2F2F2] p-1">
                         <Calculator strokeWidth={1.5} size={20} className="text-[#4A4A4A]" />
@@ -69,47 +63,31 @@ const LeftSide = () => {
                 </SideBarUI.Item>
             </Link>
             <Link as="button" className="w-full cursor-pointer" href={route('staff.index')}>
-                <SideBarUI.Item
-                    collapsed={collapsed}
-                    className={cn(
-                        'flex h-[64px] items-center space-x-[12px] px-[20px] hover:bg-[#F2F2F2]',
-                        route().current('staff.index') && 'bg-[#F2F2F2]',
-                    )}
-                >
-                    <SideBarUI.Icon className="flex h-[32px] w-[32px] items-center justify-center rounded-[8px] bg-[#F2F2F2] p-1">
+                <SideBarUI.Item collapsed={collapsed} className={cn('h-[64px] hover:bg-[#F2F2F2]', route().current('staff.index') && 'bg-[#F2F2F2]')}>
+                    <SideBarUI.Icon className="h-[32px] w-[32px] rounded-[8px] bg-[#F2F2F2]">
                         <Users strokeWidth={1.5} size={20} className="text-[#4A4A4A]" />
                     </SideBarUI.Icon>
                     <SideBarUI.Text collapsed={collapsed}>Manage Staff </SideBarUI.Text>
                 </SideBarUI.Item>
             </Link>
-            <div className={cn('my-2 flex items-center space-x-[12px]', collapsed ? 'pl-0' : 'pl-[16px]')}>
-                <SideBarUI.Text collapsed={collapsed}>Campus</SideBarUI.Text>
-                <hr className="h-[0.5px] w-full bg-[#AFAFAF]" />
-            </div>
+            {/* Campus Section */}
+            <SideBarUI.Group label="Campus" divider collapsed={collapsed} />
             {departments?.map((department) => (
                 <Link key={department.id} href={route('department.students_show', department.slug)} className="w-full cursor-pointer" as="button">
                     <SideBarUI.Item
                         collapsed={collapsed}
-                        className={cn(
-                            'flex h-[64px] items-center space-x-[8px] pl-[20px] hover:bg-[#F2F2F2]',
-                            route().current('department.students_show', department.slug) && 'bg-[#F2F2F2]',
-                        )}
+                        className={cn('h-[64px] hover:bg-[#F2F2F2]', route().current('department.students_show', department.slug) && 'bg-[#F2F2F2]')}
                     >
-                        <SideBarUI.Icon className="flex h-[32px] w-[32px] items-center justify-center rounded-[8px] bg-[#F2F2F2] p-1">
+                        <SideBarUI.Icon className="h-[32px] w-[32px] rounded-[8px] bg-[#F2F2F2]">
                             <School strokeWidth={1.5} size={20} className="text-[#4A4A4A]" />
                         </SideBarUI.Icon>
-                        <SideBarUI.Text className="w-full text-start" collapsed={collapsed}>
-                            {department.name}
-                        </SideBarUI.Text>
+                        <SideBarUI.Text collapsed={collapsed}>{department.name}</SideBarUI.Text>
                     </SideBarUI.Item>
                 </Link>
             ))}
-            <div className={cn('my-2 flex items-center space-x-[12px]', collapsed ? 'pl-0' : 'pl-[24px]')}>
-                <SideBarUI.Text collapsed={collapsed} className="w-[120px]">
-                    Mobile app
-                </SideBarUI.Text>
-                <hr className="h-[0.5px] w-full bg-[#AFAFAF]" />
-            </div>
+            {/* Mobile App Section */}
+            <SideBarUI.Group label="Mobile app" collapsed={collapsed} divider />
+
             <SideBarUI.Item collapsed={collapsed} className="flex h-[64px] items-center space-x-[12px] px-[20px] hover:bg-[#F2F2F2]">
                 <SideBarUI.Icon>
                     <img src={Logo} alt="Mobile app" className="h-[24px] w-[24px]" />
