@@ -1,6 +1,7 @@
 import SettingDropdownContainer from '@/Container/Shared/SettingDropdownContainer';
 import { cn } from '@/lib/utils';
 import { Link } from '@inertiajs/react';
+import { GraduationCap } from 'lucide-react';
 import { FaUserGroup } from 'react-icons/fa6';
 
 const DepartmentTabSectionComponent = ({ department, type }) => {
@@ -32,6 +33,20 @@ const DepartmentTabSectionComponent = ({ department, type }) => {
                 >
                     <FaUserGroup className="inline-flex" size={24} />
                     <span className="text-[16px]">Teachers</span>
+                </Link>
+                <Link
+                    href={route('department.exams_show', { department_slug: department.slug })}
+                    as="button"
+                    prefetch={type !== 'exams'}
+                    preserveState
+                    preserveScroll
+                    className={cn(
+                        'flex w-fit cursor-pointer items-center space-x-[8px]',
+                        type === 'exams' ? 'border-b-[1px] border-[#4891FF] px-[8px] py-[6px] text-[#4891FF]' : 'text-gray-500',
+                    )}
+                >
+                    <GraduationCap strokeWidth={1.5} className="inline-flex" size={24} />
+                    <span className="text-[16px]">Exams</span>
                 </Link>
             </div>
             <SettingDropdownContainer />

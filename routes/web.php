@@ -30,6 +30,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('{department_slug}/add_student', [StudentController::class, 'add_student'])->name('student.add_student');
             Route::post('{student_id}/update', [StudentController::class, 'update_student'])->name('student.update_student');
         });
+        Route::prefix('exams')->group(function () {
+            Route::get('{department_slug}', [DepartmentController::class, 'exams_show'])->name('department.exams_show');
+            // Route::get('{department_slug}/{student_id}', [StudentController::class, 'show_student_info'])->name('show_student_info');
+            // Route::post('{department_slug}/add_student', [StudentController::class, 'add_student'])->name('student.add_student');
+            // Route::post('{student_id}/update', [StudentController::class, 'update_student'])->name('student.update_student');
+        });
 
         // Assign/Unassign Teacher to Department
         Route::get('/get-assign-teacher', [StaffController::class, 'assign_staff'])->name('get_assign_staff_data');
