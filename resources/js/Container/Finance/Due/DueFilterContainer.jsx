@@ -23,9 +23,14 @@ const DueFilterContainer = ({ data, filterData }) => {
     const handleFilterChange = (event) => {
         const { name, value } = event.target;
         const parsedValue = parseValue(value);
+        console.log('🚀 ~ handleFilterChange ~ parsedValue:', parsedValue);
 
         // Update filtered classes if department changes
         if (name === 'department') {
+            if (!parsedValue) {
+                delete filters['class'];
+                setFilteredClasses([]);
+            }
             classRef.current.value = 'Select Class';
             const departmentId = parsedValue?.id;
             setFilteredClasses(getClassesByDepartment(departmentId));

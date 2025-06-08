@@ -2,7 +2,6 @@ import TableUI from '@/Components/UI/TableUI';
 import { router } from '@inertiajs/react';
 
 const DueTableListContainer = ({ data }) => {
-    console.log('🚀 ~ DueTableListContainer ~ data:', data);
     const dataSource =
         data?.data?.map((item) => ({
             key: item.id,
