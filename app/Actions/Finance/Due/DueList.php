@@ -19,12 +19,12 @@ class DueList
             })
             ->when($class, function ($query, $class) {
                 $query->whereHas('academics.class', function ($q) use ($class) {
-                    $q->where('name', $class);
+                    $q->where('slug', $class);
                 });
             })
             ->when($department, function ($query, $department) {
                 $query->whereHas('academics.department', function ($q) use ($department) {
-                    $q->where('name', $department);
+                    $q->where('slug', $department);
                 });
             })
             ->where(function ($query) use ($date) {
