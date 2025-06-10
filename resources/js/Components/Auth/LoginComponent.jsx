@@ -12,13 +12,13 @@ const LoginComponent = ({ handleSubmit, togglePasswordVisibility, showPassword, 
                 {/* <span className="absolute top-5 left-5 flex h-15 w-15 items-center justify-center rounded-full bg-[#FFFFFF1F]">
                     <IoMdArrowBack className="cursor-pointer text-2xl text-white" onClick={() => window.history.back()} />
                 </span> */}
-                <img className="h-screen w-full object-cover" alt="Element quran islam" src={loginImg1} />
+                <img className="h-screen w-full object-cover" alt="Element quran islam" draggable="false" src={loginImg1} />
             </div>
             <div className="relative z-10 flex h-full w-full items-center justify-center p-4 md:w-[70%]">
                 <Card className="w-full max-w-[500px] overflow-hidden rounded-xl border-none bg-white shadow-lg">
                     {/* Header image */}
                     <div className="h-[100px] w-full overflow-hidden">
-                        <img className="h-full w-full object-cover" alt="Islamic decorative pattern" src={loginImg2} />
+                        <img className="h-full w-full object-cover" alt="Islamic decorative pattern" draggable="false" src={loginImg2} />
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-8 p-8">

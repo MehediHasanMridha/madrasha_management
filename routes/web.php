@@ -111,6 +111,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/add_voucher', [FinanceController::class, 'add_voucher'])->name('finance.add_voucher');
         Route::delete('/delete_voucher/{voucher_id}', [FinanceController::class, 'delete_voucher'])->name('finance.delete_voucher');
         Route::get('/due-list', [FinanceController::class, 'due_list'])->name('finance.due_list');
+        // add download due list students
+        Route::get('/due-list/download', [FinanceController::class, 'download_due_list'])->name('finance.download_due_list');
     });
 
 });
