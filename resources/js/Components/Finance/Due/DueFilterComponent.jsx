@@ -3,9 +3,9 @@ import { forwardRef } from 'react';
 
 const DueFilterComponent = forwardRef(({ classData, department, gender, handleFilterChange, classRef, getMonthYearData }) => {
     return (
-        <div className="flex items-center gap-4 rounded-lg p-4">
+        <div className="flex items-center justify-between gap-4 rounded-lg p-4">
             <select
-                className="filter-dropdown rounded border border-gray-400 px-2 py-2 focus:outline-none"
+                className="filter-dropdown w-full rounded border border-gray-400 px-2 py-2 focus:outline-none"
                 name="department"
                 onChange={handleFilterChange}
             >
@@ -18,7 +18,7 @@ const DueFilterComponent = forwardRef(({ classData, department, gender, handleFi
                 {/* Add more departments as needed */}
             </select>
             <select
-                className="filter-dropdown rounded border border-gray-400 px-2 py-2 focus:outline-none"
+                className="filter-dropdown w-full rounded border border-gray-400 px-2 py-2 focus:outline-none"
                 name="class"
                 onChange={handleFilterChange}
                 ref={classRef}
@@ -32,7 +32,7 @@ const DueFilterComponent = forwardRef(({ classData, department, gender, handleFi
                 {/* Add more classes as needed */}
             </select>
             <select
-                className="filter-dropdown rounded border border-gray-400 px-2 py-2 focus:outline-none"
+                className="filter-dropdown w-full rounded border border-gray-400 px-2 py-2 focus:outline-none"
                 name="gender"
                 onChange={handleFilterChange}
             >
