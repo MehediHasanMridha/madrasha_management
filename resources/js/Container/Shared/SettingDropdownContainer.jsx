@@ -34,7 +34,7 @@ const items = [
     },
     {
         label: (
-            <a href="https://madrasha.om-qrcode.com" target="_blank" className="flex items-center justify-between">
+            <a href="https://dev.madrasatulhera.com" target="_blank" className="flex items-center justify-between">
                 <span>Practice Mode</span>
             </a>
         ),
