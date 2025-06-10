@@ -3,7 +3,6 @@ namespace App\Actions\Finance\Due;
 
 use App\Models\Classes;
 use App\Models\Department;
-use App\Models\FeeType;
 use Lorisleiva\Actions\Concerns\AsAction;
 
 class DueFilterGroup
@@ -15,9 +14,9 @@ class DueFilterGroup
 
         $result = [
             'gender'     => ['male', 'female', 'other'],
-            'class'      => Classes::pluck('name')->unique()->values()->all(),
-            'department' => Department::pluck('name')->unique()->values()->all(),
-            'fee_type'   => FeeType::pluck('name')->unique()->values()->all(),
+            'class'      => Classes::get(),
+            'department' => Department::get(),
+            // 'fee_type'   => FeeType::pluck('name')->unique()->values()->all(),
         ];
 
         $data = $result;

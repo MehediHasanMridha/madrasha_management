@@ -266,14 +266,15 @@ class FinanceController extends Controller
     public function due_list()
     {
         $year       = request()->input('year') ?? date('Y');
+        $month      = request()->input('month') ?? date('F');
         $gender     = request()->input('gender');
         $class      = request()->input('class');
         $department = request()->input('department');
-
-        $date = date('Y-m');
+        $date       = $year . '-' . date('m', strtotime($month));
 
         $data        = DueList::run($date, $gender, $class, $department);
         $filterGroup = DueFilterGroup::make()->handle();
+        // return $data;
         return Inertia::render('admin::finance/dueList', [
             'data'       => $data,
             'filterData' => $filterGroup,

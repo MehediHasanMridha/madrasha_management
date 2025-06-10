@@ -3,8 +3,10 @@ import loginImg2 from '@/assets/images/loginImg2.webp';
 import LoginComponent from '@/Components/Auth/LoginComponent';
 import { useForm, usePage } from '@inertiajs/react';
 import { notification } from 'antd';
+import { useState } from 'react';
 const Login = () => {
     const { message } = usePage().props.flash;
+    const [showPassword, setShowPassword] = useState(false);
     const { post, setData } = useForm({
         email: '',
         password: '',
@@ -52,10 +54,21 @@ const Login = () => {
         window.history.back();
     };
 
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    };
+
     return (
         <>
             {contextHolder}
-            <LoginComponent handleSubmit={handleSubmit} setData={setData} loginImg1={loginImg1} loginImg2={loginImg2} />
+            <LoginComponent
+                showPassword={showPassword}
+                togglePasswordVisibility={togglePasswordVisibility}
+                handleSubmit={handleSubmit}
+                setData={setData}
+                loginImg1={loginImg1}
+                loginImg2={loginImg2}
+            />
         </>
     );
 };

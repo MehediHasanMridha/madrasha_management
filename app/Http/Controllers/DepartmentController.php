@@ -265,4 +265,17 @@ class DepartmentController extends Controller
             return redirect()->back()->with('error', 'Department not found.');
         }
     }
+
+    public function exams_show($department_slug)
+    {
+        try {
+            $department = Department::where('slug', $department_slug)->firstOrFail();
+            return Inertia::render('admin::department/exams', [
+                'department' => $department,
+            ]);
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', 'Department not found.');
+        }
+    }
+
 }
