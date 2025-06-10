@@ -1,5 +1,6 @@
 import DepartmentTabSectionComponent from '@/Components/Department/DepartmentTabSectionComponent';
 import ExamCard from '@/Components/Department/Exams/ExamCard';
+import AddExamContainer from './AddExamContainer';
 
 const ExamsContainer = ({ department }) => {
     // Sample exam data - this would typically come from props or API
@@ -30,7 +31,7 @@ const ExamsContainer = ({ department }) => {
     return (
         <>
             <DepartmentTabSectionComponent type="exams" department={department} />
-
+            <AddExamContainer />
             {/* Exams Section */}
             <div className="mt-[16px] grid grid-cols-1 gap-[12px]">
                 {exams.map((exam) => (
