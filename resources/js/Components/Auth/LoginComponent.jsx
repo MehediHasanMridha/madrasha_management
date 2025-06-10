@@ -7,13 +7,14 @@ import Field from '../UI/Field';
 const LoginComponent = ({ handleSubmit, togglePasswordVisibility, showPassword, setData, loginImg1, loginImg2 }) => {
     return (
         <div style={{ backgroundImage: `url(${BG})` }} className="flex h-screen w-full bg-[#f6f6f6] bg-blend-luminosity">
+            <div className="absolute top-0 left-0 h-full w-full bg-white opacity-[70%]" />
             <div className="relative hidden h-full w-[30%] md:block">
                 {/* <span className="absolute top-5 left-5 flex h-15 w-15 items-center justify-center rounded-full bg-[#FFFFFF1F]">
                     <IoMdArrowBack className="cursor-pointer text-2xl text-white" onClick={() => window.history.back()} />
                 </span> */}
                 <img className="h-screen w-full object-cover" alt="Element quran islam" src={loginImg1} />
             </div>
-            <div className="flex h-full w-full items-center justify-center p-4 md:w-[70%]">
+            <div className="relative z-10 flex h-full w-full items-center justify-center p-4 md:w-[70%]">
                 <Card className="w-full max-w-[500px] overflow-hidden rounded-xl border-none bg-white shadow-lg">
                     {/* Header image */}
                     <div className="h-[100px] w-full overflow-hidden">
