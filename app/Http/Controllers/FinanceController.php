@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Actions\Finance\Due\DownloadDueList;
 use App\Actions\Finance\Due\DueFilterGroup;
 use App\Actions\Finance\Due\DueList;
 use App\Actions\Finance\Earning\AddMonthlyFee;
@@ -279,6 +280,18 @@ class FinanceController extends Controller
             'data'       => $data,
             'filterData' => $filterGroup,
         ]);
+    }
+
+    public function download_due_list()
+    {
+        $year       = request()->input('year') ?? date('Y');
+        $month      = request()->input('month') ?? date('F');
+        $gender     = request()->input('gender');
+        $class      = request()->input('class');
+        $department = request()->input('department');
+        $date       = $year . '-' . date('m', strtotime($month));
+        $data       = DownloadDueList::run($date, $gender, $class, $department);
+        return $data;
     }
 
 }
