@@ -272,6 +272,7 @@ class DepartmentController extends Controller
             $department = Department::where('slug', $department_slug)->firstOrFail();
             return Inertia::render('admin::department/exams', [
                 'department' => $department,
+                'classes'    => $department->classes,
             ]);
         } catch (Exception $e) {
             return redirect()->back()->with('error', 'Department not found.');

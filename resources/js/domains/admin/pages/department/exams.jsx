@@ -1,10 +1,10 @@
 import ExamsContainer from '@/Container/Department/Exams/ExamsContainer';
 import AuthenticatedLayout from '@/layouts/AuthenticatedLayout';
 
-const exams = ({ department }) => {
+const exams = ({ department, classes }) => {
     return (
         <AuthenticatedLayout>
-            <ExamsContainer department={department} />
+            <ExamsContainer department={department} classes={classes} />
         </AuthenticatedLayout>
     );
 };

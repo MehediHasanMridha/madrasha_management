@@ -7,7 +7,7 @@ import { notification } from 'antd';
 import { Plus } from 'lucide-react';
 import { useState } from 'react';
 
-const AddExamContainer = () => {
+const AddExamContainer = ({ classes }) => {
     const [modal, setModal] = useState(false);
     const [loading, setLoading] = useState(false);
     const [step, setStep] = useState('form'); // 'form' | 'success'
@@ -92,6 +92,7 @@ const AddExamContainer = () => {
                     setIsFeeEnabled={setIsFeeEnabled}
                     data={data}
                     setData={setData}
+                    classes={classes}
                 />
             );
             break;
@@ -108,6 +109,7 @@ const AddExamContainer = () => {
                     setIsFeeEnabled={setIsFeeEnabled}
                     data={data}
                     setData={setData}
+                    classes={classes}
                 />
             );
             break;

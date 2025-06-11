@@ -3,7 +3,7 @@ import FieldSet from '@/Components/UI/FieldSet';
 import ExamClassSelectFieldContainer from '@/Container/Department/Exams/ExamClassSelectFieldContainer';
 import { Calendar, Check } from 'lucide-react';
 
-const ExamModalStepComponent = ({ onCancel, loading = false, isFeeEnabled, setIsFeeEnabled, handleSubmit, data, setData }) => {
+const ExamModalStepComponent = ({ onCancel, loading = false, isFeeEnabled, setIsFeeEnabled, handleSubmit, data, setData, classes }) => {
     return (
         <div className="flex flex-col gap-8 px-6 py-4">
             {/* Exam Name Input */}
@@ -79,7 +79,7 @@ const ExamModalStepComponent = ({ onCancel, loading = false, isFeeEnabled, setIs
             </FieldSet>
 
             {/* Select Class Section */}
-            <ExamClassSelectFieldContainer data={data} setData={setData} />
+            <ExamClassSelectFieldContainer data={data} setData={setData} classes={classes} />
 
             {/* Action Buttons */}
             <div className="flex gap-4 pt-8">

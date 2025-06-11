@@ -2,22 +2,10 @@ import FieldSet from '@/Components/UI/FieldSet';
 import { ChevronDown, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
-const ExamClassSelectFieldContainer = ({ data, setData }) => {
+const ExamClassSelectFieldContainer = ({ data, setData, classes }) => {
     const [selectedClasses, setSelectedClasses] = useState([]);
     const [showClassDropdown, setShowClassDropdown] = useState(false);
     const dropdownRef = useRef(null);
-    const availableClasses = [
-        { id: 1, name: 'Class 1' },
-        { id: 2, name: 'Class 2' },
-        { id: 3, name: 'Class 3' },
-        { id: 4, name: 'Class 4' },
-        { id: 5, name: 'Class 5' },
-        { id: 6, name: 'Class 6' },
-        { id: 7, name: 'Class 7' },
-        { id: 8, name: 'Class 8' },
-        { id: 9, name: 'Class 9' },
-        { id: 10, name: 'Class 10' },
-    ];
 
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -60,7 +48,7 @@ const ExamClassSelectFieldContainer = ({ data, setData }) => {
 
                 {showClassDropdown && (
                     <div className="absolute top-full right-0 left-0 z-10 mt-1 max-h-48 overflow-y-auto rounded-lg border border-[#AFAFAF] bg-white p-3 shadow-lg">
-                        {availableClasses.map((classItem) => (
+                        {classes.map((classItem) => (
                             <button
                                 key={classItem.id}
                                 onClick={() => handleClassSelect(classItem)}
