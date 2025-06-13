@@ -3,6 +3,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Classes extends Model
@@ -41,5 +42,22 @@ class Classes extends Model
     public function subjects(): HasMany
     {
         return $this->hasMany(Subject::class, 'class_id');
+    }
+
+    /**
+     * Get the exams for the class.
+     */
+    public function exams(): BelongsToMany
+    {
+        return $this->belongsToMany(Exam::class, 'exam_classes', 'class_id', 'exam_id')
+            ->withTimestamps();
+    }
+
+    /**
+     * Get the exam subjects for the class.
+     */
+    public function examSubjects(): HasMany
+    {
+        return $this->hasMany(ExamSubject::class, 'class_id');
     }
 }

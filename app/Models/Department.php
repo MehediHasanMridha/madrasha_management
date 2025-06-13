@@ -29,4 +29,12 @@ class Department extends Model
     {
         return $this->hasMany(FeeType::class, 'department_id');
     }
+
+    /**
+     * Get the exams for the department.
+     */
+    public function exams()
+    {
+        return $this->hasMany(Exam::class, 'department_id');
+    }
 }

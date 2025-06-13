@@ -4,10 +4,15 @@ namespace App\Http\Controllers;
 use App\Http\Resources\showStaffData;
 use App\Http\Resources\showStudentData;
 use App\Models\Department;
+use App\Models\Exam;
 use App\Models\User;
 use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 
@@ -270,12 +275,172 @@ class DepartmentController extends Controller
     {
         try {
             $department = Department::where('slug', $department_slug)->firstOrFail();
+
+            // Get exams for this department with related data
+            $exams = $department->exams()
+                ->with(['classes', 'examSubjects.subject', 'creator'])
+                ->latest()
+                ->get();
+
+            // Transform exams to include status with time
+            $exams->transform(function ($exam) {
+                $statusInfo           = $exam->getStatusWithTime();
+                $exam->display_status = $statusInfo['status'];
+                $exam->time_left      = $statusInfo['timeLeft'];
+                return $exam;
+            });
+
             return Inertia::render('admin::department/exams', [
                 'department' => $department,
+                'classes'    => $department->classes->load('subjects'),
+                'exams'      => $exams,
             ]);
         } catch (Exception $e) {
             return redirect()->back()->with('error', 'Department not found.');
         }
     }
 
+    /**
+     * Store a new exam for the department.
+     */
+    public function storeExam(Request $request, $department_slug)
+    {
+        try {
+            $department = Department::where('slug', $department_slug)->firstOrFail();
+
+            $validator = Validator::make($request->all(), [
+                'examName'             => 'required|string|max:150',
+                'examType'             => 'nullable|in:midterm,final,quiz,assessment,other',
+                'description'          => 'nullable|string|max:1000',
+                'startDate'            => 'required|date|after:now',
+                'endDate'              => 'required|date|after:startDate',
+                'registrationStart'    => 'nullable|date|before:startDate',
+                'registrationEnd'      => 'nullable|date|after:registrationStart|before:startDate',
+                'examFee'              => 'nullable|numeric|min:0|max:999999.99',
+                'selectedClasses'      => 'required|array|min:1',
+                'selectedClasses.*.id' => 'exists:classes,id',
+                'totalMarks'           => 'required|integer|min:1|max:1000',
+                'passMarks'            => 'required|integer|min:1|lte:totalMarks',
+                'durationMinutes'      => 'nullable|integer|min:1|max:1440',
+                'instructions'         => 'nullable|string|max:2000',
+            ]);
+
+            if ($validator->fails()) {
+                return back()->withErrors($validator)->withInput();
+            }
+
+            DB::beginTransaction();
+
+            $examData = [
+                'name'               => $request->examName,
+                'slug'               => Str::slug($request->examName),
+                'description'        => $request->description,
+                'department_id'      => $department->id,
+                'start_date'         => $request->startDate,
+                'end_date'           => $request->endDate,
+                'registration_start' => $request->registrationStart,
+                'registration_end'   => $request->registrationEnd,
+                'exam_fee'           => $request->examFee ?? 0,
+                'is_fee_required'    => ! empty($request->examFee),
+                'total_marks'        => $request->totalMarks,
+                'pass_marks'         => $request->passMarks,
+                'duration_minutes'   => $request->durationMinutes,
+                'instructions'       => $request->instructions,
+                'status'             => 'scheduled',
+                'created_by'         => Auth::user()->id,
+            ];
+
+            $exam = Exam::create($examData);
+
+            // Attach classes to exam
+            $classIds = collect($request->selectedClasses)->pluck('id')->toArray();
+            $exam->classes()->attach($classIds);
+
+            DB::commit();
+
+            return redirect()->back()->with('success', 'Exam created successfully!');
+
+        } catch (Exception $e) {
+            Log::error('Error creating exam: ' . $e->getMessage());
+            DB::rollBack();
+            return back()->with('error', 'Failed to create exam. Please try again.');
+        }
+    }
+
+    /**
+     * Update an existing exam for the department.
+     */
+    public function updateExam(Request $request, $department_slug, $exam_id)
+    {
+        try {
+            $department = Department::where('slug', $department_slug)->firstOrFail();
+            $exam       = Exam::where('id', $exam_id)->where('department_id', $department->id)->firstOrFail();
+
+            $validator = Validator::make($request->all(), [
+                'examName'             => 'required|string|max:150',
+                'examType'             => 'nullable|in:midterm,final,quiz,assessment,other',
+                'description'          => 'nullable|string|max:1000',
+                'startDate'            => 'required|date',
+                'endDate'              => 'required|date|after:startDate',
+                'registrationStart'    => 'nullable|date|before:startDate',
+                'registrationEnd'      => 'nullable|date|after:registrationStart|before:startDate',
+                'examFee'              => 'nullable|numeric|min:0|max:999999.99',
+                'selectedClasses'      => 'required|array|min:1',
+                'selectedClasses.*.id' => 'exists:classes,id',
+                'totalMarks'           => 'required|integer|min:1|max:1000',
+                'passMarks'            => 'required|integer|min:1|lte:totalMarks',
+                'durationMinutes'      => 'nullable|integer|min:1|max:1440',
+                'instructions'         => 'nullable|string|max:2000',
+            ]);
+
+            if ($validator->fails()) {
+                return back()->withErrors($validator)->withInput();
+            }
+
+            DB::beginTransaction();
+
+            $examData = [
+                'name'               => $request->examName,
+                'slug'               => Str::slug($request->examName),
+                'description'        => $request->description,
+                'start_date'         => $request->startDate,
+                'end_date'           => $request->endDate,
+                'registration_start' => $request->registrationStart,
+                'registration_end'   => $request->registrationEnd,
+                'exam_fee'           => $request->examFee ?? 0,
+                'is_fee_required'    => ! empty($request->examFee),
+                'total_marks'        => $request->totalMarks,
+                'pass_marks'         => $request->passMarks,
+                'duration_minutes'   => $request->durationMinutes,
+                'instructions'       => $request->instructions,
+            ];
+
+            $exam->update($examData);
+
+            // Sync classes to exam
+            $classIds = collect($request->selectedClasses)->pluck('id')->toArray();
+            $exam->classes()->sync($classIds);
+
+            DB::commit();
+
+            return redirect()->back()->with('success', 'Exam updated successfully!');
+
+        } catch (Exception $e) {
+            Log::error('Error updating exam: ' . $e->getMessage());
+            DB::rollBack();
+            return back()->with('error', 'Failed to update exam. Please try again.');
+        }
+    }
+
+    public function destroyExam(Exam $exam)
+    {
+        try {
+            $exam->delete();
+            return redirect()->back()
+                ->with('success', 'Exam deleted successfully!');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Failed to delete exam. Please try again.');
+        }
+    }
 }
