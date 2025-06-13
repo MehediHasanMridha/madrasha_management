@@ -2,41 +2,33 @@ import DepartmentTabSectionComponent from '@/Components/Department/DepartmentTab
 import ExamCard from '@/Components/Department/Exams/ExamCard';
 import AddExamContainer from './AddExamContainer';
 
-const ExamsContainer = ({ department, classes }) => {
-    // Sample exam data - this would typically come from props or API
-    const exams = [
-        {
-            id: 1,
-            examName: 'Exam name',
-            date: '1 April 2025',
-            status: 'finished',
-            timeLeft: null,
-        },
-        {
-            id: 2,
-            examName: 'Exam name',
-            date: '1 April 2025',
-            status: 'pending',
-            timeLeft: '30d 20h 22m left',
-        },
-        {
-            id: 3,
-            examName: 'Exam name',
-            date: '1 April 2025',
-            status: 'not_scheduled',
-            timeLeft: null,
-        },
-    ];
-
+const ExamsContainer = ({ department, classes, exams }) => {
     return (
         <>
             <DepartmentTabSectionComponent type="exams" department={department} />
-            <AddExamContainer classes={classes} />
+            <AddExamContainer classes={classes} department={department} />
             {/* Exams Section */}
-            <div className="mt-[16px] grid grid-cols-1 gap-[12px]">
-                {exams.map((exam) => (
-                    <ExamCard key={exam.id} examName={exam.examName} date={exam.date} status={exam.status} timeLeft={exam.timeLeft} />
-                ))}
+            <div className="my-[16px] grid grid-cols-1 gap-[12px]">
+                {exams && exams.length > 0 ? (
+                    exams.map((exam) => (
+                        <ExamCard
+                            key={exam.id}
+                            examName={exam.name}
+                            date={new Date(exam.start_date).toLocaleDateString('en-US', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                            })}
+                            status={exam.display_status}
+                            timeLeft={exam.time_left}
+                        />
+                    ))
+                ) : (
+                    <div className="py-8 text-center text-gray-500">
+                        <p>No exams scheduled yet.</p>
+                        <p className="mt-2 text-sm">Click "Create exam" to add your first exam.</p>
+                    </div>
+                )}
             </div>
         </>
     );
