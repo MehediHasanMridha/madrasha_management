@@ -7,6 +7,13 @@ const ExamClassSelectFieldContainer = ({ data, setData, classes }) => {
     const [showClassDropdown, setShowClassDropdown] = useState(false);
     const dropdownRef = useRef(null);
 
+    // Sync selectedClasses with data.classes
+    useEffect(() => {
+        if (data?.classes && Array.isArray(data.classes)) {
+            setSelectedClasses(data.classes);
+        }
+    }, [data?.classes]);
+
     // Close dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -23,16 +30,21 @@ const ExamClassSelectFieldContainer = ({ data, setData, classes }) => {
 
     const handleClassSelect = (classItem) => {
         if (!selectedClasses.find((item) => item.id === classItem.id)) {
-            setSelectedClasses([...selectedClasses, classItem]);
+            const newSelectedClasses = [...selectedClasses, classItem];
+            setSelectedClasses(newSelectedClasses);
             setData({
-                classes: [...selectedClasses, classItem],
+                classes: newSelectedClasses,
             });
         }
         setShowClassDropdown(false);
     };
 
     const handleClassRemove = (classId) => {
-        setSelectedClasses(selectedClasses.filter((item) => item.id !== classId));
+        const newSelectedClasses = selectedClasses.filter((item) => item.id !== classId);
+        setSelectedClasses(newSelectedClasses);
+        setData({
+            classes: newSelectedClasses,
+        });
     };
 
     return (

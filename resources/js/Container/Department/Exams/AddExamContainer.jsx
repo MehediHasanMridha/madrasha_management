@@ -3,11 +3,12 @@ import ExamModalStepComponent from '@/Components/Department/Exams/ExamModalStepC
 import ExamSuccessModalComponent from '@/Components/Department/Exams/ExamSuccessModalComponent';
 import StaticBtn from '@/Components/UI/StaticBtn';
 import { useDepartmentStore } from '@/stores';
+import { router } from '@inertiajs/react';
 import { notification } from 'antd';
 import { Plus } from 'lucide-react';
 import { useState } from 'react';
 
-const AddExamContainer = ({ classes }) => {
+const AddExamContainer = ({ classes, department }) => {
     const [modal, setModal] = useState(false);
     const [loading, setLoading] = useState(false);
     const [step, setStep] = useState('form'); // 'form' | 'success'
@@ -18,54 +19,51 @@ const AddExamContainer = ({ classes }) => {
     const handleSubmit = () => {
         setLoading(true);
 
-        // Here you would typically make an API call to save the exam
-        // For now, we'll simulate a successful submission
-        setTimeout(() => {
-            setLoading(false);
-            setStep('success');
-            api.success({
-                message: 'Success',
-                description: 'Exam created successfully!',
-                placement: 'bottomRight',
-            });
-        }, 1000);
+        // Prepare the exam data for submission
+        const examData = {
+            examName: data?.examName,
+            startDate: data?.startDate,
+            endDate: data?.endDate,
+            examFee: isFeeEnabled ? parseFloat(data.examFee) || 0 : null,
+            selectedClasses: data?.classes || [],
+            totalMarks: parseInt(data.totalMarks) || 100,
+            passMarks: parseInt(data.passMarks) || 40,
+        };
 
-        // Example of how you might handle this with Inertia:
-        /*
-        router.post(
-            route('department.exams.store'),
-            {
-                exam_name: formData.examName,
-                start_date: formData.startDate,
-                end_date: formData.endDate,
-                exam_fee: formData.examFee,
-                classes: formData.selectedClasses.map(c => c.id)
+        // Make API call to create exam
+        router.post(route('department.exams.store', { department_slug: department.slug }), examData, {
+            onStart: () => setLoading(true),
+            onSuccess: (response) => {
+                setLoading(false);
+                setStep('success');
+                api.success({
+                    message: 'Success',
+                    description: 'Exam created successfully!',
+                    placement: 'bottomRight',
+                });
             },
-            {
-                onStart: () => setLoading(true),
-                onSuccess: (response) => {
-                    setLoading(false);
-                    setStep('success');
-                    if (response.props.flash.success) {
-                        api.success({
-                            message: 'Success',
-                            description: response.props.flash.success,
-                            placement: 'bottomRight',
-                        });
+            onError: (errors) => {
+                setLoading(false);
+                let errorMessage = 'Failed to create exam. Please try again.';
+
+                // Check if there are specific validation errors
+                if (errors && typeof errors === 'object') {
+                    const firstError = Object.values(errors)[0];
+                    if (Array.isArray(firstError)) {
+                        errorMessage = firstError[0];
+                    } else if (typeof firstError === 'string') {
+                        errorMessage = firstError;
                     }
-                },
-                onError: (error) => {
-                    setLoading(false);
-                    api.error({
-                        message: 'Error',
-                        description: 'Failed to create exam. Please try again.',
-                        placement: 'bottomRight',
-                    });
-                },
-                onFinish: () => setLoading(false)
-            }
-        );
-        */
+                }
+
+                api.error({
+                    message: 'Error',
+                    description: errorMessage,
+                    placement: 'bottomRight',
+                });
+            },
+            onFinish: () => setLoading(false),
+        });
     };
 
     const handleCancel = () => {

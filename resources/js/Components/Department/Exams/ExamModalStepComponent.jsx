@@ -3,7 +3,17 @@ import FieldSet from '@/Components/UI/FieldSet';
 import ExamClassSelectFieldContainer from '@/Container/Department/Exams/ExamClassSelectFieldContainer';
 import { Calendar, Check } from 'lucide-react';
 
-const ExamModalStepComponent = ({ onCancel, loading = false, isFeeEnabled, setIsFeeEnabled, handleSubmit, data, setData, classes }) => {
+const ExamModalStepComponent = ({
+    onCancel,
+    loading = false,
+    isFeeEnabled,
+    setIsFeeEnabled,
+    handleSubmit,
+    data,
+    setData,
+    classes,
+    isEdit = false,
+}) => {
     return (
         <div className="flex flex-col gap-8 px-6 py-4">
             {/* Exam Name Input */}
@@ -94,7 +104,7 @@ const ExamModalStepComponent = ({ onCancel, loading = false, isFeeEnabled, setIs
                     disabled={!data?.examName || !data?.startDate || !data?.endDate || data?.classes?.length === 0 || loading}
                     className="flex h-14 flex-1 items-center justify-center rounded-lg bg-[#0267FF] px-4 py-3 text-base font-normal text-white transition-colors hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                    {loading ? 'Creating...' : 'Create exam'}
+                    {loading ? (isEdit ? 'Updating...' : 'Creating...') : isEdit ? 'Update exam' : 'Create exam'}
                 </button>
             </div>
         </div>
