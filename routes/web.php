@@ -34,6 +34,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::prefix('exams')->group(function () {
             Route::get('{department_slug}', [DepartmentController::class, 'exams_show'])->name('department.exams_show');
             Route::post('{department_slug}/store', [DepartmentController::class, 'storeExam'])->name('department.exams.store');
+            Route::put('{department_slug}/{exam_id}/update', [DepartmentController::class, 'updateExam'])->name('department.exams.update');
+            Route::delete('/{exam}', [DepartmentController::class, 'destroyExam'])->name('department.exams.delete');
         });
 
         // Global Exam Management Routes
