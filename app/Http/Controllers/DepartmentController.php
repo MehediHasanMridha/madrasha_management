@@ -290,7 +290,7 @@ class DepartmentController extends Controller
                 return $exam;
             });
 
-            return Inertia::render('admin::department/exams', [
+            return Inertia::render('admin::department/exam/exams', [
                 'department' => $department,
                 'classes'    => $department->classes->load('subjects'),
                 'exams'      => $exams,
@@ -442,5 +442,17 @@ class DepartmentController extends Controller
             return redirect()->back()
                 ->with('error', 'Failed to delete exam. Please try again.');
         }
+    }
+
+    public function exams_details($exam_slug, $department_slug)
+    {
+        $exam = Exam::where('slug', $exam_slug)
+            ->whereHas('department', fn($q) => $q->where('slug', $department_slug))
+            ->with(['classes', 'examSubjects.subject', 'creator'])
+            ->firstOrFail();
+        return Inertia::render('admin::department/exam/exams_details', [
+            'exam'       => $exam,
+            'department' => $exam->department,
+        ]);
     }
 }
