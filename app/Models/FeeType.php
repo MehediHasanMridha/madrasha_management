@@ -47,4 +47,12 @@ class FeeType extends Model
     {
         return $this->belongsTo(Department::class);
     }
+
+    /**
+     * Get the exams associated with this fee type.
+     */
+    public function exams()
+    {
+        return $this->hasMany(Exam::class);
+    }
 }
