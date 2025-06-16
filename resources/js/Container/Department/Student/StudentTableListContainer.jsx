@@ -3,7 +3,7 @@ import TableUI from '@/Components/UI/TableUI';
 import Icons from '@/icons';
 import { getAvatarImage } from '@/lib/avatarImageUrlUtils';
 import { useBoundStore } from '@/stores';
-import { router } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import { Avatar } from 'antd';
 import { useState } from 'react';
 import { FaFilter } from 'react-icons/fa6';
@@ -101,7 +101,9 @@ const StudentTableListContainer = ({ department, data, setIsLoading, isLoading }
             align: 'center',
             render: (text, record) => (
                 <div className="flex justify-center gap-2">
-                    <Icons name="eye" className="text-fuchsia-600 hover:text-fuchsia-900" />
+                    <Link as="button" href={route('department.student_details', { department_slug: department.slug, student_id: record.unique_id })}>
+                        <Icons name="eye" className="text-fuchsia-600 hover:text-fuchsia-900" />
+                    </Link>
                     <Icons
                         name="edit"
                         onClick={() => {

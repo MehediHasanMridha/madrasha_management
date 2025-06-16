@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Academic;
 use App\Models\Address;
+use App\Models\Department;
 use App\Models\Guardian;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -189,8 +190,14 @@ class StudentController extends Controller
 
     }
 
-    public function show_student_info($department_slug, $student_id)
+    public function student_details($department_slug, $student_id)
     {
-        return "student info";
+        $department = Department::where('slug', $department_slug)->firstOrFail();
+        return Inertia::render('admin::department/student/student_details',
+            [
+                'department' => $department,
+                // 'student'    => User::with(['academic', 'address', 'guardian'])->where('unique_id', $student_id)->firstOrFail(),
+            ]
+        );
     }
 }

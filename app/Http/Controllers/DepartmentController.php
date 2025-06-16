@@ -97,7 +97,7 @@ class DepartmentController extends Controller
 
             $students = $studentsQuery->paginate($per_page, ['*'], 'page', $page)->withQueryString();
 
-            return Inertia::render('admin::department/students', [
+            return Inertia::render('admin::department/student/students', [
                 'department' => $department,
                 'students'   => Inertia::defer(fn() => showStudentData::collection(
                     $students ?? [],

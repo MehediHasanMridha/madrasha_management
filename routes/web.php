@@ -30,6 +30,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('{department_slug}/{student_id}', [StudentController::class, 'show_student_info'])->name('show_student_info');
             Route::post('{department_slug}/add_student', [StudentController::class, 'add_student'])->name('student.add_student');
             Route::post('{student_id}/update', [StudentController::class, 'update_student'])->name('student.update_student');
+            // student details
+            Route::get('{department_slug}/{student_id}/details', [StudentController::class, 'student_details'])->name('department.student_details');
         });
         Route::prefix('exams')->group(function () {
             Route::get('{department_slug}', [DepartmentController::class, 'exams_show'])->name('department.exams_show');
