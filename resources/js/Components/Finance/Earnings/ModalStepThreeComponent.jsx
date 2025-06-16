@@ -166,7 +166,7 @@ const ModalStepThreeComponent = ({
                 <StaticBtn
                     onClick={() => {
                         if (selectedRows.length === 0) return;
-                        type === 'exam_fee' ? submitData() : setStep((prev) => prev + 1);
+                        type === 'exam_fee' ? setStep(6) : setStep((prev) => prev + 1);
                     }}
                     className={cn(
                         'flex h-14 flex-1 cursor-pointer items-center justify-center rounded-lg bg-[#0267FF] text-white',
@@ -174,7 +174,7 @@ const ModalStepThreeComponent = ({
                             'cursor-not-allowed opacity-50',
                     )}
                 >
-                    {loading ? 'Processing...' : type === 'exam_fee' ? 'Submit' : 'Next'}
+                    {loading ? 'Processing...' : 'Next'}
                 </StaticBtn>
             </div>
         </div>

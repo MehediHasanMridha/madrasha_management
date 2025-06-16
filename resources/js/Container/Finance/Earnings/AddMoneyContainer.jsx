@@ -1,3 +1,4 @@
+import ExamFinalModalStepComponent from '@/Components/Finance/Earnings/ExamFinalModalStepComponent';
 import ExamModalStepFourComponent from '@/Components/Finance/Earnings/ExamModalStepFourComponent';
 import FinalModalStepComponent from '@/Components/Finance/Earnings/FinalModalStepComponent';
 import ModalStepFiveComponent from '@/Components/Finance/Earnings/ModalStepFiveComponent';
@@ -73,10 +74,11 @@ const AddMoneyContainer = ({ modal, setModal }) => {
                     setLoading(true);
                 },
                 onSuccess: (response) => {
+                    router.flushAll();
                     // Move to final confirmation step instead of resetting
                     setLoading(false);
                     if (response.props.flash.success) {
-                        type === 'exam_fee' ? setStep(6) : setStep(0);
+                        type === 'exam_fee' ? setStep(7) : setStep(0);
                         api.success({
                             message: 'Success',
                             description: response.props.flash.success,
@@ -197,6 +199,23 @@ const AddMoneyContainer = ({ modal, setModal }) => {
                     year={year}
                     comments={comments}
                     setComments={setComments}
+                    submitData={submitData}
+                />
+            );
+            break;
+        case 7:
+            content = (
+                <ExamFinalModalStepComponent
+                    data={data}
+                    loading={loading}
+                    fee={fee}
+                    selectedRows={selectedRows}
+                    handleClose={handleClose}
+                    setModal={setModal}
+                    setStep={setStep}
+                    setLoading={setLoading}
+                    year={year}
+                    comments={comments}
                 />
             );
             break;

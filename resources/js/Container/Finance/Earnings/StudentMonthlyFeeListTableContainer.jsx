@@ -101,16 +101,15 @@ const StudentMonthlyFeeListTableContainer = ({ data, setFee, setSelectedRows, se
 
     const dataSource = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'].map(
         (month, index) => {
-            const boardingFeeDue =
-                data?.income_logs?.find((item) => item?.month == month)?.fees?.find((item) => item?.type.toLowerCase().includes('boarding-fee'))
-                    ?.due || 0;
-            const academicFeeDue =
-                data?.income_logs?.find((item) => item?.month == month)?.fees?.find((item) => item?.type.toLowerCase().includes('academic-fee'))
-                    ?.due || 0;
-            const boardingFee = data?.boarding_fee - boardingFeeDue;
+            const monthLog = data?.income_logs?.find((item) => item?.month === month);
+            const boardingFeeLog = monthLog?.fees?.find((item) => item?.type.toLowerCase().includes('boarding-fee'));
+            const academicFeeLog = monthLog?.fees?.find((item) => item?.type.toLowerCase().includes('academic-fee'));
 
+            const boardingFeeDue = boardingFeeLog?.due || 0;
+            const academicFeeDue = academicFeeLog?.due || 0;
+            const boardingFee = data?.boarding_fee - boardingFeeDue;
             const academicFee = data?.academic_fee - academicFeeDue;
-            const isPaid = data?.income_logs?.find((item) => item?.month == month) ? true : false;
+            const isPaid = !!(boardingFeeLog || academicFeeLog);
 
             return {
                 key: index,
