@@ -4,7 +4,7 @@ import StudentDetailsContainer from '@/Container/Department/Student/StudentDetai
 import AuthenticatedLayout from '@/layouts/AuthenticatedLayout';
 import { Link } from '@inertiajs/react';
 
-const StudentDetails = ({ department }) => {
+const StudentDetails = ({ department, student }) => {
     return (
         <AuthenticatedLayout>
             <DepartmentTabSectionComponent type="students" department={department} />
@@ -16,7 +16,7 @@ const StudentDetails = ({ department }) => {
                     ]}
                 />
             </div>
-            <StudentDetailsContainer />
+            <StudentDetailsContainer student={student} />
         </AuthenticatedLayout>
     );
 };

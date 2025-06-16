@@ -193,10 +193,39 @@ class StudentController extends Controller
     public function student_details($department_slug, $student_id)
     {
         $department = Department::where('slug', $department_slug)->firstOrFail();
+        // set format for student details
+        $student = User::with(['academics', 'address', 'guardians'])->where('unique_id', $student_id)->firstOrFail();
+        $student = [
+            'id'        => $student->id,
+            'name'      => $student->name,
+            'unique_id' => $student->unique_id,
+            'phone'     => $student->phone,
+            'gender'    => $student->gender,
+            'image'     => $student->img,
+            'status'    => $student->status ? 'active' : 'inactive',
+            'blood'     => $student->academics->blood ?? null,
+            'address'   => [
+                'district' => $student->address->district ?? null,
+                'upazilla' => $student->address->upazilla ?? null,
+                'location' => $student->address->location ?? null,
+            ],
+            'guardian'  => [
+                'father_name' => $student->guardians->father_name ?? null,
+                'mother_name' => $student->guardians->mother_name ?? null,
+                'phone'       => json_decode($student->guardians->numbers, true) ?? [],
+            ],
+            'academic'  => [
+                'class'            => $student->academics->class->name ?? null,
+                'boarding_fee'     => $student->academics->boarding_fee ?? getStudentFee($student->academics, 'boarding'),
+                'academic_fee'     => $student->academics->academic_fee ?? getStudentFee($student->academics, 'academic'),
+                'reference'        => $student->academics->reference ?? null,
+                'reference_number' => $student->academics->reference_number ?? null,
+            ],
+        ];
         return Inertia::render('admin::department/student/student_details',
             [
                 'department' => $department,
-                // 'student'    => User::with(['academic', 'address', 'guardian'])->where('unique_id', $student_id)->firstOrFail(),
+                'student'    => $student,
             ]
         );
     }
