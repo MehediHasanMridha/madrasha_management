@@ -52,7 +52,9 @@ class DashboardController extends Controller
             });
 
             $monthly_income = $item->academics->sum(function ($academic) {
-                return $academic->student->incomeLogs->sum('amount');
+                return $academic->student->incomeLogs->filter(function ($incomeLog) {
+                    return in_array($incomeLog->feeType->name, ['Academic Fee', 'Boarding Fee']);
+                })->sum('amount');
             });
 
             return [
