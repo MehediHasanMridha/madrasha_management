@@ -46,13 +46,18 @@ class DashboardController extends Controller
                 });
             },
         ])->get()->map(function ($item) {
-            $total_tk = $item->academics->sum(function ($academic) {
-                return ($academic->academic_fee ?? getStudentFee($academic, 'academic')) +
-                    ($academic->boarding_fee ?? getStudentFee($academic, 'boarding'));
+            $academics = $item->academics;
+
+            $total_tk = $academics->sum(function ($academic) {
+                $academic_fee = $academic->academic_fee ?? getStudentFee($academic, 'academic');
+                $boarding_fee = $academic->boarding_fee ?? getStudentFee($academic, 'boarding');
+                return $academic_fee + $boarding_fee;
             });
 
-            $monthly_income = $item->academics->sum(function ($academic) {
-                return $academic->student->incomeLogs->sum('amount');
+            $monthly_income = $academics->sum(function ($academic) {
+                return $academic->student->incomeLogs
+                    ->whereIn('feeType.name', ['Academic Fee', 'Boarding Fee'])
+                    ->sum('amount');
             });
 
             return [

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\Classes;
 use App\Models\Department;
 use App\Models\FeeType;
+use App\Models\Subject;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -16,13 +17,16 @@ class ClassController extends Controller
     {
 
         $request->validate([
-            'name'          => 'required|string|max:255',
-            'department'    => 'required|exists:departments,slug',
-            'description'   => 'nullable|string',
-            'icon'          => 'nullable|string',
-            'boarding_fee'  => 'required|numeric|min:0',
-            'academic_fee'  => 'required|numeric|min:0',
-            'admission_fee' => 'required|numeric|min:0',
+            'name'            => 'required|string|max:255',
+            'department'      => 'required|exists:departments,slug',
+            'description'     => 'nullable|string',
+            'icon'            => 'nullable|string',
+            'boarding_fee'    => 'required|numeric|min:0',
+            'academic_fee'    => 'required|numeric|min:0',
+            'admission_fee'   => 'required|numeric|min:0',
+            'subjects'        => 'nullable|array',
+            'subjects.*.name' => 'required_with:subjects|string|max:255',
+            'subjects.*.code' => 'nullable|string|max:100',
         ]);
 
         try {
@@ -66,6 +70,21 @@ class ClassController extends Controller
             foreach ($feeTypes as $feeType) {
                 FeeType::create($feeType);
             }
+
+            // Create subjects for the class
+            if ($request->has('subjects') && is_array($request->input('subjects'))) {
+                foreach ($request->input('subjects') as $subjectData) {
+                    if (! empty($subjectData['name'])) {
+                        Subject::create([
+                            'name'     => $subjectData['name'],
+                            'slug'     => Str::slug($subjectData['name']) . '-' . $class->slug,
+                            'code'     => $subjectData['code'] ?? null,
+                            'class_id' => $class->id,
+                        ]);
+                    }
+                }
+            }
+
             DB::commit();
 
             return redirect()->back()->with('success', 'Class created successfully.');
@@ -81,12 +100,15 @@ class ClassController extends Controller
     {
 
         $request->validate([
-            'name'          => 'required|string|max:255',
-            'description'   => 'nullable|string',
-            'icon'          => 'nullable|string',
-            'boarding_fee'  => 'required|numeric|min:0',
-            'academic_fee'  => 'required|numeric|min:0',
-            'admission_fee' => 'required|numeric|min:0',
+            'name'            => 'required|string|max:255',
+            'description'     => 'nullable|string',
+            'icon'            => 'nullable|string',
+            'boarding_fee'    => 'required|numeric|min:0',
+            'academic_fee'    => 'required|numeric|min:0',
+            'admission_fee'   => 'required|numeric|min:0',
+            'subjects'        => 'nullable|array', // Limit to 50 subjects max
+            'subjects.*.name' => 'required_with:subjects|string|max:255|distinct',
+            'subjects.*.code' => 'nullable|string|max:100',
         ]);
 
         try {
@@ -139,6 +161,24 @@ class ClassController extends Controller
                         'department_id' => $class->department_id,
                     ]
                 );
+            }
+
+            // Update subjects for the class
+            // First, delete existing subjects for this class
+            Subject::where('class_id', $class->id)->delete();
+
+            // Then create new subjects
+            if ($request->has('subjects') && is_array($request->input('subjects'))) {
+                foreach ($request->input('subjects') as $subjectData) {
+                    if (! empty($subjectData['name'])) {
+                        Subject::create([
+                            'name'     => $subjectData['name'],
+                            'slug'     => Str::slug($subjectData['name']) . '-' . $class->slug,
+                            'code'     => $subjectData['code'] ?? null,
+                            'class_id' => $class->id,
+                        ]);
+                    }
+                }
             }
 
             DB::commit();

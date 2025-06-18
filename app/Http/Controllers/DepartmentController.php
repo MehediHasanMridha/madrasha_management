@@ -4,10 +4,16 @@ namespace App\Http\Controllers;
 use App\Http\Resources\showStaffData;
 use App\Http\Resources\showStudentData;
 use App\Models\Department;
+use App\Models\Exam;
+use App\Models\FeeType;
 use App\Models\User;
 use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 
@@ -91,7 +97,7 @@ class DepartmentController extends Controller
 
             $students = $studentsQuery->paginate($per_page, ['*'], 'page', $page)->withQueryString();
 
-            return Inertia::render('admin::department/students', [
+            return Inertia::render('admin::department/student/students', [
                 'department' => $department,
                 'students'   => Inertia::defer(fn() => showStudentData::collection(
                     $students ?? [],
@@ -256,13 +262,285 @@ class DepartmentController extends Controller
     public function departmentClasses($department_slug)
     {
         try {
-            $department = Department::with(['classes', 'classes.feeTypes'])->where('slug', $department_slug)->firstOrFail();
+            $department = Department::with(['classes', 'classes.feeTypes', 'classes.subjects'])->where('slug', $department_slug)->firstOrFail();
             return Inertia::render('admin::department/classes', [
                 'department' => $department,
                 'classes'    => $department->classes,
             ]);
         } catch (Exception $e) {
             return redirect()->back()->with('error', 'Department not found.');
+        }
+    }
+
+    public function exams_show($department_slug)
+    {
+        try {
+            $department = Department::where('slug', $department_slug)->firstOrFail();
+
+            // Get exams for this department with related data
+            $exams = $department->exams()
+                ->with(['classes', 'examSubjects.subject', 'creator'])
+                ->latest()
+                ->get();
+
+            // Transform exams to include status with time
+            $exams->transform(function ($exam) {
+                $statusInfo           = $exam->getStatusWithTime();
+                $exam->display_status = $statusInfo['status'];
+                $exam->time_left      = $statusInfo['timeLeft'];
+                $exam->exam_fee       = $exam->getExamFeeAmount();
+                return $exam;
+            });
+
+            return Inertia::render('admin::department/exam/exams', [
+                'department' => $department,
+                'classes'    => $department->classes->load('subjects'),
+                'exams'      => $exams,
+            ]);
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', 'Department not found.');
+        }
+    }
+
+    /**
+     * Store a new exam for the department.
+     */
+    public function storeExam(Request $request, $department_slug)
+    {
+        try {
+            $department = Department::where('slug', $department_slug)->firstOrFail();
+
+            $validator = Validator::make($request->all(), [
+                'examName'             => 'required|string|max:150',
+                'examType'             => 'nullable|in:midterm,final,quiz,assessment,other',
+                'description'          => 'nullable|string|max:1000',
+                'startDate'            => 'required|date|after:now',
+                'endDate'              => 'required|date|after:startDate',
+                'registrationStart'    => 'nullable|date|before:startDate',
+                'registrationEnd'      => 'nullable|date|after:registrationStart|before:startDate',
+                'examFee'              => 'nullable|numeric|min:0|max:999999.99',
+                'selectedClasses'      => 'required|array|min:1',
+                'selectedClasses.*.id' => 'exists:classes,id',
+                'totalMarks'           => 'required|integer|min:1|max:1000',
+                'passMarks'            => 'required|integer|min:1|lte:totalMarks',
+                'durationMinutes'      => 'nullable|integer|min:1|max:1440',
+                'instructions'         => 'nullable|string|max:2000',
+            ]);
+
+            if ($validator->fails()) {
+                return back()->withErrors($validator)->withInput();
+            }DB::beginTransaction();
+
+            // Handle exam fee logic using helper method
+            $feeTypeId = $this->handleExamFeeType(
+                $request->examName,
+                $request->examFee ?? 0,
+                $department
+            );
+
+            $examData = [
+                'name'               => $request->examName,
+                'slug'               => Str::slug($request->examName),
+                'description'        => $request->description,
+                'department_id'      => $department->id,
+                'start_date'         => $request->startDate,
+                'end_date'           => $request->endDate,
+                'registration_start' => $request->registrationStart,
+                'registration_end'   => $request->registrationEnd,
+                'fee_type_id'        => $feeTypeId,
+                'is_fee_required'    => ! empty($request->examFee),
+                'total_marks'        => $request->totalMarks,
+                'pass_marks'         => $request->passMarks,
+                'duration_minutes'   => $request->durationMinutes,
+                'instructions'       => $request->instructions,
+                'status'             => 'scheduled',
+                'created_by'         => Auth::user()->id,
+            ];
+
+            $exam = Exam::create($examData);
+
+            // Attach classes to exam
+            $classIds = collect($request->selectedClasses)->pluck('id')->toArray();
+            $exam->classes()->attach($classIds);
+
+            DB::commit();
+
+            return redirect()->back()->with('success', 'Exam created successfully!');
+
+        } catch (Exception $e) {
+            Log::error('Error creating exam: ' . $e->getMessage());
+            DB::rollBack();
+            return back()->with('error', 'Failed to create exam. Please try again.');
+        }
+    }
+
+    /**
+     * Update an existing exam for the department.
+     */
+    public function updateExam(Request $request, $department_slug, $exam_id)
+    {
+        try {
+            $department = Department::where('slug', $department_slug)->firstOrFail();
+            $exam       = Exam::where('id', $exam_id)->where('department_id', $department->id)->firstOrFail();
+
+            $validator = Validator::make($request->all(), [
+                'examName'             => 'required|string|max:150',
+                'examType'             => 'nullable|in:midterm,final,quiz,assessment,other',
+                'description'          => 'nullable|string|max:1000',
+                'startDate'            => 'required|date',
+                'endDate'              => 'required|date|after:startDate',
+                'registrationStart'    => 'nullable|date|before:startDate',
+                'registrationEnd'      => 'nullable|date|after:registrationStart|before:startDate',
+                'examFee'              => 'nullable|numeric|min:0|max:999999.99',
+                'selectedClasses'      => 'required|array|min:1',
+                'selectedClasses.*.id' => 'exists:classes,id',
+                'totalMarks'           => 'required|integer|min:1|max:1000',
+                'passMarks'            => 'required|integer|min:1|lte:totalMarks',
+                'durationMinutes'      => 'nullable|integer|min:1|max:1440',
+                'instructions'         => 'nullable|string|max:2000',
+            ]);
+
+            if ($validator->fails()) {
+                return back()->withErrors($validator)->withInput();
+            }
+            DB::beginTransaction();
+
+            // Handle exam fee logic using helper method
+            $feeTypeId = $this->handleExamFeeType(
+                $request->examName,
+                $request->examFee ?? 0,
+                $department,
+                $exam->feeType
+            );
+
+            $examData = [
+                'name'               => $request->examName,
+                'slug'               => Str::slug($request->examName),
+                'description'        => $request->description,
+                'start_date'         => $request->startDate,
+                'end_date'           => $request->endDate,
+                'registration_start' => $request->registrationStart,
+                'registration_end'   => $request->registrationEnd,
+                'fee_type_id'        => $feeTypeId,
+                'is_fee_required'    => ! empty($request->examFee),
+                'total_marks'        => $request->totalMarks,
+                'pass_marks'         => $request->passMarks,
+                'duration_minutes'   => $request->durationMinutes,
+                'instructions'       => $request->instructions,
+            ];
+
+            $exam->update($examData);
+
+            // Sync classes to exam
+            $classIds = collect($request->selectedClasses)->pluck('id')->toArray();
+            $exam->classes()->sync($classIds);
+
+            // Note: Exam fee records are now managed through the regular fee system via FeeType
+
+            DB::commit();
+
+            return redirect()->back()->with('success', 'Exam updated successfully!');
+
+        } catch (Exception $e) {
+            Log::error('Error updating exam: ' . $e->getMessage());
+            DB::rollBack();
+            return back()->with('error', 'Failed to update exam. Please try again.');
+        }
+    }
+
+    public function destroyExam(Exam $exam)
+    {
+        try {
+            $exam->delete();
+            return redirect()->back()
+                ->with('success', 'Exam deleted successfully!');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Failed to delete exam. Please try again.');
+        }
+    }
+
+    public function exams_details($exam_slug, $department_slug)
+    {
+        $exam = Exam::where('slug', $exam_slug)
+            ->whereHas('department', fn($q) => $q->where('slug', $department_slug))
+            ->with(['classes', 'examSubjects.subject', 'creator'])
+            ->firstOrFail();
+        return Inertia::render('admin::department/exam/exams_details', [
+            'exam'       => $exam,
+            'department' => $exam->department,
+        ]);
+    }
+
+    /**
+     * Create or update fee type for exam
+     */
+    private function handleExamFeeType($examName, $examFee, $department, $existingFeeType = null)
+    {
+        if ($examFee <= 0) {
+            return null;
+        }
+
+        $feeTypeName = 'Exam Fee';
+        $feeTypeSlug = Str::slug($examName . ' ' . $department->slug);
+        if ($existingFeeType) {
+            // Update existing fee type
+            $existingFeeType->update([
+                'slug'   => $feeTypeSlug,
+                'amount' => $examFee,
+                'status' => true,
+            ]);
+            return $existingFeeType->id;
+        }
+
+        // Create new fee type
+        $feeType = FeeType::firstOrCreate(
+            [
+                'slug'          => $feeTypeSlug,
+                'department_id' => $department->id,
+            ],
+            [
+                'name'   => $feeTypeName,
+                'amount' => $examFee,
+                'status' => true,
+            ]
+        );
+
+        return $feeType->id;
+    }
+
+    /**
+     * Get exam fee details for an exam
+     */
+    public function getExamFeeDetails($department_slug, $exam_id)
+    {
+        try {
+            $department = Department::where('slug', $department_slug)->firstOrFail();
+            $exam       = Exam::where('id', $exam_id)
+                ->where('department_id', $department->id)
+                ->with(['feeType'])
+                ->firstOrFail();
+
+            $examFeeDetails = [
+                'exam_name'       => $exam->name,
+                'is_fee_required' => $exam->is_fee_required,
+                'fee_type'        => $exam->feeType ? [
+                    'id'     => $exam->feeType->id,
+                    'name'   => $exam->feeType->name,
+                    'amount' => $exam->feeType->amount,
+                ] : null,
+            ];
+
+            return response()->json([
+                'success' => true,
+                'data'    => $examFeeDetails,
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to retrieve exam fee details: ' . $e->getMessage(),
+            ], 500);
         }
     }
 }

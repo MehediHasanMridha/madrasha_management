@@ -1,3 +1,5 @@
+import ExamFinalModalStepComponent from '@/Components/Finance/Earnings/ExamFinalModalStepComponent';
+import ExamModalStepFourComponent from '@/Components/Finance/Earnings/ExamModalStepFourComponent';
 import FinalModalStepComponent from '@/Components/Finance/Earnings/FinalModalStepComponent';
 import ModalStepFiveComponent from '@/Components/Finance/Earnings/ModalStepFiveComponent';
 import ModalStepFourComponent from '@/Components/Finance/Earnings/ModalStepFourComponent';
@@ -42,7 +44,9 @@ const AddMoneyContainer = ({ modal, setModal }) => {
     const getData = async (data) => {
         try {
             setLoading(true);
-            const { data: info } = await axios.get(route('finance.get_user_data', { user_id: studentId.replace(/\s+/g, ''), year: data || year }));
+            const { data: info } = await axios.get(
+                route('finance.get_user_data', { user_id: studentId.replace(/\s+/g, ''), year: data || year, type: type }),
+            );
             if (info) {
                 setData(info);
             }
@@ -70,10 +74,11 @@ const AddMoneyContainer = ({ modal, setModal }) => {
                     setLoading(true);
                 },
                 onSuccess: (response) => {
+                    router.flushAll();
                     // Move to final confirmation step instead of resetting
                     setLoading(false);
                     if (response.props.flash.success) {
-                        setStep(0);
+                        type === 'exam_fee' ? setStep(7) : setStep(0);
                         api.success({
                             message: 'Success',
                             description: response.props.flash.success,
@@ -135,10 +140,11 @@ const AddMoneyContainer = ({ modal, setModal }) => {
                     fee={fee}
                     setFee={setFee}
                     type={type}
-                    setType={setType}
                     setSelectedRows={setSelectedRows}
                     selectedRows={selectedRows}
                     getData={getData}
+                    type={type}
+                    submitData={submitData}
                 />
             );
             break;
@@ -176,6 +182,40 @@ const AddMoneyContainer = ({ modal, setModal }) => {
                     setLoading={setLoading}
                     comments={comments}
                     year={year}
+                />
+            );
+            break;
+        case 6:
+            content = (
+                <ExamModalStepFourComponent
+                    data={data}
+                    loading={loading}
+                    fee={fee}
+                    selectedRows={selectedRows}
+                    handleClose={handleClose}
+                    setModal={setModal}
+                    setStep={setStep}
+                    setLoading={setLoading}
+                    year={year}
+                    comments={comments}
+                    setComments={setComments}
+                    submitData={submitData}
+                />
+            );
+            break;
+        case 7:
+            content = (
+                <ExamFinalModalStepComponent
+                    data={data}
+                    loading={loading}
+                    fee={fee}
+                    selectedRows={selectedRows}
+                    handleClose={handleClose}
+                    setModal={setModal}
+                    setStep={setStep}
+                    setLoading={setLoading}
+                    year={year}
+                    comments={comments}
                 />
             );
             break;
