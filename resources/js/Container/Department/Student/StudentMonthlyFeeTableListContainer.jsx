@@ -1,7 +1,7 @@
 import TableUI from '@/Components/UI/TableUI';
 import { cn } from '@/lib/utils';
 
-const StudentMonthlyFeeListTableContainer = ({ data, setFee, setSelectedRows, selectedRows, fee }) => {
+const StudentMonthlyFeeTableListContainer = ({ data, academicFee, boardingFee }) => {
     const columns = [
         {
             title: 'Month',
@@ -101,52 +101,28 @@ const StudentMonthlyFeeListTableContainer = ({ data, setFee, setSelectedRows, se
 
     const dataSource = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'].map(
         (month, index) => {
-            const monthLog = data?.income_logs?.find((item) => item?.month === month);
-            const boardingFeeLog = monthLog?.fees?.find((item) => item?.type.toLowerCase().includes('boarding-fee'));
-            const academicFeeLog = monthLog?.fees?.find((item) => item?.type.toLowerCase().includes('academic-fee'));
+            const monthLog = data?.find((item) => item?.month === month);
+            const boardingFeeLog = monthLog?.fees?.find((item) => item?.fee_type.includes('Boarding Fee'));
+            const academicFeeLog = monthLog?.fees?.find((item) => item?.fee_type.includes('Academic Fee'));
 
-            const boardingFeeDue = boardingFeeLog?.due || 0;
-            const academicFeeDue = academicFeeLog?.due || 0;
-            const boardingFee = data?.boarding_fee - boardingFeeDue;
-            const academicFee = data?.academic_fee - academicFeeDue;
+            const boardingFeeDue = Number(boardingFee) - monthLog?.fees?.find((item) => item?.fee_type.includes('Boarding Fee'))?.amount || 0;
+            const academicFeeDue = Number(academicFee) - monthLog?.fees?.find((item) => item?.fee_type.includes('Academic Fee'))?.amount || 0;
+            const boarding_fee = monthLog?.fees?.find((item) => item?.fee_type.includes('Boarding Fee'))?.amount || boardingFee;
+            const academic_fee = monthLog?.fees?.find((item) => item?.fee_type.includes('Academic Fee'))?.amount || academicFee;
             const isPaid = !!(boardingFeeLog || academicFeeLog);
 
             return {
                 key: index,
                 month: month,
-                boarding_fee: boardingFeeDue ? data?.boarding_fee - boardingFeeDue : boardingFee,
-                academic_fee: academicFeeDue ? data?.academic_fee - academicFeeDue : academicFee,
+                boarding_fee: boarding_fee,
+                academic_fee: academic_fee,
                 due: boardingFeeDue + academicFeeDue,
                 status: boardingFeeDue + academicFeeDue > 0 ? 'Due' : isPaid ? 'Paid' : 'Unpaid',
             };
         },
     );
 
-    return (
-        <TableUI
-            dataSource={dataSource}
-            columns={columns}
-            pagination={false}
-            rowSelection={{
-                type: 'checkbox',
-                onChange: (selectedRowKeys, selectedRows, info) => {
-                    setSelectedRows(selectedRows);
-                    setFee({
-                        ...fee,
-                        boarding_fee: selectedRows.reduce((acc, curr) => acc + curr?.boarding_fee, 0),
-                        academic_fee: selectedRows.reduce((acc, curr) => acc + curr?.academic_fee, 0),
-                        total: selectedRows.reduce((acc, curr) => acc + curr?.boarding_fee + curr?.academic_fee, 0),
-                    });
-                },
-                selectedRowKeys: selectedRows.map((item) => item?.key),
-                getCheckboxProps: (record) => ({
-                    disabled: record?.status === 'Paid' || record?.status === 'Due', // Column configuration not to be checked
-                    // defaultChecked: record?.status === 'Paid' ? false : true,
-                }),
-            }}
-            rowKey={(record) => record?.key}
-        />
-    );
+    return <TableUI columns={columns} dataSource={dataSource} pagination={false} />;
 };
 
-export default StudentMonthlyFeeListTableContainer;
+export default StudentMonthlyFeeTableListContainer;

@@ -20,7 +20,7 @@ class Exam extends Model
         'end_date',
         'registration_start',
         'registration_end',
-        'exam_fee',
+        'fee_type_id',
         'is_fee_required',
         'instructions',
         'total_marks',
@@ -37,7 +37,6 @@ class Exam extends Model
         'registration_start' => 'datetime',
         'registration_end'   => 'datetime',
         'published_at'       => 'datetime',
-        'exam_fee'           => 'decimal:2',
         'is_fee_required'    => 'boolean',
         'total_marks'        => 'integer',
         'pass_marks'         => 'integer',
@@ -73,6 +72,14 @@ class Exam extends Model
     }
 
     /**
+     * Get the fee type associated with the exam.
+     */
+    public function feeType(): BelongsTo
+    {
+        return $this->belongsTo(FeeType::class);
+    }
+
+    /**
      * Get the classes associated with the exam.
      */
     public function classes(): BelongsToMany
@@ -97,6 +104,14 @@ class Exam extends Model
         return $this->belongsToMany(Subject::class, 'exam_subjects', 'exam_id', 'subject_id')
             ->withPivot(['class_id', 'exam_date', 'start_time', 'end_time', 'total_marks', 'pass_marks', 'instructions', 'status'])
             ->withTimestamps();
+    }
+
+    /**
+     * Get the exam fee amount.
+     */
+    public function getExamFeeAmount(): ?float
+    {
+        return $this->feeType ? $this->feeType->amount : null;
     }
 
     /**

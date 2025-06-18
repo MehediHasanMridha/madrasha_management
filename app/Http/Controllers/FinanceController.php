@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Actions\Finance\Due\DownloadDueList;
 use App\Actions\Finance\Due\DueFilterGroup;
 use App\Actions\Finance\Due\DueList;
+use App\Actions\Finance\Earning\AddExamFee;
 use App\Actions\Finance\Earning\AddMonthlyFee;
 use App\Actions\Finance\Earning\MonthlyDiscount;
 use App\Actions\Finance\Earning\MonthlyTransaction;
@@ -14,6 +15,7 @@ use App\Actions\Finance\Expense\VoucherList;
 use App\Actions\Finance\Reports\MonthlyDailyReport;
 use App\Actions\Finance\Reports\MonthlyGroupReport;
 use App\Actions\Finance\Summary;
+use App\Models\Exam;
 use App\Models\ExpenseLog;
 use App\Models\FeeType;
 use App\Models\StudentDue;
@@ -94,9 +96,10 @@ class FinanceController extends Controller
 
     public function get_user_data($user_id)
     {
-
         $year = request()->input('year') ?? date('Y');
-        if (request()->input('type') == 'staff') {
+        $type = request()->input('type');
+
+        if ($type == 'staff') {
             $user = User::with(['academics', 'expenseLogs' => function ($q) use ($year) {
                 $q->whereYear('date', $year);
             }])->whereHas('roles', fn($q) => $q->where('name', 'staff'))->where('unique_id', $user_id)->firstOrFail();
@@ -124,10 +127,10 @@ class FinanceController extends Controller
                 })->values(),
             ]);
         }
-        // find user by id
+
+        // Find user by unique_id
         $user = User::with([
-            'incomeLogs' =>
-            function ($q) use ($year) {
+            'incomeLogs' => function ($q) use ($year) {
                 $q->where('payment_period', 'like', $year . '%')
                     ->with(['feeType', 'studentDue' => function ($q) {
                         $q->select('income_log_id', 'due_amount');
@@ -137,9 +140,7 @@ class FinanceController extends Controller
             ->where('unique_id', $user_id)
             ->firstOrFail();
 
-        // return $user;
-
-        return response()->json([
+        $responseData = [
             'id'           => $user->id,
             'name'         => $user->name,
             'email'        => $user->email,
@@ -162,8 +163,37 @@ class FinanceController extends Controller
                     'fees'  => $group,
                 ];
             })->values(),
+        ];
 
-        ]);
+        // If type is exam_fee, include exam fee data
+        if ($type === 'exam_fee') {
+            $exams = Exam::where('is_fee_required', true)
+                ->where('department_id', $user->academics->department_id)
+                ->whereYear('start_date', $year)
+                ->whereHas('classes', function ($query) use ($user) {
+                    $classIds = is_array($user->academics->class_id)
+                    ? $user->academics->class_id
+                    : [$user->academics->class_id];
+                    $query->whereIn('classes.id', array_filter($classIds));
+                })
+                ->get()
+                ->map(function ($exam) use ($user) {
+                    return [
+                        'id'          => $exam->id,
+                        'name'        => $exam->name,
+                        'exam_fee'    => $exam->getExamFeeAmount(),
+                        'fee_type_id' => $exam->fee_type_id,
+                        'start_date'  => $exam->start_date,
+                        'end_date'    => $exam->end_date,
+                        'status'      => $exam->status,
+                        'is_paid'     => $user->incomeLogs->where('fee_type_id', $exam->fee_type_id)->isNotEmpty(),
+                    ];
+                });
+
+            $responseData['exam_data'] = $exams;
+        }
+
+        return response()->json($responseData);
     }
 
     public function add_money(Request $request)
@@ -184,11 +214,10 @@ class FinanceController extends Controller
             }
 
             // convert month to 2025-04
+            DB::beginTransaction();
 
             if ($request->type == 'monthly_fee') {
-
                 // if fee_type is not in fee_types table then create it
-                DB::beginTransaction();
                 MonthlyTransaction::run($request);
 
                 if ($request->discount) {
@@ -216,6 +245,10 @@ class FinanceController extends Controller
                 DB::commit();
                 return redirect()->back()->with('success', 'Monthly fee added successfully');
 
+            } elseif ($request->type == 'exam_fee') {
+                AddExamFee::run($request, $student);
+                DB::commit();
+                return redirect()->back()->with('success', 'Exam fee added successfully');
             }
 
         } catch (\Throwable $th) {

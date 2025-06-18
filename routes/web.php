@@ -30,12 +30,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('{department_slug}/{student_id}', [StudentController::class, 'show_student_info'])->name('show_student_info');
             Route::post('{department_slug}/add_student', [StudentController::class, 'add_student'])->name('student.add_student');
             Route::post('{student_id}/update', [StudentController::class, 'update_student'])->name('student.update_student');
+            // student details
+            Route::get('{department_slug}/{student_id}/details', [StudentController::class, 'student_details'])->name('department.student_details');
         });
         Route::prefix('exams')->group(function () {
             Route::get('{department_slug}', [DepartmentController::class, 'exams_show'])->name('department.exams_show');
             Route::post('{department_slug}/store', [DepartmentController::class, 'storeExam'])->name('department.exams.store');
             Route::put('{department_slug}/{exam_id}/update', [DepartmentController::class, 'updateExam'])->name('department.exams.update');
             Route::delete('/{exam}', [DepartmentController::class, 'destroyExam'])->name('department.exams.delete');
+            Route::get('{exam_slug}/{department_slug}', [DepartmentController::class, 'exams_details'])->name('department.exams_details');
         });
 
         // Global Exam Management Routes
@@ -132,6 +135,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/due-list', [FinanceController::class, 'due_list'])->name('finance.due_list');
         // add download due list students
         Route::get('/due-list/download', [FinanceController::class, 'download_due_list'])->name('finance.download_due_list');
+
+        // Exam Fee Routes - Removed StudentExamFee functionality
+        // Exam fees are now managed through the regular fee system
     });
 
 });

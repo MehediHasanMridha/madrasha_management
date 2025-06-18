@@ -1,12 +1,17 @@
 import ExamIcon from '@/assets/images/exam.webp';
 import ExamActionContainer from '@/Container/Department/Exams/ExamActionContainer';
 import ExamStatusBadgeContainer from '@/Container/Department/Exams/ExamStatusBadgeContainer';
+import { Link } from '@inertiajs/react';
 
-const ExamCard = ({ exam }) => {
+const ExamCard = ({ exam, department }) => {
     return (
-        <div className="flex w-full items-center gap-[22px] rounded-[8px] bg-white p-[12px] shadow-[0px_8px_20px_0px_rgba(0,0,0,0.04)]">
+        <Link
+            as="button"
+            href={route('department.exams_details', { exam_slug: exam.slug, department_slug: department.slug })}
+            className="flex w-full cursor-pointer items-center gap-[22px] rounded-[8px] bg-white p-[12px] shadow-[0px_8px_20px_0px_rgba(0,0,0,0.04)]"
+        >
             <div className="relative h-[80px] w-[80px] flex-shrink-0 overflow-hidden rounded-[8px]">
-                <img src={ExamIcon} alt="Exam placeholder" className="h-full w-full rounded-[8px] object-cover" />
+                <img src={ExamIcon} draggable="false" alt="Exam placeholder" className="h-full w-full rounded-[8px] object-cover" />
             </div>
             <div className="flex flex-1 flex-col justify-center gap-[6px]">
                 <div className="flex flex-col gap-[12px] sm:flex-row sm:items-center sm:justify-between sm:gap-[24px]">
@@ -24,7 +29,7 @@ const ExamCard = ({ exam }) => {
             </div>{' '}
             <ExamStatusBadgeContainer status={exam.display_status} timeLeft={exam.time_left} />
             <ExamActionContainer data={exam} />
-        </div>
+        </Link>
     );
 };
 

@@ -23,7 +23,7 @@ return new class extends Migration
             $table->datetime('end_date');
             $table->datetime('registration_start')->nullable();
             $table->datetime('registration_end')->nullable();
-            $table->decimal('exam_fee', 10, 2)->default(0);
+            $table->foreignId('fee_type_id')->nullable()->constrained('fee_types')->nullOnDelete();
             $table->boolean('is_fee_required')->default(false);
             $table->text('instructions')->nullable();
             $table->integer('total_marks')->default(100);

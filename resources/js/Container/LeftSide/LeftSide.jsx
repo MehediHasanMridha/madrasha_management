@@ -105,7 +105,7 @@ const LeftSide = ({ drawerOpen, onDrawerClose, isMobile }) => {
                 >
                     <SideBarUI.Item
                         collapsed={collapsed}
-                        className={cn('h-[64px] hover:bg-[#F2F2F2]', route().current('department.students_show', department.slug) && 'bg-[#F2F2F2]')}
+                        className={cn('h-[64px] hover:bg-[#F2F2F2]', route().current('department.*', department.slug) && 'bg-[#F2F2F2]')}
                     >
                         <SideBarUI.Icon className="h-[32px] w-[32px] rounded-[8px] bg-[#F2F2F2]">
                             <School strokeWidth={1.5} size={20} className="text-[#4A4A4A]" />

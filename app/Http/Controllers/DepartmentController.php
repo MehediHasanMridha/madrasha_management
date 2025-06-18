@@ -5,6 +5,7 @@ use App\Http\Resources\showStaffData;
 use App\Http\Resources\showStudentData;
 use App\Models\Department;
 use App\Models\Exam;
+use App\Models\FeeType;
 use App\Models\User;
 use Exception;
 use Illuminate\Database\QueryException;
@@ -96,7 +97,7 @@ class DepartmentController extends Controller
 
             $students = $studentsQuery->paginate($per_page, ['*'], 'page', $page)->withQueryString();
 
-            return Inertia::render('admin::department/students', [
+            return Inertia::render('admin::department/student/students', [
                 'department' => $department,
                 'students'   => Inertia::defer(fn() => showStudentData::collection(
                     $students ?? [],
@@ -287,10 +288,11 @@ class DepartmentController extends Controller
                 $statusInfo           = $exam->getStatusWithTime();
                 $exam->display_status = $statusInfo['status'];
                 $exam->time_left      = $statusInfo['timeLeft'];
+                $exam->exam_fee       = $exam->getExamFeeAmount();
                 return $exam;
             });
 
-            return Inertia::render('admin::department/exams', [
+            return Inertia::render('admin::department/exam/exams', [
                 'department' => $department,
                 'classes'    => $department->classes->load('subjects'),
                 'exams'      => $exams,
@@ -327,9 +329,14 @@ class DepartmentController extends Controller
 
             if ($validator->fails()) {
                 return back()->withErrors($validator)->withInput();
-            }
+            }DB::beginTransaction();
 
-            DB::beginTransaction();
+            // Handle exam fee logic using helper method
+            $feeTypeId = $this->handleExamFeeType(
+                $request->examName,
+                $request->examFee ?? 0,
+                $department
+            );
 
             $examData = [
                 'name'               => $request->examName,
@@ -340,7 +347,7 @@ class DepartmentController extends Controller
                 'end_date'           => $request->endDate,
                 'registration_start' => $request->registrationStart,
                 'registration_end'   => $request->registrationEnd,
-                'exam_fee'           => $request->examFee ?? 0,
+                'fee_type_id'        => $feeTypeId,
                 'is_fee_required'    => ! empty($request->examFee),
                 'total_marks'        => $request->totalMarks,
                 'pass_marks'         => $request->passMarks,
@@ -396,8 +403,15 @@ class DepartmentController extends Controller
             if ($validator->fails()) {
                 return back()->withErrors($validator)->withInput();
             }
-
             DB::beginTransaction();
+
+            // Handle exam fee logic using helper method
+            $feeTypeId = $this->handleExamFeeType(
+                $request->examName,
+                $request->examFee ?? 0,
+                $department,
+                $exam->feeType
+            );
 
             $examData = [
                 'name'               => $request->examName,
@@ -407,7 +421,7 @@ class DepartmentController extends Controller
                 'end_date'           => $request->endDate,
                 'registration_start' => $request->registrationStart,
                 'registration_end'   => $request->registrationEnd,
-                'exam_fee'           => $request->examFee ?? 0,
+                'fee_type_id'        => $feeTypeId,
                 'is_fee_required'    => ! empty($request->examFee),
                 'total_marks'        => $request->totalMarks,
                 'pass_marks'         => $request->passMarks,
@@ -420,6 +434,8 @@ class DepartmentController extends Controller
             // Sync classes to exam
             $classIds = collect($request->selectedClasses)->pluck('id')->toArray();
             $exam->classes()->sync($classIds);
+
+            // Note: Exam fee records are now managed through the regular fee system via FeeType
 
             DB::commit();
 
@@ -441,6 +457,90 @@ class DepartmentController extends Controller
         } catch (\Exception $e) {
             return redirect()->back()
                 ->with('error', 'Failed to delete exam. Please try again.');
+        }
+    }
+
+    public function exams_details($exam_slug, $department_slug)
+    {
+        $exam = Exam::where('slug', $exam_slug)
+            ->whereHas('department', fn($q) => $q->where('slug', $department_slug))
+            ->with(['classes', 'examSubjects.subject', 'creator'])
+            ->firstOrFail();
+        return Inertia::render('admin::department/exam/exams_details', [
+            'exam'       => $exam,
+            'department' => $exam->department,
+        ]);
+    }
+
+    /**
+     * Create or update fee type for exam
+     */
+    private function handleExamFeeType($examName, $examFee, $department, $existingFeeType = null)
+    {
+        if ($examFee <= 0) {
+            return null;
+        }
+
+        $feeTypeName = 'Exam Fee';
+        $feeTypeSlug = Str::slug($examName . ' ' . $department->slug);
+        if ($existingFeeType) {
+            // Update existing fee type
+            $existingFeeType->update([
+                'slug'   => $feeTypeSlug,
+                'amount' => $examFee,
+                'status' => true,
+            ]);
+            return $existingFeeType->id;
+        }
+
+        // Create new fee type
+        $feeType = FeeType::firstOrCreate(
+            [
+                'slug'          => $feeTypeSlug,
+                'department_id' => $department->id,
+            ],
+            [
+                'name'   => $feeTypeName,
+                'amount' => $examFee,
+                'status' => true,
+            ]
+        );
+
+        return $feeType->id;
+    }
+
+    /**
+     * Get exam fee details for an exam
+     */
+    public function getExamFeeDetails($department_slug, $exam_id)
+    {
+        try {
+            $department = Department::where('slug', $department_slug)->firstOrFail();
+            $exam       = Exam::where('id', $exam_id)
+                ->where('department_id', $department->id)
+                ->with(['feeType'])
+                ->firstOrFail();
+
+            $examFeeDetails = [
+                'exam_name'       => $exam->name,
+                'is_fee_required' => $exam->is_fee_required,
+                'fee_type'        => $exam->feeType ? [
+                    'id'     => $exam->feeType->id,
+                    'name'   => $exam->feeType->name,
+                    'amount' => $exam->feeType->amount,
+                ] : null,
+            ];
+
+            return response()->json([
+                'success' => true,
+                'data'    => $examFeeDetails,
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to retrieve exam fee details: ' . $e->getMessage(),
+            ], 500);
         }
     }
 }

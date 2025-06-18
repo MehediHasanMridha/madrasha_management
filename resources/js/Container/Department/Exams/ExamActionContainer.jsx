@@ -77,7 +77,10 @@ const ExamActionContainer = ({ data }) => {
             themeToken={defaultThemeToken}
             placement="bottomRight"
         >
-            <div className="flex h-[40px] w-[40px] flex-shrink-0 cursor-pointer items-center justify-center rounded-[6px] bg-white transition-colors hover:border hover:border-[#0267FF] hover:bg-gray-50">
+            <div
+                onClick={(e) => e.stopPropagation()}
+                className="flex h-[40px] w-[40px] flex-shrink-0 cursor-pointer items-center justify-center rounded-[6px] bg-white transition-colors hover:border hover:border-[#0267FF] hover:bg-gray-50"
+            >
                 <div className="flex items-center justify-center">
                     <EllipsisVertical className="h-[24px] w-[24px] text-lg" />
                 </div>

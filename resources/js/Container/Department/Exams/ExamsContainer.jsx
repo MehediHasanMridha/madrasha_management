@@ -24,6 +24,7 @@ const ExamsContainer = ({ department, classes, exams }) => {
                             })}
                             status={exam.display_status}
                             timeLeft={exam.time_left}
+                            department={department}
                         />
                     ))
                 ) : (

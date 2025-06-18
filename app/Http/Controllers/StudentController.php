@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Academic;
 use App\Models\Address;
+use App\Models\Department;
 use App\Models\Guardian;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -189,8 +190,60 @@ class StudentController extends Controller
 
     }
 
-    public function show_student_info($department_slug, $student_id)
+    public function student_details($department_slug, $student_id)
     {
-        return "student info";
+        $year       = request()->input('year') ?? date('Y');
+        $department = Department::where('slug', $department_slug)->firstOrFail();
+        // set format for student details
+        $student = User::with(['academics', 'address', 'guardians'])->where('unique_id', $student_id)->firstOrFail();
+        $student = [
+            'id'                  => $student->id,
+            'name'                => $student->name,
+            'unique_id'           => $student->unique_id,
+            'phone'               => $student->phone,
+            'gender'              => $student->gender,
+            'image'               => $student->img,
+            'status'              => $student->status ? 'active' : 'inactive',
+            'blood'               => $student->academics->blood ?? null,
+            'address'             => [
+                'district' => $student->address->district ?? null,
+                'upazilla' => $student->address->upazilla ?? null,
+                'location' => $student->address->location ?? null,
+            ],
+            'guardian'            => [
+                'father_name' => $student->guardians->father_name ?? null,
+                'mother_name' => $student->guardians->mother_name ?? null,
+                'phone'       => json_decode($student->guardians->numbers, true) ?? [],
+            ],
+            'academic'            => [
+                'class'            => $student->academics->class->name ?? null,
+                'boarding_fee'     => $student->academics->boarding_fee ?? getStudentFee($student->academics, 'boarding'),
+                'academic_fee'     => $student->academics->academic_fee ?? getStudentFee($student->academics, 'academic'),
+                'reference'        => $student->academics->reference ?? null,
+                'reference_number' => $student->academics->reference_number ?? null,
+            ],
+            'monthly_fee_history' => $student->incomeLogs()->where('payment_period', 'like', $year . '%')->whereHas('feeType', function ($query) {
+                $query->whereIn('name', ['Academic Fee', 'Boarding Fee']);
+            })->get()->map(function ($log) {
+                return [
+                    'id'             => $log->id,
+                    'source_details' => $log->source_details,
+                    'amount'         => intval($log->amount),
+                    'fee_type'       => $log->feeType ? $log->feeType->name : null,
+                    'month'          => date('F', strtotime($log->payment_period)),
+                ];
+            })->groupBy('month')->map(function ($group, $month) {
+                return [
+                    'month' => $month,
+                    'fees'  => $group,
+                ];
+            })->values(),
+        ];
+        return Inertia::render('admin::department/student/student_details',
+            [
+                'department' => $department,
+                'student'    => $student,
+            ]
+        );
     }
 }
