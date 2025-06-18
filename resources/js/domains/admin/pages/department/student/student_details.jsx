@@ -16,7 +16,7 @@ const StudentDetails = ({ department, student }) => {
                     ]}
                 />
             </div>
-            <StudentDetailsContainer student={student} />
+            <StudentDetailsContainer student={student} department={department} />
         </AuthenticatedLayout>
     );
 };

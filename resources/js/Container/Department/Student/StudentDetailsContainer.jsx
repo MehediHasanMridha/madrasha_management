@@ -1,10 +1,11 @@
-import { Button } from '@/Components/UI/button';
 import { Card, CardContent } from '@/Components/UI/card';
 import { getAvatarImage } from '@/lib/avatarImageUrlUtils';
-import { cn } from '@/lib/utils';
-import { ChevronDown, Copy } from 'lucide-react';
+import { router } from '@inertiajs/react';
+import { Copy } from 'lucide-react';
+import { useState } from 'react';
+import StudentMonthlyFeeTableListContainer from './StudentMonthlyFeeTableListContainer';
 
-const StudentDetailsContainer = ({ student }) => {
+const StudentDetailsContainer = ({ student, department }) => {
     // Sample student data
     const personalInfo = [
         { label: 'Phone number', value: student?.phone || 'N/A' },
@@ -18,34 +19,23 @@ const StudentDetailsContainer = ({ student }) => {
         { label: 'Guardian Mobile-2', value: student?.guardian?.phone?.[1] || 'N/A' },
         { label: 'Reference', value: student?.academic?.reference || 'N/A' },
     ];
+    const totalPayableAmount = Number(student?.academic?.academic_fee) + Number(student?.academic?.boarding_fee);
+    const [year, setYear] = useState(new Date().getFullYear().toString());
 
-    const academicTransactions = [
-        { month: 'January', boardingFee: '2,000', academicFee: '1,000', due: '00', status: 'Paid', statusColor: 'text-green-600' },
-        { month: 'February', boardingFee: '2,000', academicFee: '1,000', due: '00', status: 'Paid', statusColor: 'text-green-600' },
-        { month: 'March', boardingFee: '2,000', academicFee: '1,000', due: '00', status: 'Paid', statusColor: 'text-green-600' },
-        { month: 'April', boardingFee: '2,000', academicFee: '1,000', due: '00', status: 'Paid', statusColor: 'text-green-600' },
-        {
-            month: 'May',
-            boardingFee: '1,000',
-            academicFee: '1,000',
-            due: '1,000',
-            status: 'Pay due',
-            statusColor: 'text-red-600',
-            hasPayButton: true,
-        },
-        { month: 'June', boardingFee: '2,000', academicFee: '1,000', due: '3,000', status: 'Not paid', statusColor: 'text-gray-600' },
-        { month: 'July', boardingFee: '2,000', academicFee: '1,000', due: '3,000', status: 'Not paid', statusColor: 'text-gray-600' },
-        { month: 'August', boardingFee: '2,000', academicFee: '1,000', due: '3,000', status: 'Not paid', statusColor: 'text-gray-600' },
-        { month: 'September', boardingFee: '2,000', academicFee: '1,000', due: '3,000', status: 'Not paid', statusColor: 'text-gray-600' },
-        { month: 'October', boardingFee: '2,000', academicFee: '1,000', due: '3,000', status: 'Not paid', statusColor: 'text-gray-600' },
-        { month: 'November', boardingFee: '2,000', academicFee: '1,000', due: '3,000', status: 'Not paid', statusColor: 'text-gray-600' },
-        { month: 'December', boardingFee: '2,000', academicFee: '1,000', due: '3,000', status: 'Not paid', statusColor: 'text-gray-600' },
-    ];
+    const getData = (year) => {
+        router.get(
+            route('department.student_details', { department_slug: department?.slug, student_id: student?.unique_id }),
+            { year },
+            {
+                preserveState: true,
+            },
+        );
+    };
 
     return (
         <div className="mb-6 flex justify-center gap-6">
             {/* Left Column - Personal Information */}
-            <Card className="w-fit max-w-md border-none shadow-none">
+            <Card className="w-[30%] border-none shadow-none">
                 <CardContent className="p-8">
                     {/* Student Profile Header */}
                     <div className="mb-14 flex flex-col items-center gap-6">
@@ -92,7 +82,7 @@ const StudentDetailsContainer = ({ student }) => {
             </Card>
 
             {/* Right Column - Academic Transactions */}
-            <div className="w-full max-w-5xl">
+            <div className="w-[70%]">
                 <Card className="h-full border-none shadow-none">
                     <CardContent className="p-6">
                         <div className="space-y-4">
@@ -104,72 +94,32 @@ const StudentDetailsContainer = ({ student }) => {
                                 <div className="flex items-center gap-2">
                                     <span className="text-sm text-gray-500">Total payable amount/Month</span>
                                     <span className="text-sm text-gray-500">:</span>
-                                    <span className="text-sm font-medium text-gray-700">4,000 BDT</span>
+                                    <span className="text-sm font-medium text-gray-700">{totalPayableAmount.toLocaleString('en-US')} BDT</span>
                                 </div>
 
-                                <div className="flex items-center gap-2 rounded border border-gray-200 px-3 py-2 text-sm text-gray-700">
-                                    <span>2024</span>
-                                    <ChevronDown size={16} className="text-gray-400" />
-                                </div>
+                                <select
+                                    className="w-[78px] cursor-pointer rounded-[4px] border-[1px] border-[#AFAFAF] px-[8px] py-[4px] text-black focus:outline-0"
+                                    value={year}
+                                    onChange={(e) => {
+                                        setYear(e.target.value);
+                                        getData(e.target.value);
+                                    }}
+                                >
+                                    <option disabled>Year</option>
+                                    {['2025', '2026', '2027', '2028', '2029', '2030'].map((item) => (
+                                        <option key={item} value={item}>
+                                            {item}
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
 
                             {/* Transactions Table */}
-                            <div className="overflow-hidden rounded-lg border border-gray-200">
-                                {/* Table Header */}
-                                <div className="grid grid-cols-5 border-b border-gray-200 bg-gray-50">
-                                    <div className="border-r border-gray-200 p-3 text-sm font-normal text-gray-900">Month</div>
-                                    <div className="border-r border-gray-200 p-3 text-sm font-normal text-gray-900">Boarding fee</div>
-                                    <div className="border-r border-gray-200 p-3 text-sm font-normal text-gray-900">Academic fee</div>
-                                    <div className="border-r border-gray-200 p-3 text-sm font-normal text-gray-900">Due</div>
-                                    <div className="p-3 text-sm font-normal text-gray-900">Status</div>
-                                </div>
-
-                                {/* Table Body */}
-                                {academicTransactions.map((transaction, index) => (
-                                    <div
-                                        key={index}
-                                        className={cn('grid grid-cols-5', index < academicTransactions.length - 1 && 'border-b border-gray-200')}
-                                    >
-                                        <div className="border-r border-gray-200 p-3 text-sm text-gray-700">{transaction.month}</div>
-                                        <div
-                                            className={cn(
-                                                'border-r border-gray-200 p-3 text-right text-sm',
-                                                transaction.status === 'Paid' ? 'text-green-600' : 'text-gray-700',
-                                            )}
-                                        >
-                                            {transaction.boardingFee}
-                                        </div>
-                                        <div
-                                            className={cn(
-                                                'border-r border-gray-200 p-3 text-right text-sm',
-                                                transaction.status === 'Paid' ? 'text-green-600' : 'text-gray-700',
-                                            )}
-                                        >
-                                            {transaction.academicFee}
-                                        </div>
-                                        <div
-                                            className={cn(
-                                                'border-r border-gray-200 p-3 text-right text-sm',
-                                                transaction.due === '00' ? 'text-green-600' : 'text-red-600',
-                                            )}
-                                        >
-                                            {transaction.due}
-                                        </div>
-                                        <div className="p-3 text-center">
-                                            {transaction.hasPayButton ? (
-                                                <Button className="flex h-auto items-center gap-2 bg-blue-600 px-3 py-1 text-sm text-white hover:bg-blue-700">
-                                                    <span>Pay due</span>
-                                                    <svg width="5" height="10" viewBox="0 0 5 10" fill="none" className="text-white">
-                                                        <path d="M0 8.5L3.5 5L0 1.5L1 0.5L5.5 5L1 9.5L0 8.5Z" fill="currentColor" />
-                                                    </svg>
-                                                </Button>
-                                            ) : (
-                                                <span className={cn('text-sm', transaction.statusColor)}>{transaction.status}</span>
-                                            )}
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
+                            <StudentMonthlyFeeTableListContainer
+                                data={student?.monthly_fee_history}
+                                academicFee={student?.academic?.academic_fee}
+                                boardingFee={student?.academic?.boarding_fee}
+                            />
                         </div>
                     </CardContent>
                 </Card>
