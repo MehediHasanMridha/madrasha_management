@@ -52,7 +52,6 @@ class BlogController extends Controller
         }
 
         $blogs = $query->paginate(12)->withQueryString();
-
         // Get categories and tags for filters
         $categories = BlogCategory::where('is_active', true)->get();
         $tags       = BlogTag::where('is_active', true)->get();
@@ -91,13 +90,13 @@ class BlogController extends Controller
             'content'                    => 'required|string',
             'featured_image'             => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'gallery_images.*'           => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'status'                     => 'required|in:draft,published,scheduled',
+            'status'                     => 'nullable|in:draft,published,scheduled',
             'published_at'               => 'nullable|date|after_or_equal:now',
-            'blog_category_id'           => 'required|exists:blog_categories,id',
+            'blog_category_id'           => 'nullable|exists:blog_categories,id',
             'tags'                       => 'nullable|array',
-            'tags.*'                     => 'exists:blog_tags,id',
-            'is_featured'                => 'boolean',
-            'allow_comments'             => 'boolean',
+            'tags.*'                     => 'string|max:50',
+            'is_featured'                => 'nullable|boolean',
+            'allow_comments'             => 'nullable|boolean',
             'meta_data'                  => 'nullable|array',
             'meta_data.meta_title'       => 'nullable|string|max:60',
             'meta_data.meta_description' => 'nullable|string|max:160',
@@ -108,6 +107,11 @@ class BlogController extends Controller
         if (empty($validated['slug'])) {
             $validated['slug'] = Str::slug($validated['title']);
         }
+
+        // Set default values
+        $validated['status']         = $validated['status'] ?? 'draft';
+        $validated['is_featured']    = $validated['is_featured'] ?? false;
+        $validated['allow_comments'] = $validated['allow_comments'] ?? true;
 
         // Handle featured image upload
         if ($request->hasFile('featured_image')) {
@@ -126,12 +130,30 @@ class BlogController extends Controller
         // Set author
         $validated['user_id'] = Auth::id();
 
+        // Handle tags - create or find existing tags
+        $tagIds = [];
+        if (! empty($validated['tags'])) {
+            foreach ($validated['tags'] as $tagName) {
+                $tag = BlogTag::firstOrCreate(
+                    ['name' => trim($tagName)],
+                    [
+                        'slug'      => Str::slug(trim($tagName)),
+                        'is_active' => true,
+                    ]
+                );
+                $tagIds[] = $tag->id;
+            }
+        }
+
+        // Remove tags from validated data as it's handled separately
+        unset($validated['tags']);
+
         // Create the blog post
         $blogPost = BlogPost::create($validated);
 
         // Attach tags if provided
-        if (! empty($validated['tags'])) {
-            $blogPost->tags()->attach($validated['tags']);
+        if (! empty($tagIds)) {
+            $blogPost->tags()->attach($tagIds);
         }
 
         return redirect()->route('blogs.index')
