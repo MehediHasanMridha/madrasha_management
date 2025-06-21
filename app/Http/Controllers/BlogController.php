@@ -203,8 +203,11 @@ class BlogController extends Controller
     /**
      * Update the specified blog post in storage.
      */
-    public function update(Request $request, BlogPost $blog)
+    public function update(Request $request, $blog_slug)
     {
+        // Find the blog post by slug
+        $blog = BlogPost::where('slug', $blog_slug)->firstOrFail();
+
         $validated = $request->validate([
             'title'                      => 'required|string|max:255',
             'slug'                       => [
@@ -215,15 +218,14 @@ class BlogController extends Controller
             ],
             'excerpt'                    => 'nullable|string|max:500',
             'content'                    => 'required|string',
-            'featured_image'             => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'gallery_images.*'           => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'status'                     => 'required|in:draft,published,scheduled',
-            'published_at'               => 'nullable|date',
-            'blog_category_id'           => 'required|exists:blog_categories,id',
+            'status'                     => 'nullable|in:draft,published,scheduled',
+            'published_at'               => 'nullable|date|after_or_equal:now',
+            'blog_category_id'           => 'nullable|exists:blog_categories,id',
             'tags'                       => 'nullable|array',
-            'tags.*'                     => 'exists:blog_tags,id',
-            'is_featured'                => 'boolean',
-            'allow_comments'             => 'boolean',
+            'tags.*'                     => 'string|max:50',
+            'is_featured'                => 'nullable|boolean',
+            'allow_comments'             => 'nullable|boolean',
             'meta_data'                  => 'nullable|array',
             'meta_data.meta_title'       => 'nullable|string|max:60',
             'meta_data.meta_description' => 'nullable|string|max:160',
@@ -237,13 +239,17 @@ class BlogController extends Controller
             $validated['slug'] = Str::slug($validated['title']);
         }
 
+        // Set default values
+        $validated['status']         = $validated['status'] ?? 'draft';
+        $validated['is_featured']    = $validated['is_featured'] ?? false;
+        $validated['allow_comments'] = $validated['allow_comments'] ?? true;
+
         // Handle featured image upload
         if ($request->hasFile('featured_image')) {
-            // Delete old featured image
-            if ($blog->featured_image) {
-                Storage::disk('public')->delete($blog->featured_image);
-            }
-            $validated['featured_image'] = $request->file('featured_image')->store('blog/featured', 'public');
+            $request->validate([
+                'featured_image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            ]);
+            $validated['featured_image'] = uploadImage($blog->featured_image, $request->file('featured_image'), 'uploads/blog_images/');
         }
 
         // Handle remove featured image
@@ -276,12 +282,32 @@ class BlogController extends Controller
             $validated['gallery_images'] = array_values($currentGallery);
         }
 
+        // Handle tags - create or find existing tags (same as store method)
+        $tagIds = [];
+        if (! empty($validated['tags'])) {
+            foreach ($validated['tags'] as $tagName) {
+                $tag = BlogTag::firstOrCreate(
+                    ['name' => trim($tagName)],
+                    [
+                        'slug'      => Str::slug(trim($tagName)),
+                        'is_active' => true,
+                    ]
+                );
+                $tagIds[] = $tag->id;
+            }
+        }
+
+        // Remove tags from validated data as it's handled separately
+        unset($validated['tags']);
+
         // Update the blog post
         $blog->update($validated);
 
         // Sync tags
-        if (array_key_exists('tags', $validated)) {
-            $blog->tags()->sync($validated['tags'] ?? []);
+        if (! empty($tagIds)) {
+            $blog->tags()->sync($tagIds);
+        } else {
+            $blog->tags()->detach();
         }
 
         return redirect()->route('blogs.index')
