@@ -52,6 +52,7 @@ const BlogsContainer = ({ blogs, categories, tags, filters }) => {
             blogs={blogs}
             formatDate={formatDate}
             filters={filters}
+            handleDelete={handleDelete}
         />
     );
 };
