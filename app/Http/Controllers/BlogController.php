@@ -115,7 +115,7 @@ class BlogController extends Controller
 
         // Handle featured image upload
         if ($request->hasFile('featured_image')) {
-            $validated['featured_image'] = $request->file('featured_image')->store('blog/featured', 'public');
+            $validated['featured_image'] = uploadImage(null, $request->file('featured_image'), 'uploads/blog_images/');
         }
 
         // Handle gallery images upload

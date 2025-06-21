@@ -23,7 +23,7 @@ const BlogItemsComponent = ({ blogs, formatDate, handleDelete }) => {
                                 <div className="h-[150px] w-[150px] flex-shrink-0 overflow-hidden rounded-lg bg-gray-100">
                                     {blog.featured_image ? (
                                         <img
-                                            src={getAvatarImage(blog.featured_image, 'blogs_images', blog.title)}
+                                            src={getAvatarImage(blog.featured_image, 'blog_images', blog.title)}
                                             alt={blog.title}
                                             className="h-full w-full object-cover"
                                         />

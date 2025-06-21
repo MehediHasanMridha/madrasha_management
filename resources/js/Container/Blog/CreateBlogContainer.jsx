@@ -1,34 +1,28 @@
-import RichTextEditor from '@/Components/UI/RichTextEditor';
+import Field from '@/Components/UI/Field';
+import FileUploadField from '@/Components/UI/FileUploadField';
 import StaticBtn from '@/Components/UI/StaticBtn';
+import { cn } from '@/lib/utils';
 import { router } from '@inertiajs/react';
-import { Image, X } from 'lucide-react';
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-
+import { Upload } from 'antd';
+import JoditEditor from 'jodit-react';
+import { X } from 'lucide-react';
+import { useRef, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+const { Dragger } = Upload;
 const CreateBlogContainer = ({ categories = [], existingTags = [] }) => {
+    const editor = useRef(null);
+
     const {
         register,
         handleSubmit,
         watch,
         setValue,
+        control,
         reset,
         formState: { errors, isSubmitting },
     } = useForm({
         defaultValues: {
-            title: '',
-            content: '',
-            excerpt: '',
-            featured_image: null,
-            tags: ['Education', 'Islamic'],
-            status: 'published',
-            blog_category_id: '',
-            is_featured: false,
-            allow_comments: true,
-            meta_data: {
-                meta_title: '',
-                meta_description: '',
-                meta_keywords: '',
-            },
+            tags: existingTags || [],
         },
     });
 
@@ -37,8 +31,6 @@ const CreateBlogContainer = ({ categories = [], existingTags = [] }) => {
 
     // Watch form values
     const watchedTags = watch('tags');
-    const watchedTitle = watch('title');
-    const watchedContent = watch('content');
 
     const handleRemoveTag = (tagToRemove) => {
         const currentTags = watchedTags.filter((tag) => tag !== tagToRemove);
@@ -48,7 +40,7 @@ const CreateBlogContainer = ({ categories = [], existingTags = [] }) => {
     const handleAddTag = (e) => {
         if (e.key === 'Enter' && newTag.trim()) {
             e.preventDefault();
-            if (!watchedTags.includes(newTag.trim())) {
+            if (!watchedTags?.includes(newTag.trim())) {
                 setValue('tags', [...watchedTags, newTag.trim()]);
             }
             setNewTag('');
@@ -59,34 +51,24 @@ const CreateBlogContainer = ({ categories = [], existingTags = [] }) => {
         setNewTag(e.target.value);
     };
 
-    const handleThumbnailUpload = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                setThumbnail(e.target.result);
-            };
-            reader.readAsDataURL(file);
-            setValue('featured_image', file);
-        }
-    };
-
-    const removeThumbnail = () => {
-        setThumbnail(null);
-        setValue('featured_image', null);
-    };
-
     const onSubmit = (data) => {
-        router.post(route('blogs.store'), data, {
-            onSuccess: () => {
-                reset();
-                setThumbnail(null);
-                setNewTag('');
+        router.post(
+            route('blogs.store'),
+            {
+                ...data,
+                content: data.body, // Rename body to content for consistency
+                featured_image: data.featured_image ? data.featured_image?.file : null, // Handle file upload
             },
-            onError: (errors) => {
-                console.error('Validation errors:', errors);
+            {
+                onSuccess: () => {
+                    reset();
+                    setNewTag('');
+                },
+                onError: (errors) => {
+                    console.error('Validation errors:', errors);
+                },
             },
-        });
+        );
     };
 
     const handleSaveDraft = () => {
@@ -100,110 +82,99 @@ const CreateBlogContainer = ({ categories = [], existingTags = [] }) => {
     };
 
     return (
-        <div className="min-h-screen px-12 py-8">
-            <form onSubmit={handleSubmit(onSubmit)}>
-                <div className="mx-auto flex max-w-7xl gap-6">
-                    {/* Main Content */}
-                    <div className="flex-1 space-y-6">
-                        {/* Header */}
-                        <div className="flex items-center justify-between rounded-lg bg-white p-6">
-                            <h1 className="text-2xl font-medium text-gray-900">Writing blog</h1>
-                            <div className="flex gap-3">
-                                <StaticBtn
-                                    onClick={handleSaveDraft}
-                                    disabled={isSubmitting}
-                                    className="rounded-lg bg-gray-600 px-4 py-3 font-medium text-white transition-colors hover:bg-gray-700 disabled:opacity-50"
-                                >
-                                    {isSubmitting ? 'Saving...' : 'Save Draft'}
-                                </StaticBtn>
-                                <StaticBtn
-                                    onClick={handlePublish}
-                                    disabled={isSubmitting}
-                                    className="rounded-lg bg-blue-600 px-4 py-3 font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
-                                >
-                                    {isSubmitting ? 'Publishing...' : 'Publish'}
-                                </StaticBtn>
-                            </div>
-                        </div>
-
-                        {/* Title Section */}
-                        <div className="space-y-3">
-                            <label className="text-lg font-medium text-gray-700">Title</label>
-                            <div className="rounded-lg bg-white p-6">
-                                <input
-                                    type="text"
-                                    {...register('title', { required: 'Title is required' })}
-                                    placeholder="Here is title field."
-                                    className={`w-full border-none text-base text-gray-700 placeholder-gray-400 outline-none ${
-                                        errors.title ? 'border-red-300' : ''
-                                    }`}
-                                />
-                                {errors.title && <p className="mt-2 text-sm text-red-600">{errors.title.message}</p>}
-                            </div>
-                        </div>
-
-                        {/* Body Section */}
-                        <div className="space-y-3">
-                            <label className="text-lg font-medium text-gray-700">Content</label>
-                            <div className="rounded-lg bg-white">
-                                <RichTextEditor value={watchedContent} onChange={(content) => setValue('content', content)} />
-                                {errors.content && <p className="mt-2 px-6 pb-4 text-sm text-red-600">{errors.content.message}</p>}
-                            </div>
+        <div className="h-full py-8">
+            <div className="mx-auto flex max-w-7xl gap-6">
+                {/* Main Content */}
+                <div className="flex-1 space-y-6">
+                    {/* Header */}
+                    <div className="flex items-center justify-between rounded-lg bg-white p-6">
+                        <h1 className="text-2xl font-medium text-gray-900">Writing blog</h1>
+                        <div className="flex gap-3">
+                            <StaticBtn
+                                onClick={handleSaveDraft}
+                                disabled={isSubmitting}
+                                className="rounded-lg bg-gray-600 px-4 py-3 font-medium text-white transition-colors hover:bg-gray-700 disabled:opacity-50"
+                            >
+                                {isSubmitting ? 'Saving...' : 'Save Draft'}
+                            </StaticBtn>
+                            <StaticBtn
+                                onClick={handlePublish}
+                                disabled={isSubmitting}
+                                className="rounded-lg bg-blue-600 px-4 py-3 font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
+                            >
+                                {isSubmitting ? 'Publishing...' : 'Publish'}
+                            </StaticBtn>
                         </div>
                     </div>
 
-                    {/* Sidebar */}
-                    <div className="w-96 space-y-6">
-                        {/* Thumbnail Upload */}
-                        <div className="rounded-lg bg-white p-4">
-                            {!thumbnail ? (
-                                <div className="space-y-6">
-                                    <div className="flex h-56 w-full items-center justify-center rounded-lg bg-gray-200">
-                                        <Image size={48} className="text-gray-400" />
-                                    </div>
-                                    <p className="text-sm text-gray-700">Please use JPEG format with non transparent background.</p>
-                                    <div className="flex gap-4">
-                                        <label className="flex-1">
-                                            <input type="file" accept="image/jpeg,image/jpg" onChange={handleThumbnailUpload} className="hidden" />
-                                            <div className="cursor-pointer rounded-lg bg-blue-600 px-4 py-3 text-center font-medium text-white transition-colors hover:bg-blue-700">
-                                                Add Thumbnail
-                                            </div>
-                                        </label>
-                                    </div>
-                                    {errors.featured_image && <p className="text-sm text-red-600">{errors.featured_image}</p>}
-                                </div>
-                            ) : (
-                                <div className="space-y-6">
-                                    <div className="h-56 w-full overflow-hidden rounded-lg bg-gray-200">
-                                        <img src={thumbnail} alt="Thumbnail" className="h-full w-full object-cover" />
-                                    </div>
-                                    <p className="text-sm text-gray-700">Please use JPEG format with non transparent background.</p>
-                                    <div className="flex gap-4">
-                                        <label className="flex-1">
-                                            <input type="file" accept="image/jpeg,image/jpg" onChange={handleThumbnailUpload} className="hidden" />
-                                            <div className="cursor-pointer rounded-lg bg-blue-600 px-4 py-3 text-center font-medium text-white transition-colors hover:bg-blue-700">
-                                                Change Thumbnail
-                                            </div>
-                                        </label>
-                                        <StaticBtn
-                                            onClick={removeThumbnail}
-                                            className="flex-1 rounded-lg bg-gray-100 px-4 py-3 font-medium text-red-600 transition-colors hover:bg-gray-200"
-                                        >
-                                            Remove
-                                        </StaticBtn>
-                                    </div>
-                                    {errors.featured_image && <p className="text-sm text-red-600">{errors.featured_image}</p>}
-                                </div>
+                    {/* Title Section */}
+                    <Field labelClassName={'text-gray-700 font-medium text-xl'} label={'Title'} error={errors.title} className="space-y-3">
+                        <input
+                            type="text"
+                            {...register('title', { required: 'Title is required' })}
+                            placeholder="Here is title field."
+                            className={cn(
+                                'w-full rounded-lg border-1 border-gray-400 bg-white p-3 text-base text-gray-700 placeholder-gray-400 focus:outline-none',
+                                errors.title ? 'border-red-300' : '',
                             )}
-                        </div>
+                        />
+                    </Field>
 
-                        {/* Tags Section */}
+                    <Field className="space-y-3" error={errors.body} label="Body" labelClassName={'text-gray-700 font-medium text-xl'}>
+                        <Controller
+                            name="body"
+                            control={control}
+                            defaultValue=""
+                            rules={{
+                                required: 'Content is required',
+                                minLength: { value: 100, message: 'Content must be at least 100 characters' },
+                            }}
+                            render={({ field }) => (
+                                <JoditEditor
+                                    className="h-[500px]"
+                                    ref={editor}
+                                    value={field.value}
+                                    onBlur={field.onChange}
+                                    onChange={field.onChange}
+                                />
+                            )}
+                        />
+                    </Field>
+                </div>
+
+                <div className="w-96 space-y-6">
+                    <Field
+                        className="rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-4"
+                        error={errors.featured_image}
+                        label="Featured Image"
+                        labelClassName={'text-gray-700 font-medium text-xl'}
+                    >
+                        <Controller
+                            name="featured_image"
+                            control={control}
+                            defaultValue={null}
+                            rules={{
+                                required: 'Featured image is required',
+                            }}
+                            render={({ field: { onChange, value, ref } }) => (
+                                <FileUploadField.DragAndDrop
+                                    control={control}
+                                    text="Upload Image"
+                                    className="h-60 w-full"
+                                    onChange={onChange}
+                                    ref={ref}
+                                />
+                            )}
+                        />
+                    </Field>
+
+                    <Field className="space-y-3" error={errors.tags} label="Tags" labelClassName={'text-gray-700 font-medium text-xl'}>
                         <div className="rounded-lg bg-white p-4">
                             <h3 className="mb-6 text-lg font-medium text-gray-900">Add tags</h3>
                             <p className="mb-3 text-sm text-gray-700">Add relevant tags to help categorize your blog post.</p>
                             <div className="rounded-xl bg-gray-100 p-3">
                                 <div className="flex flex-wrap items-center gap-2">
-                                    {watchedTags.map((tag, index) => (
+                                    {watchedTags?.map((tag, index) => (
                                         <span
                                             key={index}
                                             className="flex items-center gap-2 rounded-full border border-gray-300 bg-white px-3 py-1 text-sm text-gray-600"
@@ -229,14 +200,15 @@ const CreateBlogContainer = ({ categories = [], existingTags = [] }) => {
                                     />
                                 </div>
                             </div>
-                            {watchedTags.length === 0 && (
+                            {watchedTags?.length === 0 && (
                                 <p className="mt-2 text-xs text-gray-400">No tags added yet. Start typing to add your first tag.</p>
                             )}
-                            {errors.tags && <p className="mt-2 text-sm text-red-600">{errors.tags}</p>}
                         </div>
-                    </div>
+                    </Field>
                 </div>
-            </form>
+            </div>
+            {/* <form onSubmit={handleSubmit(onSubmit)}>
+            </form> */}
         </div>
     );
 };
