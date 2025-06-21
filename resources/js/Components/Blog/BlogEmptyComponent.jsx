@@ -1,7 +1,5 @@
-import { Link } from '@inertiajs/react';
-import { Plus, Search } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { Card, CardContent } from '../UI/card';
-import StaticBtn from '../UI/StaticBtn';
 
 const BlogEmptyComponent = ({ blogs, filters }) => {
     return (
@@ -20,14 +18,6 @@ const BlogEmptyComponent = ({ blogs, filters }) => {
                                     : 'Get started by creating your first blog post'}
                             </p>
                         </div>
-                        {!Object.values(filters).some((f) => f) && (
-                            <Link href={route('blogs.create')}>
-                                <StaticBtn>
-                                    <Plus className="mr-2 h-4 w-4" />
-                                    Create Your First Post
-                                </StaticBtn>
-                            </Link>
-                        )}
                     </div>
                 </CardContent>
             </Card>

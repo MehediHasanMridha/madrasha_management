@@ -25,9 +25,9 @@ const BlogsContainer = ({ blogs, categories, tags, filters }) => {
         );
     };
 
-    const handleDelete = (blogId) => {
+    const handleDelete = (blogSlug) => {
         if (confirm('Are you sure you want to delete this blog post?')) {
-            router.delete(route('blogs.destroy', blogId));
+            router.delete(route('blogs.destroy', { blog: blogSlug }));
         }
     };
 

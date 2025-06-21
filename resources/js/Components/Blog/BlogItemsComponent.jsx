@@ -96,7 +96,7 @@ const BlogItemsComponent = ({ blogs, formatDate, handleDelete }) => {
                                     <Edit className="h-5 w-5 text-gray-600" strokeWidth={1.5} />
                                 </Link>
                                 {/* Delete Button */}
-                                <Trash2 className="h-4 w-[18px] text-gray-600" strokeWidth={1.5} onClick={() => handleDelete(blog.id)} />
+                                <Trash2 className="h-4 w-[18px] text-gray-600" strokeWidth={1.5} onClick={() => handleDelete(blog.slug)} />
                             </div>
                         </div>
                     </CardContent>

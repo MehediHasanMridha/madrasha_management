@@ -321,7 +321,10 @@ class BlogController extends Controller
     {
         // Delete associated images
         if ($blog->featured_image) {
-            Storage::disk('public')->delete($blog->featured_image);
+            $imagePath = public_path('uploads/blog_images/' . $blog->featured_image);
+            if (file_exists($imagePath)) {
+                unlink($imagePath);
+            }
         }
 
         if ($blog->gallery_images) {
