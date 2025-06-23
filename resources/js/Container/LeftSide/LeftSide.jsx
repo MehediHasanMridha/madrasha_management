@@ -2,7 +2,7 @@ import Logo from '@/assets/images/logo.png';
 import SideBarUI from '@/Components/UI/SideBarUI';
 import { cn } from '@/lib/utils';
 import { Link, usePage } from '@inertiajs/react';
-import { Calculator, ChartNoAxesCombined, PanelRight, School, Users } from 'lucide-react';
+import { Calculator, ChartNoAxesCombined, FilePenLine, PanelRight, School, Users } from 'lucide-react';
 import { useState } from 'react';
 
 const LeftSide = ({ drawerOpen, onDrawerClose, isMobile }) => {
@@ -115,8 +115,19 @@ const LeftSide = ({ drawerOpen, onDrawerClose, isMobile }) => {
                 </Link>
             ))}
             {/* Mobile App Section */}
-            <SideBarUI.Group label="Mobile app" collapsed={collapsed} divider />
-
+            <SideBarUI.Group label="Publications" collapsed={collapsed} divider />
+            <Link href={route('blogs.index')} className="w-full cursor-pointer" as="button">
+                <SideBarUI.Item
+                    collapsed={collapsed}
+                    className="h-[64px] hover:bg-[#F2F2F2]"
+                    className={cn('h-[64px] hover:bg-[#F2F2F2]', route().current('blogs.*') && 'bg-[#F2F2F2]')}
+                >
+                    <SideBarUI.Icon>
+                        <FilePenLine strokeWidth={1.5} size={20} className="text-[#4A4A4A]" />
+                    </SideBarUI.Icon>
+                    <SideBarUI.Text collapsed={collapsed}>Manage Blogs</SideBarUI.Text>
+                </SideBarUI.Item>
+            </Link>
             <SideBarUI.Item collapsed={collapsed} className="h-[64px] hover:bg-[#F2F2F2]">
                 <SideBarUI.Icon>
                     <img src={Logo} alt="Mobile app" className="h-[24px] w-[24px]" />

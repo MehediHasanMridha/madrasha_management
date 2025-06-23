@@ -197,4 +197,82 @@ FileUploadField.Crop = ({ control, fieldName, type = 'picture-card', className, 
     );
 };
 
+FileUploadField.DragAndDrop = ({ control, children, fieldName, type = 'picture-card', className, text, required = false, onChange, ...props }) => {
+    const [previewOpen, setPreviewOpen] = useState(false);
+    const [fileList, setFileList] = useState([]);
+    const [previewImage, setPreviewImage] = useState('');
+    const [api, contextHolder] = notification.useNotification();
+
+    const handleFileChange = ({ fileList: newFileList }) => {
+        setFileList(newFileList);
+        // Call the onChange prop if provided (from React Hook Form Controller)
+        if (onChange) {
+            onChange({
+                file: newFileList[0]?.originFileObj,
+                fileList: newFileList,
+            });
+        }
+    };
+
+    const handlePreview = async (file) => {
+        if (!file.url && !file.preview) {
+            file.preview = await getBase64(file);
+        }
+        setPreviewImage(file.url || file.preview);
+        setPreviewOpen(true);
+    };
+
+    const handleBeforeUpload = (file) => {
+        const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+        if (!isJpgOrPng) {
+            api.error({
+                message: 'You can only upload JPG/PNG file!',
+                placement: 'bottomRight',
+            });
+            return Upload.LIST_IGNORE;
+        }
+
+        const isLt4M = file.size / 1024 / 1024 < 4;
+        if (!isLt4M) {
+            api.error({
+                message: 'Image must be smaller than 4MB!',
+                placement: 'bottomRight',
+            });
+            return Upload.LIST_IGNORE;
+        }
+        handlePreview(file);
+        return true;
+    };
+
+    return (
+        <>
+            {contextHolder}
+            <ConfigProvider
+                theme={{
+                    components: {
+                        Upload: {
+                            colorPrimary: '#1AA2A2',
+                        },
+                    },
+                }}
+            >
+                <Upload.Dragger
+                    name={fieldName}
+                    fileList={fileList}
+                    maxCount={1}
+                    beforeUpload={handleBeforeUpload}
+                    onChange={handleFileChange}
+                    accept={'image/png, image/jpeg'}
+                    customRequest={({ onSuccess }) => onSuccess('ok')}
+                    className={cn('relative w-fit rounded-lg bg-gray-300', className)}
+                    showUploadList={false}
+                    {...props}
+                >
+                    {previewImage ? <img src={previewImage} alt="" className="absolute top-0 left-0 h-full w-full" /> : <div>{text}</div>}
+                </Upload.Dragger>
+            </ConfigProvider>
+        </>
+    );
+};
+
 export default FileUploadField;

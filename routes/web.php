@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BlogController;
 use App\Http\Controllers\ClassController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepartmentController;
@@ -138,6 +139,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Exam Fee Routes - Removed StudentExamFee functionality
         // Exam fees are now managed through the regular fee system
+    });
+
+    // blogs
+    Route::prefix('blogs')->group(function () {
+        Route::get('/', [BlogController::class, 'index'])->name('blogs.index');
+        Route::get('/create', [BlogController::class, 'create'])->name('blogs.create');
+        Route::post('/', [BlogController::class, 'store'])->name('blogs.store');
+        Route::get('/{blog}', [BlogController::class, 'show'])->name('blogs.show');
+        Route::get('/{blog}/edit', [BlogController::class, 'edit'])->name('blogs.edit');
+        Route::post('/{blog_slug}', [BlogController::class, 'update'])->name('blogs.update');
+        Route::delete('/{blog}', [BlogController::class, 'destroy'])->name('blogs.destroy');
     });
 
 });
