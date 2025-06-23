@@ -182,6 +182,25 @@ class BlogController extends Controller
             'relatedPosts' => $relatedPosts,
         ]);
     }
+    public function showApi(BlogPost $blog)
+    {
+        $blog->load(['author', 'category', 'tags']);
+
+        // Increment view count
+        $blog->incrementViews();
+
+        // Get related posts
+        $relatedPosts = BlogPost::published()
+            ->where('id', '!=', $blog->id)
+            ->where('blog_category_id', $blog->blog_category_id)
+            ->limit(4)
+            ->get();
+
+        return response()->json([
+            'blog'         => $blog,
+            'relatedPosts' => $relatedPosts,
+        ]);
+    }
 
     /**
      * Show the form for editing the specified blog post.
