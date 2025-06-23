@@ -88,8 +88,8 @@ class BlogController extends Controller
             'slug'                       => 'nullable|string|max:255|unique:blog_posts,slug',
             'excerpt'                    => 'nullable|string|max:500',
             'content'                    => 'required|string',
-            'featured_image'             => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'gallery_images.*'           => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'featured_image'             => 'nullable|image|mimes:jpeg,png,jpg,gif|max:4096',
+            'gallery_images.*'           => 'nullable|image|mimes:jpeg,png,jpg,gif|max:4096',
             'status'                     => 'nullable|in:draft,published,scheduled',
             'published_at'               => 'nullable|date|after_or_equal:now',
             'blog_category_id'           => 'nullable|exists:blog_categories,id',
@@ -237,7 +237,7 @@ class BlogController extends Controller
             ],
             'excerpt'                    => 'nullable|string|max:500',
             'content'                    => 'required|string',
-            'gallery_images.*'           => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'gallery_images.*'           => 'nullable|image|mimes:jpeg,png,jpg,gif|max:4096',
             'status'                     => 'nullable|in:draft,published,scheduled',
             'published_at'               => 'nullable|date|after_or_equal:now',
             'blog_category_id'           => 'nullable|exists:blog_categories,id',
@@ -266,7 +266,7 @@ class BlogController extends Controller
         // Handle featured image upload
         if ($request->hasFile('featured_image')) {
             $request->validate([
-                'featured_image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+                'featured_image' => 'image|mimes:jpeg,png,jpg,gif|max:4096',
             ]);
             $validated['featured_image'] = uploadImage($blog->featured_image, $request->file('featured_image'), 'uploads/blog_images/');
         }
