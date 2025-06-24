@@ -1,12 +1,16 @@
 <?php
 
 use App\Http\Controllers\BlogController;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
+
+// Notification routes
+Route::post('/notifications/store-token', [NotificationController::class, 'storeToken']);
 
 // add public routes for blog posts and categories
 Route::get('/blog/posts', [BlogController::class, 'showApi']);

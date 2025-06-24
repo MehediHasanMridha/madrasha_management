@@ -117,11 +117,7 @@ const LeftSide = ({ drawerOpen, onDrawerClose, isMobile }) => {
             {/* Mobile App Section */}
             <SideBarUI.Group label="Publications" collapsed={collapsed} divider />
             <Link href={route('blogs.index')} className="w-full cursor-pointer" as="button">
-                <SideBarUI.Item
-                    collapsed={collapsed}
-                    className="h-[64px] hover:bg-[#F2F2F2]"
-                    className={cn('h-[64px] hover:bg-[#F2F2F2]', route().current('blogs.*') && 'bg-[#F2F2F2]')}
-                >
+                <SideBarUI.Item collapsed={collapsed} className={cn('h-[64px] hover:bg-[#F2F2F2]', route().current('blogs.*') && 'bg-[#F2F2F2]')}>
                     <SideBarUI.Icon>
                         <FilePenLine strokeWidth={1.5} size={20} className="text-[#4A4A4A]" />
                     </SideBarUI.Icon>
