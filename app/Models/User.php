@@ -95,4 +95,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(ClassAssign::class);
     }
+
+    public function blogPosts()
+    {
+        return $this->hasMany(BlogPost::class);
+    }
+
+    public function publishedBlogPosts()
+    {
+        return $this->hasMany(BlogPost::class)->where('status', 'published');
+    }
 }
