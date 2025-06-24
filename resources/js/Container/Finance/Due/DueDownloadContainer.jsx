@@ -12,15 +12,21 @@ const DueDownloadContainer = () => {
     const handlePrint = useReactToPrint({
         contentRef: printRef,
         documentTitle: `Due-List-${new Date().toLocaleDateString()}`,
+        onBeforePrint: () => {
+            if (data.length > 0) {
+                return Promise.resolve();
+            }
+        },
         pageStyle: `
             @page {
                 size: A4;
-                margin: 2mm;
+                margin: .5in;
             }
             @media print {
                 body {
                     -webkit-print-color-adjust: exact;
                     color-adjust: exact;
+                    font-size: 12px;
                 }
                 .hidden {
                     display: none !important;
@@ -47,8 +53,8 @@ const DueDownloadContainer = () => {
     return (
         <>
             <PrimaryButton
-                onClick={() => {
-                    getData();
+                onClick={async () => {
+                    await getData();
                     handlePrint();
                 }}
                 className="flex cursor-pointer items-center gap-2 bg-red-600 hover:bg-red-700 focus:bg-red-700 active:bg-red-800"
