@@ -1,6 +1,6 @@
 import React from 'react';
 
-const DuePrintableComponent = React.forwardRef(({ filterData, data }, ref) => {
+const DuePrintableComponent = React.forwardRef(({ selectedFilters, data }, ref) => {
     const currentDate = new Date().toLocaleDateString();
 
     return (
@@ -18,17 +18,17 @@ const DuePrintableComponent = React.forwardRef(({ filterData, data }, ref) => {
                     <h3 className="mb-2 font-semibold">Applied Filters:</h3>
                     <div className="grid grid-cols-2 gap-4 text-sm">
                         <div>
-                            <span>Department:</span> {filterData?.selectedDepartment || 'All Departments'}
+                            <span>Department:</span> {selectedFilters?.department || 'All Departments'}
                         </div>
                         <div>
-                            <span>Class:</span> {filterData?.selectedClass || 'All Classes'}
+                            <span>Class:</span> {selectedFilters?.class || 'All Classes'}
                         </div>
                         <div>
-                            <span>Gender:</span> {filterData?.selectedGender || 'All'}
+                            <span>Gender:</span> {selectedFilters?.gender || 'All'}
                         </div>
-                        <div>
-                            <span>Fee Type:</span> {filterData?.selectedFeeType || 'All'}
-                        </div>
+                        {/* <div>
+                            <span>Fee Type:</span> {filter?.selectedFeeType || 'All'}
+                        </div> */}
                     </div>
                 </div>
 

@@ -5,17 +5,22 @@ import { useRef, useState } from 'react';
 import { FaFilePdf } from 'react-icons/fa6';
 import { useReactToPrint } from 'react-to-print';
 
-const DueDownloadContainer = () => {
+const DueDownloadContainer = ({ filter, selectedFilters }) => {
     const printRef = useRef();
     const [data, setData] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
 
     const handlePrint = useReactToPrint({
         contentRef: printRef,
         documentTitle: `Due-List-${new Date().toLocaleDateString()}`,
-        onBeforePrint: () => {
-            if (data.length > 0) {
-                return Promise.resolve();
+        onBeforePrint: async () => {
+            if (data.length === 0) {
+                await getData();
             }
+            return Promise.resolve();
+        },
+        onAfterPrint: () => {
+            setData([]);
         },
         pageStyle: `
             @page {
@@ -39,31 +44,41 @@ const DueDownloadContainer = () => {
     });
 
     const getData = async () => {
+        setIsLoading(true);
         try {
-            const response = await axios.get(route('finance.download_due_list'));
+            const response = await axios.get(route('finance.download_due_list', { ...filter }));
             if (response.data.length > 0) {
                 setData(response.data);
+            } else {
+                setData([]);
             }
         } catch (error) {
             console.error('Error fetching due list data:', error);
             setData([]);
+        } finally {
+            setIsLoading(false);
         }
+    };
+
+    const handleDownloadClick = async () => {
+        if (data.length === 0) {
+            await getData();
+        }
+        handlePrint();
     };
 
     return (
         <>
             <PrimaryButton
-                onClick={async () => {
-                    await getData();
-                    handlePrint();
-                }}
-                className="flex cursor-pointer items-center gap-2 bg-red-600 hover:bg-red-700 focus:bg-red-700 active:bg-red-800"
+                onClick={handleDownloadClick}
+                disabled={isLoading}
+                className="flex cursor-pointer items-center gap-2 bg-red-600 hover:bg-red-700 focus:bg-red-700 active:bg-red-800 disabled:cursor-not-allowed disabled:opacity-50"
             >
                 <FaFilePdf className="text-sm" />
-                Download PDF
+                {isLoading ? 'Loading...' : 'Download PDF'}
             </PrimaryButton>
             {/* Hidden Printable Component */}
-            <DuePrintableComponent data={data} ref={printRef} />
+            <DuePrintableComponent data={data} selectedFilters={selectedFilters} ref={printRef} />
         </>
     );
 };

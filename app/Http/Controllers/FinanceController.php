@@ -312,6 +312,13 @@ class FinanceController extends Controller
         return Inertia::render('admin::finance/dueList', [
             'data'       => $data,
             'filterData' => $filterGroup,
+            'filter'     => [
+                'year'       => $year,
+                'month'      => $month,
+                'gender'     => $gender,
+                'class'      => $class,
+                'department' => $department,
+            ],
         ]);
     }
 
