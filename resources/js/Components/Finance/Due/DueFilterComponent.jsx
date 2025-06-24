@@ -1,7 +1,7 @@
 import MonthYearContainer from '@/Container/Shared/MonthYearContainer';
 import { forwardRef } from 'react';
 
-const DueFilterComponent = forwardRef(({ classData, department, gender, handleFilterChange, classRef, getMonthYearData }) => {
+const DueFilterComponent = forwardRef(({ classData, department, gender, handleFilterChange, getMonthYearData }, ref) => {
     return (
         <div className="flex items-center justify-between gap-4 rounded-lg p-4">
             <select
@@ -21,7 +21,7 @@ const DueFilterComponent = forwardRef(({ classData, department, gender, handleFi
                 className="filter-dropdown w-full rounded border border-gray-400 px-2 py-2 focus:outline-none"
                 name="class"
                 onChange={handleFilterChange}
-                ref={classRef}
+                ref={ref}
             >
                 <option value="select">Select Class</option>
                 {classData?.map((item, index) => (

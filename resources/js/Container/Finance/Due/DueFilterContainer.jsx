@@ -74,7 +74,7 @@ const DueFilterContainer = ({ data, filterData, setSelectedFilters }) => {
             gender={gender}
             feeType={fee_type}
             handleFilterChange={handleFilterChange}
-            classRef={classRef}
+            ref={classRef}
             getMonthYearData={getMonthYearData}
         />
     );
