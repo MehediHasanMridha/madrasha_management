@@ -2,9 +2,10 @@ import DueFilterComponent from '@/Components/Finance/Due/DueFilterComponent';
 import { router } from '@inertiajs/react';
 import { useRef, useState } from 'react';
 
-const DueFilterContainer = ({ data, filterData }) => {
+const DueFilterContainer = ({ data, filterData, setSelectedFilters }) => {
     const [filters, setFilters] = useState({});
     const [filteredClasses, setFilteredClasses] = useState([]);
+
     const { class: classData = [], department, gender, fee_type } = filterData;
     const classRef = useRef();
 
@@ -23,13 +24,14 @@ const DueFilterContainer = ({ data, filterData }) => {
     const handleFilterChange = (event) => {
         const { name, value } = event.target;
         const parsedValue = parseValue(value);
-        console.log('🚀 ~ handleFilterChange ~ parsedValue:', parsedValue);
+        setSelectedFilters((prev) => ({ ...prev, [name]: parsedValue?.name ?? parsedValue }));
 
         // Update filtered classes if department changes
         if (name === 'department') {
             if (!parsedValue) {
                 delete filters['class'];
                 setFilteredClasses([]);
+                setSelectedFilters((prev) => ({ ...prev, class: null }));
             }
             classRef.current.value = 'Select Class';
             const departmentId = parsedValue?.id;
