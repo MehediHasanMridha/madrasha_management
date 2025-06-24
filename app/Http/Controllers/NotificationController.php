@@ -13,7 +13,7 @@ class NotificationController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function storeExpoToken(Request $request): JsonResponse
+    public function storeToken(Request $request): JsonResponse
     {
         // Validate the request
         $request->validate([
