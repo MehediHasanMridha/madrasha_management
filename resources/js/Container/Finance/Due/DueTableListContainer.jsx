@@ -82,6 +82,7 @@ const DueTableListContainer = ({ data }) => {
                     },
                 );
             }}
+            rowKey={data?.id}
         />
     );
 };
