@@ -21,7 +21,8 @@
         "spatie/laravel-backup": "^9.2",
         "spatie/laravel-pdf": "^1.5",
         "spatie/laravel-permission": "^6.16",
-        "tightenco/ziggy": "^2.4"
+        "tightenco/ziggy": "^2.4",
+        "yieldstudio/laravel-expo-notifier": "*"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.15",

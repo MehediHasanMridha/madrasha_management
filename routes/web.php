@@ -7,6 +7,7 @@ use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\ExamController;
 use App\Http\Controllers\FeeController;
 use App\Http\Controllers\FinanceController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\VoucherTypeController;
@@ -150,6 +151,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/{blog}/edit', [BlogController::class, 'edit'])->name('blogs.edit');
         Route::post('/{blog_slug}', [BlogController::class, 'update'])->name('blogs.update');
         Route::delete('/{blog}', [BlogController::class, 'destroy'])->name('blogs.destroy');
+    });
+
+    //  notification
+    Route::prefix('notifications')->group(function () {
+        Route::get('/', [NotificationController::class, 'index'])->name('notifications.index');
+        Route::post('/store-token', [\App\Http\Controllers\NotificationController::class, 'storeToken'])->name('notifications.store-token');
+        Route::post('/send-notification', [NotificationController::class, 'sendNotification'])->name('notifications.send-notification');
     });
 
 });
