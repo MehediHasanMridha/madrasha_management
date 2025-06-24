@@ -139,7 +139,6 @@ const AddMoneyContainer = ({ modal, setModal }) => {
                     setYear={setYear}
                     fee={fee}
                     setFee={setFee}
-                    type={type}
                     setSelectedRows={setSelectedRows}
                     selectedRows={selectedRows}
                     getData={getData}
