@@ -5,12 +5,12 @@ const DuePrintableComponent = React.forwardRef(({ filterData, data }, ref) => {
 
     return (
         <div ref={ref} className="hidden print:block">
-            <div className="bg-white p-8">
+            <div className="bg-white">
                 {/* Header */}
                 <div className="mb-8 text-center">
-                    <p className="mb-2 text-2xl font-bold">Madrasha Management System</p>
-                    <h2 className="mb-2 text-xl font-semibold">Student Due List Report</h2>
-                    <p className="text-gray-600">Generated on: {currentDate}</p>
+                    <div className="mb-2 text-2xl font-bold">Madrasha Management System</div>
+                    <div className="mb-2 text-xl font-semibold">Student Due List Report</div>
+                    <div className="text-gray-600">Generated on: {currentDate}</div>
                 </div>
 
                 {/* Filter Information */}
@@ -18,16 +18,16 @@ const DuePrintableComponent = React.forwardRef(({ filterData, data }, ref) => {
                     <h3 className="mb-2 font-semibold">Applied Filters:</h3>
                     <div className="grid grid-cols-2 gap-4 text-sm">
                         <div>
-                            <strong>Department:</strong> {filterData?.selectedDepartment || 'All Departments'}
+                            <span>Department:</span> {filterData?.selectedDepartment || 'All Departments'}
                         </div>
                         <div>
-                            <strong>Class:</strong> {filterData?.selectedClass || 'All Classes'}
+                            <span>Class:</span> {filterData?.selectedClass || 'All Classes'}
                         </div>
                         <div>
-                            <strong>Gender:</strong> {filterData?.selectedGender || 'All'}
+                            <span>Gender:</span> {filterData?.selectedGender || 'All'}
                         </div>
                         <div>
-                            <strong>Fee Type:</strong> {filterData?.selectedFeeType || 'All'}
+                            <span>Fee Type:</span> {filterData?.selectedFeeType || 'All'}
                         </div>
                     </div>
                 </div>
@@ -36,14 +36,13 @@ const DuePrintableComponent = React.forwardRef(({ filterData, data }, ref) => {
                 <div className="overflow-hidden">
                     <table className="w-full border-collapse border border-gray-300">
                         <thead>
-                            <tr className="bg-gray-100">
-                                <th className="border border-gray-300 px-4 py-2 text-left">SL</th>
-                                <th className="border border-gray-300 px-4 py-2 text-left">Student Name</th>
-                                <th className="border border-gray-300 px-4 py-2 text-left">Roll No</th>
-                                <th className="border border-gray-300 px-4 py-2 text-left">Class</th>
-                                <th className="border border-gray-300 px-4 py-2 text-left">Department</th>
-                                <th className="border border-gray-300 px-4 py-2 text-left">Due Amount</th>
-                                <th className="border border-gray-300 px-4 py-2 text-left">Month</th>
+                            <tr>
+                                <td className="px-4 py-2">SL</td>
+                                <td className="border border-gray-300 px-4 py-2">Student Name</td>
+                                <td className="border border-gray-300 px-4 py-2">Roll No</td>
+                                <td className="border border-gray-300 px-4 py-2">Class</td>
+                                <td className="border border-gray-300 px-4 py-2">Department</td>
+                                <td className="border border-gray-300 px-4 py-2">Due Amount</td>
                             </tr>
                         </thead>
                         <tbody>
@@ -51,12 +50,11 @@ const DuePrintableComponent = React.forwardRef(({ filterData, data }, ref) => {
                                 data?.map((student, index) => (
                                     <tr key={index} className="hover:bg-gray-50">
                                         <td className="border border-gray-300 px-4 py-2">{index + 1}</td>
-                                        <td className="border border-gray-300 px-4 py-2">{student.name}</td>
-                                        <td className="border border-gray-300 px-4 py-2">{student.unique_id}</td>
-                                        <td className="border border-gray-300 px-4 py-2">{student.class}</td>
+                                        <td className="border border-gray-300 px-2 py-2">{student.name}</td>
+                                        <td className="w-[100px] border border-gray-300 px-2 py-2">{student.unique_id}</td>
+                                        <td className="border border-gray-300 px-2 py-2">{student.class}</td>
                                         <td className="border border-gray-300 px-4 py-2">{student.department}</td>
                                         <td className="border border-gray-300 px-4 py-2">৳{student.due_amount}</td>
-                                        <td className="border border-gray-300 px-4 py-2">{student.month}</td>
                                     </tr>
                                 ))
                             ) : (
