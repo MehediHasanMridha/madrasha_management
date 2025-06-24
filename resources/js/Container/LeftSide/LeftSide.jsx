@@ -2,7 +2,7 @@ import Logo from '@/assets/images/logo.png';
 import SideBarUI from '@/Components/UI/SideBarUI';
 import { cn } from '@/lib/utils';
 import { Link, usePage } from '@inertiajs/react';
-import { Calculator, ChartNoAxesCombined, FilePenLine, PanelRight, School, Users } from 'lucide-react';
+import { Bell, Calculator, ChartNoAxesCombined, FilePenLine, PanelRight, School, Users } from 'lucide-react';
 import { useState } from 'react';
 
 const LeftSide = ({ drawerOpen, onDrawerClose, isMobile }) => {
@@ -122,6 +122,17 @@ const LeftSide = ({ drawerOpen, onDrawerClose, isMobile }) => {
                         <FilePenLine strokeWidth={1.5} size={20} className="text-[#4A4A4A]" />
                     </SideBarUI.Icon>
                     <SideBarUI.Text collapsed={collapsed}>Manage Blogs</SideBarUI.Text>
+                </SideBarUI.Item>
+            </Link>
+            <Link href={route('notifications.index')} className="w-full cursor-pointer" as="button">
+                <SideBarUI.Item
+                    collapsed={collapsed}
+                    className={cn('h-[64px] hover:bg-[#F2F2F2]', route().current('notifications.*') && 'bg-[#F2F2F2]')}
+                >
+                    <SideBarUI.Icon>
+                        <Bell strokeWidth={1.5} size={20} className="text-[#4A4A4A]" />
+                    </SideBarUI.Icon>
+                    <SideBarUI.Text collapsed={collapsed}>Notification</SideBarUI.Text>
                 </SideBarUI.Item>
             </Link>
             <SideBarUI.Item collapsed={collapsed} className="h-[64px] hover:bg-[#F2F2F2]">
