@@ -16,7 +16,7 @@ const DailyReportContainer = () => {
     const { approvedReports } = usePage().props;
 
     // Process approved reports to create a map for quick lookup
-    const approvedReportsMap = approvedReports.reduce((acc, report) => {
+    const approvedReportsMap = approvedReports?.reduce((acc, report) => {
         acc[parseInt(report.day_number)] = report;
         return acc;
     }, {});
