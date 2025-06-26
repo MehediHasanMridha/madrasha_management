@@ -166,7 +166,10 @@ const DailyReportViewComponent = forwardRef(
                                 title="Approve"
                                 description="Are you sure you want to approve this daily report?"
                                 open={confirm}
-                                handleOk={() => handleApprove(day)}
+                                handleOk={() => {
+                                    handleApprove(day);
+                                    setConfirm(false);
+                                }}
                                 handleCancel={() => setConfirm(false)}
                             >
                                 <StaticBtn
