@@ -15,6 +15,7 @@ use App\Actions\Finance\Expense\VoucherList;
 use App\Actions\Finance\Reports\MonthlyDailyReport;
 use App\Actions\Finance\Reports\MonthlyGroupReport;
 use App\Actions\Finance\Summary;
+use App\Models\DailyReportApproval;
 use App\Models\Exam;
 use App\Models\ExpenseLog;
 use App\Models\FeeType;
@@ -91,7 +92,26 @@ class FinanceController extends Controller
         $year  = request()->input('year');
         // $day   = MonthlyDailyReport::run($month, $year);
         // dd($monthly->handle());
-        return Inertia::render('admin::finance/reports/dailyReport');
+        $FORMATTED_DATE  = date('Y-m', strtotime($year . '-' . $month));
+        $approvedReports = DailyReportApproval::byMonthYear($FORMATTED_DATE)->approved()->get();
+        return Inertia::render('admin::finance/reports/dailyReport', [
+            'approvedReports' => Inertia::defer(fn() => $approvedReports),
+        ]);
+    }
+
+    public function approve_daily_report(Request $request)
+    {
+        // wnat  01-June-2025 to day_number and month_year
+        $dayNumber = date('d', strtotime($request->input('date')));
+        $monthYear = date('Y-m', strtotime($request->input('date')));
+
+        $approval = DailyReportApproval::setApproval(
+            $dayNumber,
+            $monthYear,
+            true
+        );
+
+        return redirect()->back()->with('success', 'Daily report approved successfully');
     }
 
     public function get_user_data($user_id)

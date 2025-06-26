@@ -14,7 +14,14 @@ const ReportsComponent = ({ month, currentMonth, setDaysInMonth }) => {
                         <div
                             key={index}
                             onDoubleClick={() => {
-                                router.get(route('finance.daily_report'));
+                                router.get(
+                                    route('finance.daily_report'),
+                                    { month: index + 1, year: new Date().getFullYear() },
+                                    {
+                                        preserveState: true,
+                                        preserveScroll: true,
+                                    },
+                                );
                                 setDaysInMonth(new Date().getFullYear(), index + 1);
                             }}
                             className="flex h-[236px] w-[236px] cursor-pointer flex-col items-center justify-center gap-y-4 rounded-lg p-4 px-8 text-center hover:bg-white"

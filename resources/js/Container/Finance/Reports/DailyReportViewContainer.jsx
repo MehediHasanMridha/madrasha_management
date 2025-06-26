@@ -1,11 +1,13 @@
 import DailyReportViewComponent from '@/Components/Finance/Reports/DailyReportViewComponet';
-import { usePage } from '@inertiajs/react';
-import { useRef } from 'react';
+import { router, usePage } from '@inertiajs/react';
+import { notification } from 'antd';
+import { useRef, useState } from 'react';
 import { useReactToPrint } from 'react-to-print';
 
-const DailyReportViewContainer = ({ reportViewModal, setReportViewModal, reportViewData, setReportViewData, loading, day }) => {
+const DailyReportViewContainer = ({ reportViewModal, setReportViewModal, reportViewData, setReportViewData, loading, day, is_approved }) => {
     const { user } = usePage().props.auth;
     const printViewDom = useRef(null);
+    const [confirm, setConfirm] = useState(false);
 
     const printFn = useReactToPrint({
         contentRef: printViewDom,
@@ -40,6 +42,31 @@ const DailyReportViewContainer = ({ reportViewModal, setReportViewModal, reportV
             `,
     });
 
+    const handleApprove = (date) => {
+        router.post(
+            route('finance.approve_daily_report'),
+            {
+                date: date,
+            },
+            {
+                onSuccess: () => {
+                    setReportViewModal(false);
+                    setReportViewData(null);
+                    notification.success({
+                        message: 'Daily Report Approved',
+                        description: 'The daily report has been successfully approved.',
+                        placement: 'bottomRight',
+                    });
+                },
+                onError: (error) => {
+                    console.error('Error approving daily report:', error);
+                },
+                preserveState: true,
+                preserveScroll: true,
+            },
+        );
+    };
+
     return (
         <DailyReportViewComponent
             reportViewModal={reportViewModal}
@@ -50,6 +77,10 @@ const DailyReportViewContainer = ({ reportViewModal, setReportViewModal, reportV
             user={user}
             printFn={printFn}
             day={day}
+            is_approved={is_approved}
+            handleApprove={handleApprove}
+            setConfirm={setConfirm}
+            confirm={confirm}
         />
     );
 };
