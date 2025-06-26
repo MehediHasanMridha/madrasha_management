@@ -1,11 +1,11 @@
 import DailyReportComponent from '@/Components/Finance/Reports/DailyReportComponent';
 import { useBoundStore } from '@/stores';
-import { Link, usePage } from '@inertiajs/react';
+import { Link } from '@inertiajs/react';
 import axios from 'axios';
 import { useState } from 'react';
 import DailyReportViewContainer from './DailyReportViewContainer';
 
-const DailyReportContainer = () => {
+const DailyReportContainer = ({ approvedReports }) => {
     const { daysInMonth, month } = useBoundStore((state) => state);
     const [reportViewModal, setReportViewModal] = useState(false);
     const [reportViewData, setReportViewData] = useState(null);
@@ -13,7 +13,6 @@ const DailyReportContainer = () => {
     const daysArray = Array.from({ length: daysInMonth }, (_, i) => i + 1);
     const [day, setDay] = useState(null);
     const [is_approved, setIs_approved] = useState(false);
-    const { approvedReports } = usePage().props;
 
     // Process approved reports to create a map for quick lookup
     const approvedReportsMap = approvedReports?.reduce((acc, report) => {
