@@ -95,7 +95,7 @@ class FinanceController extends Controller
         $FORMATTED_DATE  = date('Y-m', strtotime($year . '-' . $month));
         $approvedReports = DailyReportApproval::byMonthYear($FORMATTED_DATE)->approved()->get();
         return Inertia::render('admin::finance/reports/dailyReport', [
-            'approvedReports' => Inertia::defer(fn() => $approvedReports),
+            'approvedReports' => $approvedReports,
         ]);
     }
 
