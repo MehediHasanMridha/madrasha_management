@@ -11,8 +11,12 @@ const DailyReportContainer = () => {
     const [reportViewData, setReportViewData] = useState(null);
     const [loading, setLoading] = useState(false);
     const daysArray = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+    const [day, setDay] = useState(null);
 
     const handleClick = async (day) => {
+        const formattedDate = String(day).padStart(2, '0'); // Ensure day is two digits
+        const formattedDay = `${formattedDate}-${month}-${new Date().getFullYear()}`; // Format as DD-MM-YYYY
+        setDay(formattedDay);
         setReportViewModal(true);
         setLoading(true);
         const response = await axios.get(route('finance.daily_report_data', { month, day }));
@@ -39,6 +43,7 @@ const DailyReportContainer = () => {
                 reportViewData={reportViewData}
                 setReportViewData={setReportViewData}
                 loading={loading}
+                day={day}
             />
         </>
     );

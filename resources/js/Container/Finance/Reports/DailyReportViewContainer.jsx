@@ -3,7 +3,7 @@ import { usePage } from '@inertiajs/react';
 import { useRef } from 'react';
 import { useReactToPrint } from 'react-to-print';
 
-const DailyReportViewContainer = ({ reportViewModal, setReportViewModal, reportViewData, setReportViewData, loading }) => {
+const DailyReportViewContainer = ({ reportViewModal, setReportViewModal, reportViewData, setReportViewData, loading, day }) => {
     const { user } = usePage().props.auth;
     const printViewDom = useRef(null);
 
@@ -49,6 +49,7 @@ const DailyReportViewContainer = ({ reportViewModal, setReportViewModal, reportV
             loading={loading}
             user={user}
             printFn={printFn}
+            day={day}
         />
     );
 };

@@ -8,12 +8,8 @@ use Lorisleiva\Actions\Concerns\AsAction;
 class MonthlyDailyReport
 {
     use AsAction;
-    public function handle($day, $month, $year)
+    public function handle($period)
     {
-        $day = str_pad($day, 2, '0', STR_PAD_LEFT);
-        // how to convert day, month & year to Y-m-d format
-        $period = date('Y-m-d', strtotime($year . '-' . $month . '-' . $day));
-        // If no period is provided, use the current month
         $outgoing = ExpenseLog::query()
             ->whereHas('voucherType', function ($query) {
                 $query->where('slug', '!=', 'salary');
