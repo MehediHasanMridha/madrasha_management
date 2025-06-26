@@ -3,7 +3,7 @@ import LoadingUI from '@/Components/UI/LoadingUI';
 import ModalUI from '@/Components/UI/ModalUI';
 import { forwardRef } from 'react';
 
-const DailyReportViewComponent = forwardRef(({ reportViewModal, setReportViewModal, printViewDom, reportViewData, loading, user, printFn }) => {
+const DailyReportViewComponent = forwardRef(({ reportViewModal, setReportViewModal, printViewDom, reportViewData, loading, user, printFn, day }) => {
     return (
         <ModalUI
             isModalOpen={reportViewModal}
@@ -29,7 +29,7 @@ const DailyReportViewComponent = forwardRef(({ reportViewModal, setReportViewMod
                             <div className="text-right text-sm print:text-[15px]">
                                 <div className="prtint:w-[100px] flex w-fit items-center justify-between gap-2 font-bold">দৈনিক হিসাব রিপোর্ট</div>
                                 <div className="prtint:w-[100px] flex w-fit items-center justify-between gap-2">
-                                    তারিখ: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                                    তারিখ: {new Date(day).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                                 </div>
                             </div>
                         </div>

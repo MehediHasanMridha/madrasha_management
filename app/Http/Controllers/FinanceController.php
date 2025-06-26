@@ -278,9 +278,13 @@ class FinanceController extends Controller
     public function daily_report_data()
     {
         $month = request()->input('month');
+        $month = date('m', strtotime($month));
         $day   = request()->input('day');
         $year  = request()->input('year') ?? date('Y');
-        $data  = MonthlyDailyReport::run($day, $month, $year);
+        $day   = str_pad($day, 2, '0', STR_PAD_LEFT);
+        // how to convert day, month & year to Y-m-d format
+        $period = ($year . '-' . $month . '-' . $day);
+        $data   = MonthlyDailyReport::run($period);
         return response()->json($data);
     }
 
