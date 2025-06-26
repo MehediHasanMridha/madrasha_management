@@ -1,6 +1,6 @@
 import DailyReportComponent from '@/Components/Finance/Reports/DailyReportComponent';
 import { useBoundStore } from '@/stores';
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import axios from 'axios';
 import { useState } from 'react';
 import DailyReportViewContainer from './DailyReportViewContainer';
@@ -12,6 +12,23 @@ const DailyReportContainer = () => {
     const [loading, setLoading] = useState(false);
     const daysArray = Array.from({ length: daysInMonth }, (_, i) => i + 1);
     const [day, setDay] = useState(null);
+    const [is_approved, setIs_approved] = useState(false);
+    const { approvedReports } = usePage().props;
+
+    // Process approved reports to create a map for quick lookup
+    const approvedReportsMap = approvedReports.reduce((acc, report) => {
+        acc[parseInt(report.day_number)] = report;
+        return acc;
+    }, {});
+
+    // Merge daysArray with approvedReports data
+    const daysWithReportData = daysArray.map((day) => {
+        const reportData = approvedReportsMap[day];
+        return {
+            day_number: String(day),
+            is_approved: reportData ? true : false,
+        };
+    });
 
     const handleClick = async (day) => {
         const formattedDate = String(day).padStart(2, '0'); // Ensure day is two digits
@@ -36,7 +53,15 @@ const DailyReportContainer = () => {
     ];
     return (
         <>
-            <DailyReportComponent daysArray={daysArray} month={month} breadcrumbItems={breadcrumbItems} handleClick={handleClick} />
+            <DailyReportComponent
+                daysArray={daysArray}
+                month={month}
+                breadcrumbItems={breadcrumbItems}
+                handleClick={handleClick}
+                approvedReports={approvedReports}
+                daysWithReportData={daysWithReportData}
+                setIs_approved={setIs_approved}
+            />
             <DailyReportViewContainer
                 reportViewModal={reportViewModal}
                 setReportViewModal={setReportViewModal}
@@ -44,6 +69,7 @@ const DailyReportContainer = () => {
                 setReportViewData={setReportViewData}
                 loading={loading}
                 day={day}
+                is_approved={is_approved}
             />
         </>
     );
