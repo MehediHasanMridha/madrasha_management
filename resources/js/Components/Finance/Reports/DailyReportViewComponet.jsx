@@ -123,12 +123,19 @@ const DailyReportViewComponent = forwardRef(
                                         {reportViewData?.outgoings?.reduce((total, item) => total + item.amount, 0).toLocaleString('bn')} টাকা
                                     </span>
                                 </div>
+                                {reportViewData?.discounts > 0 && (
+                                    <div className="flex justify-between">
+                                        <span>আজকের মোট ছাড়:</span>
+                                        <span>{Number(reportViewData?.discounts).toLocaleString('bn') || 0} টাকা</span>
+                                    </div>
+                                )}
                                 <div className="flex justify-between font-bold">
                                     <span>আজকের বর্তমান ব্যালেন্স:</span>
                                     <span>
                                         {(
                                             reportViewData?.incomings?.reduce((total, item) => total + Number(item.amount), 0) -
-                                            reportViewData?.outgoings?.reduce((total, item) => total + item.amount, 0)
+                                            reportViewData?.outgoings?.reduce((total, item) => total + item.amount, 0) -
+                                            Number(reportViewData?.discounts)
                                         ).toLocaleString('bn')}{' '}
                                         টাকা
                                     </span>

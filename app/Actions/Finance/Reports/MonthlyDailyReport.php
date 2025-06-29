@@ -3,6 +3,7 @@ namespace App\Actions\Finance\Reports;
 
 use App\Models\ExpenseLog;
 use App\Models\IncomeLog;
+use App\Models\StudentDiscount;
 use Lorisleiva\Actions\Concerns\AsAction;
 
 class MonthlyDailyReport
@@ -40,9 +41,14 @@ class MonthlyDailyReport
             ];
         })->values();
 
+        $discounts = StudentDiscount::where('created_at', 'like', "%{$period}%")->get()
+            ->map(fn($item) => ['amount' => $item->amount])
+            ->sum('amount');
+
         return [
             'outgoings' => $outgoing,
             'incomings' => $incoming,
+            'discounts' => $discounts,
         ];
     }
 }

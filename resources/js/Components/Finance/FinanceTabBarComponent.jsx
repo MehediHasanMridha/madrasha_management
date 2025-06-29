@@ -78,6 +78,20 @@ const FinanceTabBarComponent = ({ tab }) => {
                     <Icons name={'list'} className={cn(tab === 'due_list' ? 'text-[#4891FF]' : 'text-[#4A4A4A]')} />
                     <span>Due list</span>
                 </Link>
+                <Link
+                    href={route('finance.paid_list')}
+                    className={cn(
+                        'flex w-fit cursor-pointer items-center space-x-[8px]',
+                        tab === 'paid_list' ? 'border-b-[1px] border-[#4891FF] px-[8px] py-[6px] text-[#4891FF]' : 'text-[#4A4A4A]',
+                    )}
+                    preserveState
+                    preserveScroll
+                    as="button"
+                    prefetch
+                >
+                    <Icons name={'list'} className={cn(tab === 'paid_list' ? 'text-[#4891FF]' : 'text-[#4A4A4A]')} />
+                    <span>Paid list</span>
+                </Link>
             </div>
             <SettingDropdownContainer />
         </div>
