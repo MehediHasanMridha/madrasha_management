@@ -16,8 +16,8 @@ class MonthlyDiscount
 
         // Create a new StudentDiscount record
         $discount          = new StudentDiscount();
-        $discount->user_id =
-        $discount->amount  =
+        $discount->user_id = $student->id;
+        $discount->amount  = $request->discount;
         $discount->save();
 
     }
