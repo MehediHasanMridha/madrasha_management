@@ -358,4 +358,11 @@ class FinanceController extends Controller
         return $data;
     }
 
+    public function paid_list()
+    {
+        return Inertia::render('admin::finance/paidList', [
+            'data' => [],
+        ]);
+    }
+
 }
