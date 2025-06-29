@@ -139,6 +139,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // add download due list students
         Route::get('/due-list/download', [FinanceController::class, 'download_due_list'])->name('finance.download_due_list');
         Route::get('/paid-list', [FinanceController::class, 'paid_list'])->name('finance.paid_list');
+        // add download paid list students
+        Route::get('/paid-list/download', [FinanceController::class, 'download_paid_list'])->name('finance.download_paid_list');
 
         // Exam Fee Routes - Removed StudentExamFee functionality
         // Exam fees are now managed through the regular fee system

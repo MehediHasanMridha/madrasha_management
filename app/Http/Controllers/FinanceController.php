@@ -12,6 +12,7 @@ use App\Actions\Finance\Expense\AddOthersVoucher;
 use App\Actions\Finance\Expense\AddSalaryVoucher;
 use App\Actions\Finance\Expense\Expense;
 use App\Actions\Finance\Expense\VoucherList;
+use App\Actions\Finance\Paid\PaidList;
 use App\Actions\Finance\Reports\MonthlyDailyReport;
 use App\Actions\Finance\Reports\MonthlyGroupReport;
 use App\Actions\Finance\Summary;
@@ -360,9 +361,37 @@ class FinanceController extends Controller
 
     public function paid_list()
     {
+        $filter     = request()->input('filter') ?? 'today'; // today or this_month
+        $gender     = request()->input('gender');
+        $class      = request()->input('class');
+        $department = request()->input('department');
+
+        $data        = PaidList::run($filter, $gender, $class, $department);
+        $filterGroup = DueFilterGroup::make()->handle(); // Reuse the same filter groups as due list
+
         return Inertia::render('admin::finance/paidList', [
-            'data' => [],
+            'data'       => $data,
+            'filterData' => $filterGroup,
+            'filter'     => [
+                'filter'     => $filter,
+                'gender'     => $gender,
+                'class'      => $class,
+                'department' => $department,
+            ],
         ]);
+    }
+
+    public function download_paid_list()
+    {
+        $filter     = request()->input('filter') ?? 'today';
+        $gender     = request()->input('gender');
+        $class      = request()->input('class');
+        $department = request()->input('department');
+
+        $data = PaidList::run($filter, $gender, $class, $department);
+
+        // Convert paginated data to collection for download
+        return collect($data->items());
     }
 
 }
