@@ -3,7 +3,6 @@ import { forwardRef } from 'react';
 const PaidFilterComponent = forwardRef(({ classData, department, gender, handleFilterChange }, classRef) => {
     return (
         <div className="mb-6 rounded-lg bg-gray-50 p-4">
-            <h3 className="mb-4 text-lg font-semibold text-gray-700">Filter Paid Students</h3>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
                 {/* Filter Type */}
                 <div>
