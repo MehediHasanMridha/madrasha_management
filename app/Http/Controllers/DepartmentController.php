@@ -83,7 +83,7 @@ class DepartmentController extends Controller
                 default => null,
             };
 
-            $department = Department::with('classes')->where('slug', $department_slug)->firstOrFail();
+            $department = Department::with('classes', 'classes.feeTypes')->where('slug', $department_slug)->firstOrFail();
 
             $studentsQuery = $this->applyStudentQuery($department);
 
