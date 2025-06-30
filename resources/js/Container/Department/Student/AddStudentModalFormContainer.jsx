@@ -1,6 +1,11 @@
 import AddStudentModalFormComponent from '@/Components/Department/Student/AddStudentModalFormComponent';
+import AddWithFeeModalComponent from '@/Components/Department/Student/AddWithFeeModalComponent';
+import ModalUI from '@/Components/UI/ModalUI';
+import StaticBtn from '@/Components/UI/StaticBtn';
+import SubmitBtn from '@/Components/UI/SubmitBtn';
 import { useStudentContext } from '@/contextApi&reducer/Department/StudentContextApi';
 import { router } from '@inertiajs/react';
+import { ArrowLeft } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -12,6 +17,9 @@ const AddStudentModalFormContainer = () => {
     const webcamRef = useRef(null);
     const { api, department, isModalOpen, setIsModalOpen, districts, districtId, upazillas, setDistrictId } = useStudentContext();
     const [fileList, setFileList] = useState([]);
+    const [step, setStep] = useState(1);
+    const [fees, setFees] = useState(null);
+    const [withFee, setWithFee] = useState(false);
 
     const {
         register,
@@ -22,6 +30,8 @@ const AddStudentModalFormContainer = () => {
         setFocus,
         setError,
         setValue,
+        getValues,
+        resetField,
     } = useForm();
 
     useEffect(() => {
@@ -118,10 +128,22 @@ const AddStudentModalFormContainer = () => {
     };
 
     const onSubmit = (data) => {
+        const formData = { ...data };
+        if (step === 1) {
+            delete formData.admission_fee;
+            delete formData.month;
+            delete formData.withFee;
+        }
+        if (step === 2) {
+            formData.withFee = true;
+            if (!withFee) {
+                delete formData.month;
+            }
+        }
         router.post(
             route('student.add_student', { department_slug: department.slug }),
             {
-                ...data,
+                ...formData,
                 student_image: data.student_image?.file?.originFileObj || null,
                 department_id: department.id,
             },
@@ -165,32 +187,108 @@ const AddStudentModalFormContainer = () => {
         );
     };
 
+    const handleNextStep = (data) => {
+        setStep((prevStep) => prevStep + 1);
+    };
+
+    let content;
+
+    switch (step) {
+        case 1:
+            content = (
+                <AddStudentModalFormComponent
+                    isModalOpen={isModalOpen}
+                    handleOk={handleOk}
+                    handleCancel={handleCancel}
+                    fileList={fileList}
+                    handleFileChange={handleFileChange}
+                    onSubmit={onSubmit}
+                    isLoading={isLoading}
+                    control={control}
+                    errors={errors}
+                    register={register}
+                    setValue={setValue}
+                    districts={districts}
+                    upazillas={upazillas}
+                    setDistrictId={setDistrictId}
+                    department={department}
+                    handleSubmit={handleSubmit}
+                    showWebcam={showWebcam}
+                    toggleWebcam={toggleWebcam}
+                    webcamRef={webcamRef}
+                    capture={capture}
+                    hasWebcamPermission={hasWebcamPermission}
+                    webcamError={webcamError}
+                    videoConstraints={videoConstraints}
+                    setFees={setFees}
+                />
+            );
+            break;
+        case 2:
+            content = (
+                <AddWithFeeModalComponent
+                    fees={fees}
+                    academicFee={getValues('academic_fee')}
+                    boardingFee={getValues('boarding_fee')}
+                    register={register}
+                    errors={errors}
+                    withFee={withFee}
+                    setWithFee={setWithFee}
+                />
+            );
+        default:
+            break;
+    }
+
     return (
-        <AddStudentModalFormComponent
+        <ModalUI
             isModalOpen={isModalOpen}
-            handleOk={handleOk}
             handleCancel={handleCancel}
-            fileList={fileList}
-            handleFileChange={handleFileChange}
-            onSubmit={onSubmit}
-            isLoading={isLoading}
-            control={control}
-            errors={errors}
-            register={register}
-            setValue={setValue}
-            districts={districts}
-            upazillas={upazillas}
-            setDistrictId={setDistrictId}
-            department={department}
-            handleSubmit={handleSubmit}
-            showWebcam={showWebcam}
-            toggleWebcam={toggleWebcam}
-            webcamRef={webcamRef}
-            capture={capture}
-            hasWebcamPermission={hasWebcamPermission}
-            webcamError={webcamError}
-            videoConstraints={videoConstraints}
-        />
+            handleOk={handleOk}
+            width={'80%'}
+            title="Add Student"
+            footer={() => (
+                <div className="flex justify-end gap-4">
+                    {step === 1 && (
+                        <SubmitBtn
+                            loadingIndicator={isLoading}
+                            btnText={'Add Student'}
+                            className="cursor-pointer bg-blue-400"
+                            onClick={handleSubmit(onSubmit)}
+                        />
+                    )}
+                    {step === 2 && (
+                        <StaticBtn
+                            className="cursor-pointer rounded-[4px] bg-blue-400 hover:bg-blue-500"
+                            onClick={() => {
+                                setStep(1);
+                                resetField('admission_fee');
+                            }}
+                        >
+                            <ArrowLeft />
+                            Previous
+                        </StaticBtn>
+                    )}
+                    {step === 1 ? (
+                        <SubmitBtn
+                            loadingIndicator={isLoading}
+                            btnText={'Add with fee'}
+                            className="cursor-pointer bg-blue-400"
+                            onClick={handleSubmit(handleNextStep)}
+                        />
+                    ) : (
+                        <SubmitBtn
+                            loadingIndicator={isLoading}
+                            btnText={'Add Student'}
+                            className="cursor-pointer bg-blue-400"
+                            onClick={handleSubmit(onSubmit)}
+                        />
+                    )}
+                </div>
+            )}
+        >
+            {content}
+        </ModalUI>
     );
 };
 
