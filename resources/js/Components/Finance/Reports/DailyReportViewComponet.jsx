@@ -33,7 +33,7 @@ const DailyReportViewComponent = forwardRef(
                     <LoadingUI />
                 ) : (
                     <>
-                        <div className="h-[60vh] overflow-y-auto p-4 print:max-h-[100vh] print:overflow-y-auto print:p-0" ref={printViewDom}>
+                        <div className="h-[60vh] overflow-y-auto p-4 print:max-h-[100vh] print:overflow-y-visible print:p-0" ref={printViewDom}>
                             {/* Header */}
                             <div className="mb-4 flex items-center justify-between pb-4">
                                 <div className="flex items-center gap-4">
@@ -67,17 +67,42 @@ const DailyReportViewComponent = forwardRef(
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {reportViewData?.incomings?.map((item, index) => (
-                                            <tr key={index} className="border">
-                                                <td className="border p-2">{Number(index + 1).toLocaleString('bn')}</td>
-                                                <td className="border p-2">{item.type === 'Academic Fee' ? 'একাডেমিক ফি' : 'বোর্ডিং ফি'}</td>
-                                                <td className="border p-2 text-right">
-                                                    {Number(item.amount).toLocaleString('bn', {
-                                                        minimumFractionDigits: 0,
-                                                    })}
-                                                </td>
-                                            </tr>
-                                        ))}
+                                        {reportViewData?.incomings?.map((item, index) => {
+                                            let feeName;
+                                            switch (item?.type) {
+                                                case 'Academic Fee':
+                                                    feeName = 'একাডেমিক ফি';
+                                                    break;
+                                                case 'Exam Fee':
+                                                    feeName = 'পরীক্ষা ফি';
+                                                    break;
+                                                case 'Admission Fee':
+                                                    feeName = 'ভর্তি ফি';
+                                                    break;
+                                                case 'Other Fee':
+                                                    feeName = 'অন্যান্য ফি';
+                                                    break;
+                                                case 'Donation':
+                                                    feeName = 'দান';
+                                                    break;
+                                                case 'Boarding Fee':
+                                                    feeName = 'বোর্ডিং ফি';
+                                                    break;
+                                                default:
+                                                    break;
+                                            }
+                                            return (
+                                                <tr key={index} className="border">
+                                                    <td className="border p-2">{Number(index + 1).toLocaleString('bn')}</td>
+                                                    <td className="border p-2">{feeName}</td>
+                                                    <td className="border p-2 text-right">
+                                                        {Number(item.amount).toLocaleString('bn', {
+                                                            minimumFractionDigits: 0,
+                                                        })}
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
                                     </tbody>
                                 </table>
                             </div>

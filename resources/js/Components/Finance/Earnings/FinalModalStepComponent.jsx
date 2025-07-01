@@ -8,6 +8,7 @@ import { FaPhone } from 'react-icons/fa';
 import { useReactToPrint } from 'react-to-print';
 
 const FinalModalStepComponent = ({ data, fee, selectedRows, handleClose, loading, setModal, setLoading, setStep, year, comments }) => {
+    console.log('🚀 ~ FinalModalStepComponent ~ fee:', fee);
     const academic_divider = (fee?.academic_fee / data?.academic_fee) | 0;
     const academic_division = fee?.academic_fee % data?.academic_fee | 0;
     const boarding_divider = (fee?.boarding_fee / data?.boarding_fee) | 0;
@@ -110,7 +111,7 @@ const FinalModalStepComponent = ({ data, fee, selectedRows, handleClose, loading
 
                 {/* মাসিক ফি টেবিল */}
                 {selectedRows && selectedRows.length > 0 && (
-                    <div className="h-[200px] overflow-x-auto overflow-y-scroll print:h-fit print:overflow-y-auto">
+                    <div className="h-[200px] overflow-x-auto print:h-fit print:overflow-y-auto">
                         <table className="w-full min-w-full table-auto border-collapse">
                             <thead>
                                 <tr>
@@ -155,11 +156,15 @@ const FinalModalStepComponent = ({ data, fee, selectedRows, handleClose, loading
                     <div className="w-full space-y-2">
                         <div className="flex justify-between">
                             <span>মোট:</span>
-                            <span>{formattedAmount(fee?.total || 0)} টাকা</span>
+                            <span>{formattedAmount(Number(fee?.academic_fee) + Number(fee?.boarding_fee) || 0)} টাকা</span>
                         </div>
                         <div className="flex justify-between">
                             <span>ছাড়:</span>
                             <span>{formattedAmount(fee?.discount || 0)} টাকা</span>
+                        </div>
+                        <div className="flex justify-between">
+                            <span>বাকী:</span>
+                            <span>{formattedAmount(Number(fee?.academic_due) + Number(fee?.boarding_due) || 0)} টাকা</span>
                         </div>
                         <div className="flex justify-between border-t border-dashed pt-2 font-bold">
                             <span>সর্বমোট:</span>
@@ -167,7 +172,7 @@ const FinalModalStepComponent = ({ data, fee, selectedRows, handleClose, loading
                         </div>
                         <div className="flex justify-between border-t border-dashed pt-2">
                             <span>পরিশোধিত:</span>
-                            <span>{formattedAmount(fee?.total || 0)} টাকা</span>
+                            <span>{formattedAmount(Number(fee?.academic_fee) + Number(fee?.boarding_fee) || 0)} টাকা</span>
                         </div>
                     </div>
                 </div>
