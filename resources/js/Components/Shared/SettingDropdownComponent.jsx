@@ -22,8 +22,8 @@ const SettingDropdownComponent = ({ items, user }) => {
                 items={items}
                 boxShadow={'none'}
                 dropdownRender={(menu) => {
-                    const startDate = new Date('2025-05-05');
-                    const endDate = new Date('2025-06-30');
+                    const startDate = new Date('2025-06-30');
+                    const endDate = new Date('2025-12-31');
                     const percent = calculateCountdownPercent(startDate, endDate);
                     return (
                         <div className="w-[300px] rounded-[8px] border border-[#E5E7EB] bg-white shadow-lg sm:w-[400px]">
