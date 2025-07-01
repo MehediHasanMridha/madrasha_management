@@ -13,7 +13,6 @@ class AddAdmissionFee
         $request,
         $student,
     ) {
-
         // update student academics department and class id
         $academics = $student->academics;
         if ($academics) {

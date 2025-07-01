@@ -112,7 +112,6 @@ const AdmissionFeeContainer = ({ setStep, data, type, loading }) => {
             setClasses={setClasses}
             setStep={setStep}
             allDepartments={allDepartments?.data}
-            loading={loading}
             data={data}
             classes={classes}
             selectedClassAdmissionFee={selectedClassAdmissionFee}
@@ -123,6 +122,7 @@ const AdmissionFeeContainer = ({ setStep, data, type, loading }) => {
             setValue={setValue}
             comments={comments}
             submit={submit}
+            isSubmitting={isSubmitting}
         />
     );
 };

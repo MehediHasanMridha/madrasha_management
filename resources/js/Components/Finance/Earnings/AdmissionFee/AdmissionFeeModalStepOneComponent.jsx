@@ -8,7 +8,6 @@ import { useRef } from 'react';
 const AdmissionFeeModalStepOneComponent = ({
     data,
     setStep,
-    loading,
     allDepartments,
     setClasses,
     classes,
@@ -20,6 +19,7 @@ const AdmissionFeeModalStepOneComponent = ({
     setValue,
     comments,
     submit,
+    isSubmitting,
 }) => {
     const ref = useRef(null);
 
@@ -93,7 +93,7 @@ const AdmissionFeeModalStepOneComponent = ({
                         >
                             <option value="">Select Class</option>
                             {classes?.map((item, index) => (
-                                <option key={index} value={item?.id}>
+                                <option key={index} disabled={item?.id === data?.class_id} value={item?.id}>
                                     {item.name}
                                 </option>
                             ))}
@@ -170,7 +170,7 @@ const AdmissionFeeModalStepOneComponent = ({
                 <StaticBtn
                     onClick={() => setStep((prev) => prev - 1)}
                     className="flex h-14 flex-1 cursor-pointer items-center justify-center rounded-lg bg-[#F2F2F2] text-[#4A4A4A] hover:bg-[#0267FF] hover:text-white"
-                    disabled={loading}
+                    disabled={isSubmitting}
                 >
                     Back
                 </StaticBtn>
@@ -178,7 +178,7 @@ const AdmissionFeeModalStepOneComponent = ({
                     onClick={handleSubmit(submit)}
                     className={cn('flex h-14 flex-1 cursor-pointer items-center justify-center rounded-lg bg-[#0267FF] text-white')}
                 >
-                    {loading ? 'Processing...' : 'Submit'}
+                    {isSubmitting ? 'Processing...' : 'Submit'}
                 </StaticBtn>
             </div>
         </>
