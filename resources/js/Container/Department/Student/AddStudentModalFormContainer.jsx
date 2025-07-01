@@ -4,10 +4,11 @@ import ModalUI from '@/Components/UI/ModalUI';
 import StaticBtn from '@/Components/UI/StaticBtn';
 import SubmitBtn from '@/Components/UI/SubmitBtn';
 import { useStudentContext } from '@/contextApi&reducer/Department/StudentContextApi';
+import { cn } from '@/lib/utils';
 import { router } from '@inertiajs/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { FaArrowCircleLeft, FaArrowCircleRight } from 'react-icons/fa';
+import { FaArrowCircleLeft } from 'react-icons/fa';
 
 const AddStudentModalFormContainer = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -251,12 +252,16 @@ const AddStudentModalFormContainer = () => {
             footer={() => (
                 <div className="flex justify-end gap-4">
                     {step === 1 && (
-                        <SubmitBtn
-                            loadingIndicator={isLoading}
-                            btnText={'Add Student'}
-                            className="cursor-pointer bg-blue-400"
+                        <StaticBtn
+                            disabled={isLoading}
+                            className={cn(
+                                'cursor-pointer gap-x-2 rounded-[4px] bg-blue-400 hover:bg-blue-500',
+                                isLoading && 'cursor-not-allowed opacity-50',
+                            )}
                             onClick={handleSubmit(onSubmit)}
-                        />
+                        >
+                            Add with fee
+                        </StaticBtn>
                     )}
                     {step === 2 && (
                         <StaticBtn
@@ -272,11 +277,11 @@ const AddStudentModalFormContainer = () => {
                     )}
                     {step === 1 ? (
                         <StaticBtn
-                            className="cursor-pointer gap-x-2 rounded-[4px] bg-blue-400 hover:bg-blue-500"
+                            className="cursor-pointer gap-x-2 rounded-[4px] border-2 border-blue-400 bg-transparent text-blue-400 hover:bg-blue-500 hover:text-white"
                             onClick={handleSubmit(handleNextStep)}
                         >
                             Add with fee
-                            <FaArrowCircleRight className="text-2xl text-white" />
+                            {/* <FaArrowCircleRight className="text-2xl text-white" /> */}
                         </StaticBtn>
                     ) : (
                         <SubmitBtn
