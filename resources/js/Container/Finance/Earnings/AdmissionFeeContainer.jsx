@@ -1,3 +1,4 @@
+import AdmissionFeeFinalModalComponent from '@/Components/Finance/Earnings/AdmissionFee/AdmissionFeeFinalModalComponent';
 import AdmissionFeeModalStepOneComponent from '@/Components/Finance/Earnings/AdmissionFee/AdmissionFeeModalStepOneComponent';
 import LoadingUI from '@/Components/UI/LoadingUI';
 import { router } from '@inertiajs/react';
@@ -6,11 +7,12 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useGetDeptAndClass } from './api/useGetDeptAndClass';
 
-const AdmissionFeeContainer = ({ setStep, data, type, loading }) => {
+const AdmissionFeeContainer = ({ setStep, data, type, loading, setModal, setType, setStudentId }) => {
     const { data: allDepartments, isLoading } = useGetDeptAndClass();
     const [classes, setClasses] = useState([]);
     const [selectedClassAdmissionFee, setSelectedClassAdmissionFee] = useState(0);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [admissionStep, setAdmissionStep] = useState(1);
 
     useEffect(() => {
         if (!isLoading && allDepartments?.data?.length > 0 && data?.department_id) {
@@ -24,6 +26,7 @@ const AdmissionFeeContainer = ({ setStep, data, type, loading }) => {
         setValue,
         handleSubmit,
         watch,
+        reset,
         formState: { errors },
     } = useForm({
         defaultValues: {
@@ -32,6 +35,17 @@ const AdmissionFeeContainer = ({ setStep, data, type, loading }) => {
     });
 
     const comments = watch('comments');
+
+    const handleClose = () => {
+        setStep(1);
+        reset();
+        setClasses([]);
+        setSelectedClassAdmissionFee(0);
+        setAdmissionStep(1);
+        setType(null);
+        setModal(false);
+        setStudentId('');
+    };
 
     const submit = (values) => {
         router.post(
@@ -70,12 +84,50 @@ const AdmissionFeeContainer = ({ setStep, data, type, loading }) => {
                 },
                 onFinish: () => {
                     setIsSubmitting(false);
+                    setAdmissionStep(2);
                 },
             },
         );
     };
 
-    if (isLoading) {
+    let content = null;
+    switch (admissionStep) {
+        case 1:
+            content = (
+                <AdmissionFeeModalStepOneComponent
+                    setClasses={setClasses}
+                    setStep={setStep}
+                    allDepartments={allDepartments?.data}
+                    data={data}
+                    classes={classes}
+                    selectedClassAdmissionFee={selectedClassAdmissionFee}
+                    setSelectedClassAdmissionFee={setSelectedClassAdmissionFee}
+                    register={register}
+                    handleSubmit={handleSubmit}
+                    errors={errors}
+                    setValue={setValue}
+                    comments={comments}
+                    submit={submit}
+                    isSubmitting={isSubmitting}
+                />
+            );
+            break;
+        case 2:
+            content = (
+                <AdmissionFeeFinalModalComponent
+                    data={data}
+                    selectedClassAdmissionFee={selectedClassAdmissionFee}
+                    comments={comments}
+                    handleClose={handleClose}
+                />
+            );
+            break;
+
+        default:
+            break;
+    }
+
+    if (loading || isLoading) {
         return <LoadingUI />;
     }
     if (!data || !allDepartments) {
@@ -107,24 +159,7 @@ const AdmissionFeeContainer = ({ setStep, data, type, loading }) => {
             </div>
         );
     }
-    return (
-        <AdmissionFeeModalStepOneComponent
-            setClasses={setClasses}
-            setStep={setStep}
-            allDepartments={allDepartments?.data}
-            data={data}
-            classes={classes}
-            selectedClassAdmissionFee={selectedClassAdmissionFee}
-            setSelectedClassAdmissionFee={setSelectedClassAdmissionFee}
-            register={register}
-            handleSubmit={handleSubmit}
-            errors={errors}
-            setValue={setValue}
-            comments={comments}
-            submit={submit}
-            isSubmitting={isSubmitting}
-        />
-    );
+    return content;
 };
 
 export default AdmissionFeeContainer;

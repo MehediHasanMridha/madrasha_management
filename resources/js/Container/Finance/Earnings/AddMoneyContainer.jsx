@@ -131,7 +131,17 @@ const AddMoneyContainer = ({ modal, setModal }) => {
             break;
         case 3:
             if (type === 'admission_fee') {
-                content = <AdmissionFeeContainer setStep={setStep} loading={loading} type={type} data={data} />;
+                content = (
+                    <AdmissionFeeContainer
+                        setModal={setModal}
+                        setStep={setStep}
+                        loading={loading}
+                        type={type}
+                        setType={setType}
+                        data={data}
+                        setStudentId={setStudentId}
+                    />
+                );
             } else {
                 content = (
                     <ModalStepThreeComponent
