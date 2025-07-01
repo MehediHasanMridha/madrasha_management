@@ -21,15 +21,15 @@ const ModalStepOneComponent = ({ setStep, setType }) => {
             >
                 Exam Fee
             </StaticBtn>
-            {/* <StaticBtn
+            <StaticBtn
                 className="h-[100px] w-[440px] rounded-lg bg-[#F2F2F2] px-[8px] py-[6px] text-[#4A4A4A] hover:bg-[#4891FF] hover:text-white"
                 onClick={() => {
                     setStep(2);
-                    setType('others_fee');
+                    setType('admission_fee');
                 }}
             >
-                Other Fee
-            </StaticBtn> */}
+                Admission Fee
+            </StaticBtn>
         </div>
     );
 };
