@@ -5,9 +5,9 @@ import StaticBtn from '@/Components/UI/StaticBtn';
 import SubmitBtn from '@/Components/UI/SubmitBtn';
 import { useStudentContext } from '@/contextApi&reducer/Department/StudentContextApi';
 import { router } from '@inertiajs/react';
-import { ArrowLeft } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { FaArrowCircleLeft, FaArrowCircleRight } from 'react-icons/fa';
 
 const AddStudentModalFormContainer = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -233,6 +233,7 @@ const AddStudentModalFormContainer = () => {
                     register={register}
                     errors={errors}
                     withFee={withFee}
+                    step={step}
                     setWithFee={setWithFee}
                 />
             );
@@ -259,23 +260,24 @@ const AddStudentModalFormContainer = () => {
                     )}
                     {step === 2 && (
                         <StaticBtn
-                            className="cursor-pointer rounded-[4px] bg-blue-400 hover:bg-blue-500"
+                            className="cursor-pointer gap-x-2 rounded-[4px] bg-blue-400 hover:bg-blue-500"
                             onClick={() => {
                                 setStep(1);
                                 resetField('admission_fee');
                             }}
                         >
-                            <ArrowLeft />
+                            <FaArrowCircleLeft className="text-2xl text-white" />
                             Previous
                         </StaticBtn>
                     )}
                     {step === 1 ? (
-                        <SubmitBtn
-                            loadingIndicator={isLoading}
-                            btnText={'Add with fee'}
-                            className="cursor-pointer bg-blue-400"
+                        <StaticBtn
+                            className="cursor-pointer gap-x-2 rounded-[4px] bg-blue-400 hover:bg-blue-500"
                             onClick={handleSubmit(handleNextStep)}
-                        />
+                        >
+                            Add with fee
+                            <FaArrowCircleRight className="text-2xl text-white" />
+                        </StaticBtn>
                     ) : (
                         <SubmitBtn
                             loadingIndicator={isLoading}

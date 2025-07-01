@@ -1,17 +1,32 @@
 import Field from '@/Components/UI/Field';
 import FieldSet from '@/Components/UI/FieldSet';
 import { cn } from '@/lib/utils';
+import { useState } from 'react';
 
-const AddWithFeeModalComponent = ({ fees, academicFee, boardingFee, register, setWithFee, withFee }) => {
+const AddWithFeeModalComponent = ({ fees, academicFee, boardingFee, register, setWithFee, withFee, errors, step }) => {
+    const [admissionFee, setAdmissionFee] = useState(fees?.find((item) => item.name === 'Admission Fee')?.amount || '');
     return (
         <FieldSet>
             <div>
-                <Field label={'Admission Fee'}>
+                <Field label={'Admission Fee'} error={errors?.admission_fee}>
                     <input
-                        {...register('admission_fee')}
-                        type="text"
-                        value={fees?.find((item) => item.name === 'Admission Fee')?.amount || ''}
-                        readOnly
+                        {...register('admission_fee', {
+                            required: step === 2 ? 'Admission fee is required' : false,
+                            valueAsNumber: true,
+                            validate: (value) => {
+                                if (value < 0) {
+                                    return 'Admission fee cannot be negative';
+                                }
+                                return true;
+                            },
+                        })}
+                        type="number"
+                        value={admissionFee}
+                        onChange={(e) => {
+                            setAdmissionFee(e.target.value);
+                            register('admission_fee').onChange(e);
+                        }}
+                        min={0}
                         className="rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
                     />
                 </Field>
@@ -26,9 +41,9 @@ const AddWithFeeModalComponent = ({ fees, academicFee, boardingFee, register, se
                         className="right-0 h-5 w-5 rounded-[8px] border-[1px] border-[#AFAFAF] bg-red-500 px-[16px] py-[12px] focus:outline-0"
                     />
                 </div>
-                <Field label={'Session Fee'}>
+                <Field label={'Monthly Fee'} error={errors?.month}>
                     <select
-                        {...register('month')}
+                        {...register('month', { required: withFee ? 'Month is required' : false })}
                         disabled={!withFee}
                         className={cn(
                             'rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0',
