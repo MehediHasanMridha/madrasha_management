@@ -7,7 +7,7 @@ import { useCallback, useRef } from 'react';
 import { FaPhone } from 'react-icons/fa';
 import { useReactToPrint } from 'react-to-print';
 
-const ExamFinalModalStepComponent = ({ data, fee, selectedRows, handleClose, loading, setModal, setLoading, setStep, year, comments }) => {
+const ExamFinalModalStepComponent = ({ data, fee, selectedRows, handleClose, loading, setLoading, year, comments }) => {
     const printComponentRef = useRef(null);
     const currentDate = new Date();
     const { user } = usePage().props.auth;
@@ -109,7 +109,7 @@ const ExamFinalModalStepComponent = ({ data, fee, selectedRows, handleClose, loa
 
                 {/* পরীক্ষার ফি টেবিল */}
                 {selectedRows && selectedRows.length > 0 && (
-                    <div className="h-[200px] overflow-x-auto overflow-y-scroll print:h-fit print:overflow-y-auto">
+                    <div className="h-[200px] overflow-y-auto print:h-fit print:overflow-y-auto">
                         <table className="w-full min-w-full table-auto border-collapse">
                             <thead>
                                 <tr>
@@ -176,7 +176,6 @@ const ExamFinalModalStepComponent = ({ data, fee, selectedRows, handleClose, loa
                 <StaticBtn
                     onClick={() => {
                         handleClose();
-                        setModal(false);
                     }}
                     className="flex h-14 flex-1 cursor-pointer items-center justify-center rounded-lg bg-[#F2F2F2] text-[#4A4A4A] hover:bg-[#0267FF] hover:text-white"
                 >

@@ -1,13 +1,13 @@
-import LoadingUI from '@/Components/UI/LoadingUI';
 import StaticBtn from '@/Components/UI/StaticBtn';
 import StudentExamFeeListTableContainer from '@/Container/Finance/Earnings/StudentExamFeeListTableContainer';
 import { getAvatarImage } from '@/lib/avatarImageUrlUtils';
 import { cn } from '@/lib/utils';
 
-const ModalStepThreeComponent = ({
+const ExamModalStepOneComponent = ({
     data,
     loading,
     setStep,
+    setExamFeeStep,
     year,
     setYear,
     fee,
@@ -15,12 +15,9 @@ const ModalStepThreeComponent = ({
     setSelectedRows,
     selectedRows,
     getData,
-    type,
-    submitData,
 }) => {
-    let renderStudentInfo;
-    if (type === 'exam_fee') {
-        renderStudentInfo = () => (
+    return (
+        <div>
             <div className="space-y-6">
                 {/* Student Info Card */}
                 <div className="flex items-center justify-between rounded-[8px] bg-[#F2F2F2] p-[12px]">
@@ -88,12 +85,6 @@ const ModalStepThreeComponent = ({
                     </div>
                 </div>
             </div>
-        );
-    }
-
-    return (
-        <div className="h-full space-y-4">
-            {loading ? <LoadingUI /> : data ? renderStudentInfo() : <div>No data found</div>}
             <div className="mt-5 flex w-full gap-[18px]">
                 <StaticBtn
                     onClick={() => setStep((prev) => prev - 1)}
@@ -105,12 +96,11 @@ const ModalStepThreeComponent = ({
                 <StaticBtn
                     onClick={() => {
                         if (selectedRows.length === 0) return;
-                        type === 'exam_fee' ? setStep(6) : setStep((prev) => prev + 1);
+                        setExamFeeStep((prev) => prev + 1);
                     }}
                     className={cn(
                         'flex h-14 flex-1 cursor-pointer items-center justify-center rounded-lg bg-[#0267FF] text-white',
-                        ((type === 'exam_fee' && selectedRows.length === 0) || (type !== 'exam_fee' && selectedRows.length === 0)) &&
-                            'cursor-not-allowed opacity-50',
+                        selectedRows.length === 0 && 'cursor-not-allowed opacity-50',
                     )}
                 >
                     {loading ? 'Processing...' : 'Next'}
@@ -120,4 +110,4 @@ const ModalStepThreeComponent = ({
     );
 };
 
-export default ModalStepThreeComponent;
+export default ExamModalStepOneComponent;
