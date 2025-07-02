@@ -8,7 +8,6 @@ import { FaPhone } from 'react-icons/fa';
 import { useReactToPrint } from 'react-to-print';
 
 const FinalModalStepComponent = ({ data, fee, selectedRows, handleClose, loading, setModal, setLoading, setStep, year, comments }) => {
-    console.log('🚀 ~ FinalModalStepComponent ~ fee:', fee);
     const academic_divider = (fee?.academic_fee / data?.academic_fee) | 0;
     const academic_division = fee?.academic_fee % data?.academic_fee | 0;
     const boarding_divider = (fee?.boarding_fee / data?.boarding_fee) | 0;

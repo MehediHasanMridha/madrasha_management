@@ -119,6 +119,8 @@ const StudentDetailsContainer = ({ student, department }) => {
                                 data={student?.monthly_fee_history}
                                 academicFee={student?.academic?.academic_fee}
                                 boardingFee={student?.academic?.boarding_fee}
+                                student={student}
+                                year={year}
                             />
                         </div>
                     </CardContent>
