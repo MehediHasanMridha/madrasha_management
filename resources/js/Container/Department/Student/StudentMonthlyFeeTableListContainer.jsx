@@ -6,7 +6,6 @@ import { useCallback, useRef, useState } from 'react';
 import { useReactToPrint } from 'react-to-print';
 
 const StudentMonthlyFeeTableListContainer = ({ data, academicFee, boardingFee, student, year }) => {
-    console.log('🚀 ~ StudentMonthlyFeeTableListContainer ~ data:', data);
     const [loading, setLoading] = useState(false);
     const printComponentRef = useRef(null);
 
@@ -138,7 +137,6 @@ const StudentMonthlyFeeTableListContainer = ({ data, academicFee, boardingFee, s
 
     const handleAfterPrint = () => {
         setLoading(false);
-        handleClose();
     };
 
     const printFn = useReactToPrint({
