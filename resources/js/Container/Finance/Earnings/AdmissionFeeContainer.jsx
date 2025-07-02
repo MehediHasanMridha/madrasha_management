@@ -70,10 +70,11 @@ const AdmissionFeeContainer = ({ setStep, data, type, loading, setModal, setType
                             description: response.props.flash.success,
                             placement: 'bottomRight',
                         });
+                        setAdmissionStep(2);
                     }
                     if (response.props.flash.error) {
                         notification.error({
-                            message: 'Success',
+                            message: 'Error',
                             description: response.props.flash.error,
                             placement: 'bottomRight',
                         });
@@ -84,7 +85,6 @@ const AdmissionFeeContainer = ({ setStep, data, type, loading, setModal, setType
                 },
                 onFinish: () => {
                     setIsSubmitting(false);
-                    setAdmissionStep(2);
                 },
             },
         );
