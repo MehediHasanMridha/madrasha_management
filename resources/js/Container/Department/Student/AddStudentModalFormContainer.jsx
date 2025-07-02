@@ -54,6 +54,7 @@ const AddStudentModalFormContainer = () => {
         setShowWebcam(false);
         setHasWebcamPermission(false);
         setWebcamError(null);
+        setStep(1);
     };
 
     const videoConstraints = {

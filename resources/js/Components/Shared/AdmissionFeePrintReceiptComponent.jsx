@@ -56,7 +56,7 @@ const AdmissionFeePrintReceiptComponent = forwardRef((props, ref) => {
                         </div>
                     </div>
                     <div className="text-right">
-                        <div className="text-lg font-semibold print:text-[12px]">মাসিক বেতন রসিদ</div>
+                        <div className="text-lg font-semibold print:text-[12px]">ভর্তি রসিদ</div>
                         <div className="text-sm text-black print:text-[10px]">তারিখ: {formattedDate}</div>
                     </div>
                 </div>
@@ -67,9 +67,9 @@ const AdmissionFeePrintReceiptComponent = forwardRef((props, ref) => {
                 <table className="w-full min-w-full table-auto border-collapse">
                     <thead>
                         <tr>
-                            <th className="border-[0.5px] border-black px-4 py-2 text-left">ক্রমিক</th>
+                            <th className="w-[20px] border-[0.5px] border-black px-4 py-2 text-left">ক্রমিক</th>
                             <th className="border-[0.5px] border-black px-4 py-2 text-left">ফি</th>
-                            <th className="border-[0.5px] border-black px-4 py-2 text-right">টাকা</th>
+                            <th className="w-[150px] border-[0.5px] border-black px-4 py-2 text-right">টাকা</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -86,11 +86,11 @@ const AdmissionFeePrintReceiptComponent = forwardRef((props, ref) => {
                     <table className="w-full min-w-full table-auto border-collapse">
                         <thead>
                             <tr>
-                                <th className="border-[0.5px] border-black px-4 py-2 text-left">ক্রমিক</th>
+                                <th className="w-[20px] border-[0.5px] border-black px-4 py-2 text-left">ক্রমিক</th>
                                 <th className="border-[0.5px] border-black px-4 py-2 text-left">
                                     মাস({new Date().toLocaleString('en-US', { year: 'numeric' })})
                                 </th>
-                                <th className="border-[0.5px] border-black px-4 py-2 text-right">টাকা</th>
+                                <th className="w-[150px] border-[0.5px] border-black px-4 py-2 text-right">টাকা</th>
                             </tr>
                         </thead>
                         <tbody>
