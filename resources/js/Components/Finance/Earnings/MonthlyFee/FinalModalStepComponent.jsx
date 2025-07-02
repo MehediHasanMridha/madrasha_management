@@ -34,8 +34,7 @@ const FinalModalStepComponent = ({ data, fee, selectedRows, handleClose, loading
     }, []);
 
     const handleAfterPrint = () => {
-        // handleClose();
-        setLoading(false);
+        handleClose();
     };
 
     const printFn = useReactToPrint({
@@ -197,7 +196,6 @@ const FinalModalStepComponent = ({ data, fee, selectedRows, handleClose, loading
                 <StaticBtn
                     onClick={() => {
                         handleClose();
-                        setModal(false);
                     }}
                     className="flex h-14 flex-1 cursor-pointer items-center justify-center rounded-lg bg-[#F2F2F2] text-[#4A4A4A] hover:bg-[#0267FF] hover:text-white"
                 >
