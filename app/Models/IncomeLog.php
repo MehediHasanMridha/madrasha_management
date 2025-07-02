@@ -37,6 +37,11 @@ class IncomeLog extends Model
         return $this->hasOne(StudentDue::class);
     }
 
+    public function receiver()
+    {
+        return $this->belongsTo(User::class, 'receiver_id');
+    }
+
     public function scopeFilter($query, array $filters)
     {
         $query->when($filters['search'] ?? false, function ($query, $search) {

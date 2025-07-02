@@ -274,13 +274,14 @@ class StudentController extends Controller
             ],
             'monthly_fee_history' => $student->incomeLogs()->where('payment_period', 'like', $year . '%')->whereHas('feeType', function ($query) {
                 $query->whereIn('name', ['Academic Fee', 'Boarding Fee']);
-            })->get()->map(function ($log) {
+            })->with('receiver')->get()->map(function ($log) {
                 return [
                     'id'             => $log->id,
                     'source_details' => $log->source_details,
                     'amount'         => intval($log->amount),
                     'fee_type'       => $log->feeType ? $log->feeType->name : null,
                     'month'          => date('F', strtotime($log->payment_period)),
+                    'receiver'       => $log->receiver ? $log->receiver : null,
                 ];
             })->groupBy('month')->map(function ($group, $month) {
                 return [
