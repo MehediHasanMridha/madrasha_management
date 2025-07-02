@@ -11,6 +11,7 @@ import { router } from '@inertiajs/react';
 import { notification } from 'antd';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
+import AdmissionFeeContainer from './AdmissionFeeContainer';
 
 const AddMoneyContainer = ({ modal, setModal }) => {
     const [step, setStep] = useState(1);
@@ -30,7 +31,6 @@ const AddMoneyContainer = ({ modal, setModal }) => {
     const [type, setType] = useState();
     const [comments, setComments] = useState(null);
     let content = null;
-
     useEffect(() => {
         setFee({
             ...fee,
@@ -130,22 +130,36 @@ const AddMoneyContainer = ({ modal, setModal }) => {
             );
             break;
         case 3:
-            content = (
-                <ModalStepThreeComponent
-                    data={data}
-                    loading={loading}
-                    setStep={setStep}
-                    year={year}
-                    setYear={setYear}
-                    fee={fee}
-                    setFee={setFee}
-                    setSelectedRows={setSelectedRows}
-                    selectedRows={selectedRows}
-                    getData={getData}
-                    type={type}
-                    submitData={submitData}
-                />
-            );
+            if (type === 'admission_fee') {
+                content = (
+                    <AdmissionFeeContainer
+                        setModal={setModal}
+                        setStep={setStep}
+                        loading={loading}
+                        type={type}
+                        setType={setType}
+                        data={data}
+                        setStudentId={setStudentId}
+                    />
+                );
+            } else {
+                content = (
+                    <ModalStepThreeComponent
+                        data={data}
+                        loading={loading}
+                        setStep={setStep}
+                        year={year}
+                        setYear={setYear}
+                        fee={fee}
+                        setFee={setFee}
+                        setSelectedRows={setSelectedRows}
+                        selectedRows={selectedRows}
+                        getData={getData}
+                        type={type}
+                        submitData={submitData}
+                    />
+                );
+            }
             break;
         case 4:
             content = (
