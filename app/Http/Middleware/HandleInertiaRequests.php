@@ -52,6 +52,7 @@ class HandleInertiaRequests extends Middleware
                 'success' => Session::get('success'),
                 'error'   => Session::get('error'),
                 'message' => Session::get('message'),
+                'data'    => Session::get('data'),
             ],
             'departments'  => Department::get(),
             'voucherTypes' => VoucherType::get(),

@@ -1,7 +1,8 @@
 import axios from 'axios';
+import { appLink } from './variable';
 
 const axiosInstance = axios.create({
-    baseURL: 'https://madrasa.test',
+    baseURL: appLink,
     headers: {
         'Content-Type': 'application/json',
     },

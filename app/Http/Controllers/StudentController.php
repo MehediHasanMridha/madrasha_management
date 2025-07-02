@@ -19,6 +19,7 @@ class StudentController extends Controller
 {
     public function add_student($department_slug, Request $request)
     {
+        // dd($request->all());
         $request->validate([
             'name'                    => 'required|string|max:120',
             'blood_group'             => 'nullable|in:O+,O-,A+,A-,B+,B-,AB+,AB-,null',
@@ -124,7 +125,10 @@ class StudentController extends Controller
                 }
             }
             DB::commit();
-            return back()->with('success', 'Student added successfully');
+            return back()->with([
+                'success' => 'Student added successfully',
+                'data'    => $student,
+            ]);
         } catch (\Throwable $th) {
             DB::rollBack();
             return back()->with('error', $th->getMessage());

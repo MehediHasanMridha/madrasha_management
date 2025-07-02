@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Actions\Finance\Due\DownloadDueList;
 use App\Actions\Finance\Due\DueFilterGroup;
 use App\Actions\Finance\Due\DueList;
+use App\Actions\Finance\Earning\AddAdmissionFee;
 use App\Actions\Finance\Earning\AddExamFee;
 use App\Actions\Finance\Earning\AddMonthlyFee;
 use App\Actions\Finance\Earning\MonthlyDiscount;
@@ -162,16 +163,18 @@ class FinanceController extends Controller
             ->firstOrFail();
 
         $responseData = [
-            'id'           => $user->id,
-            'name'         => $user->name,
-            'email'        => $user->email,
-            'phone'        => $user->phone,
-            'image'        => $user->img,
-            'unique_id'    => $user->unique_id,
-            'department'   => $user->academics->department->name ?? null,
-            'boarding_fee' => round(getStudentFee($user->academics, 'boarding'), 2),
-            'academic_fee' => round(getStudentFee($user->academics, 'academic'), 2),
-            'income_logs'  => $user->incomeLogs->map(function ($item) {
+            'id'            => $user->id,
+            'name'          => $user->name,
+            'email'         => $user->email,
+            'phone'         => $user->phone,
+            'image'         => $user->img,
+            'unique_id'     => $user->unique_id,
+            'department'    => $user->academics->department->name ?? null,
+            'department_id' => $user->academics->department_id,
+            'class_id'      => $user->academics->class_id,
+            'boarding_fee'  => round(getStudentFee($user->academics, 'boarding'), 2),
+            'academic_fee'  => round(getStudentFee($user->academics, 'academic'), 2),
+            'income_logs'   => $user->incomeLogs->map(function ($item) {
                 return [
                     'amount' => round($item->amount, 2),
                     'type'   => $item->feeType->slug ?? 'Unknown',
@@ -224,10 +227,9 @@ class FinanceController extends Controller
             // Validate the request data
             $request->validate([
                 'student_id' => 'required|exists:users,unique_id',
-                'type'       => 'required|in:monthly_fee,exam_fee,others_fee',
+                'type'       => 'required|in:monthly_fee,exam_fee,admission_fee,other_fee',
                 'note'       => 'nullable|string|max:255',
             ]);
-
             // Find the student by unique_id
             $student = User::with(['academics', 'academics.class.feeTypes'])->where('unique_id', $request->student_id)->first();
             if (! $student) {
@@ -266,14 +268,25 @@ class FinanceController extends Controller
                 DB::commit();
                 return redirect()->back()->with('success', 'Monthly fee added successfully');
 
-            } elseif ($request->type == 'exam_fee') {
+            }
+            if ($request->type == 'exam_fee') {
                 AddExamFee::run($request, $student);
                 DB::commit();
                 return redirect()->back()->with('success', 'Exam fee added successfully');
             }
+            if ($request->type == 'admission_fee') {
+                AddAdmissionFee::run($request, $student);
+                DB::commit();
+                return redirect()->back()->with('success', 'Admission fee added successfully');
+            }
 
         } catch (\Throwable $th) {
             DB::rollBack();
+            // Handle duplicate entry for income_logs
+            if (str_contains($th->getMessage(), 'Duplicate entry') && str_contains($th->getMessage(), 'unique_income_log')) {
+                return redirect()->back()->with('error', 'This payment already exists for the selected period. Please check the payment history.');
+            }
+
             return redirect()->back()->with('error', $th->getMessage());
         }
 
