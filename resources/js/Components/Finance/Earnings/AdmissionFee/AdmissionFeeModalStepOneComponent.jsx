@@ -115,6 +115,13 @@ const AdmissionFeeModalStepOneComponent = ({
                                     return true;
                                 },
                             })}
+                            onChange={(e) => {
+                                const value = e.target.value;
+                                if (value === '' || !isNaN(value)) {
+                                    register('admissionFee').onChange(e);
+                                    setSelectedClassAdmissionFee(value ? parseFloat(value) : 0);
+                                }
+                            }}
                             type="text"
                             className="w-full rounded-[8px] border border-solid border-[#AFAFAF] px-[16px] py-[12px] text-right text-black focus:outline-0"
                         />
