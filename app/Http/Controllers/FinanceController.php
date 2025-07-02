@@ -282,6 +282,11 @@ class FinanceController extends Controller
 
         } catch (\Throwable $th) {
             DB::rollBack();
+            // Handle duplicate entry for income_logs
+            if (str_contains($th->getMessage(), 'Duplicate entry') && str_contains($th->getMessage(), 'unique_income_log')) {
+                return redirect()->back()->with('error', 'This payment already exists for the selected period. Please check the payment history.');
+            }
+
             return redirect()->back()->with('error', $th->getMessage());
         }
 
