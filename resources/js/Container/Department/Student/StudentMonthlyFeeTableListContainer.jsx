@@ -1,7 +1,7 @@
 import MonthlyFeePrintReceiptComponent from '@/Components/Shared/MonthlyFeePrintReceiptComponent';
 import TableUI from '@/Components/UI/TableUI';
 import { cn } from '@/lib/utils';
-import { FileCheck } from 'lucide-react';
+import { ScrollText } from 'lucide-react';
 import { useCallback, useRef, useState } from 'react';
 import { useReactToPrint } from 'react-to-print';
 
@@ -97,7 +97,7 @@ const StudentMonthlyFeeTableListContainer = ({ data, academicFee, boardingFee, s
                             <span className="w-[56px] rounded-full border-[0.5px] border-[#00A606] bg-[#E4FFE5] text-[14px] font-semibold text-[#00A606]">
                                 Paid
                             </span>
-                            <FileCheck onClick={printFn} className="cursor-pointer hover:text-blue-500" />
+                            <ScrollText onClick={printFn} className="cursor-pointer hover:text-blue-500" />
                         </div>
                     );
                 }
@@ -175,6 +175,7 @@ const StudentMonthlyFeeTableListContainer = ({ data, academicFee, boardingFee, s
                     academicFee={academicFee}
                     boardingFee={boardingFee}
                     comments={data[0]?.fees[0]?.source_details}
+                    receiver={data[0]?.fees[0]?.receiver || null}
                 />
             </div>
         </>

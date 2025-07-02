@@ -4,7 +4,7 @@ import { usePage } from '@inertiajs/react';
 import { forwardRef } from 'react';
 import { FaPhone } from 'react-icons/fa6';
 const MonthlyFeePrintReceiptComponent = forwardRef((props, ref) => {
-    const { data, month = '', year, academicFee, boardingFee, comments = '' } = props;
+    const { data, month = '', year, academicFee, boardingFee, comments = '', receiver } = props;
     const formattedDate = new Date()
         .toLocaleString('en-US', {
             hour: '2-digit',
@@ -113,11 +113,11 @@ const MonthlyFeePrintReceiptComponent = forwardRef((props, ref) => {
             <div className="flex items-center justify-center gap-2">
                 যোগ করেছেন :
                 <img
-                    src={getAvatarImage(user?.img, 'staff_images', user?.name)}
+                    src={getAvatarImage(receiver?.img, 'staff_images', receiver?.name)}
                     alt=""
                     className="h-[20px] w-[20px] rounded-sm print:h-[10px] print:w-[10px]"
                 />
-                {user?.name} আইডি: {user?.unique_id}
+                {user?.name} আইডি: {receiver?.unique_id}
             </div>
         </div>
     );
