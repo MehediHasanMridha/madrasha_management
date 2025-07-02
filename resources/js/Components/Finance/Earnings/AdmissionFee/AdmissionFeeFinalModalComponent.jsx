@@ -43,7 +43,7 @@ const AdmissionFeeFinalModalComponent = ({ data, month = '', selectedClassAdmiss
                 ref={printComponentRef}
                 data={data}
                 month={month}
-                selectedClassAdmissionFee={selectedClassAdmissionFee}
+                admissionFee={selectedClassAdmissionFee}
                 comments={comments}
             />
             <div className="mt-auto flex w-full gap-[18px] pt-4 print:hidden">

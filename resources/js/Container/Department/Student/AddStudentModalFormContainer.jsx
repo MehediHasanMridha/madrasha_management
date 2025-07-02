@@ -9,6 +9,7 @@ import { router } from '@inertiajs/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FaArrowCircleLeft } from 'react-icons/fa';
+import AddStudentWithFeePrintableContainer from './AddStudentWithFeePrintableContainer';
 
 const AddStudentModalFormContainer = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -21,6 +22,7 @@ const AddStudentModalFormContainer = () => {
     const [step, setStep] = useState(1);
     const [fees, setFees] = useState(null);
     const [withFee, setWithFee] = useState(false);
+    const [studentData, setStudentData] = useState(null);
 
     const {
         register,
@@ -50,6 +52,8 @@ const AddStudentModalFormContainer = () => {
         reset();
         setFileList([]);
         setShowWebcam(false);
+        setHasWebcamPermission(false);
+        setWebcamError(null);
     };
 
     const videoConstraints = {
@@ -152,21 +156,36 @@ const AddStudentModalFormContainer = () => {
                 onStart: () => {
                     setIsLoading(true);
                 },
-                onSuccess: () => {
-                    reset();
-                    setFileList([]);
-                    setIsModalOpen(false);
-                    api.success({
-                        message: 'Student Added Successfully',
-                        placement: 'bottomRight',
-                    });
+                onSuccess: (response) => {
+                    if (response.props.flash.success) {
+                        router.flushAll();
+                        api.success({
+                            message: 'Success',
+                            description: response.props.flash.success,
+                            placement: 'bottomRight',
+                        });
+                        setStudentData(response.props.flash.data);
+                        if (step === 1) {
+                            setIsModalOpen(false);
+                        }
+                        if (step === 2) {
+                            setStep((prevStep) => prevStep + 1);
+                        }
+                    }
+                    if (response.props.flash.error) {
+                        api.error({
+                            message: 'Error',
+                            description: response.props.flash.error,
+                            placement: 'bottomRight',
+                        });
+                    }
                     setIsLoading(false);
                 },
                 onError: (errors) => {
+                    console.log('🚀 ~ onSubmit ~ errors:', errors);
                     // Set form errors for each field
                     Object.keys(errors).forEach((field) => {
                         if (field !== 'message') {
-                            console.log('🚀 ~ Object.keys ~ field:', field);
                             setError(field, {
                                 type: 'manual',
                                 message: errors[field],
@@ -238,6 +257,17 @@ const AddStudentModalFormContainer = () => {
                     setWithFee={setWithFee}
                 />
             );
+            break;
+        case 3:
+            content = (
+                <AddStudentWithFeePrintableContainer
+                    data={studentData}
+                    handleClose={handleCancel}
+                    month={getValues('month') || ''}
+                    admission_fee={getValues('admission_fee')}
+                />
+            );
+            break;
         default:
             break;
     }
@@ -247,7 +277,7 @@ const AddStudentModalFormContainer = () => {
             isModalOpen={isModalOpen}
             handleCancel={handleCancel}
             handleOk={handleOk}
-            width={'80%'}
+            width={step === 3 ? '50%' : '80%'}
             title="Add Student"
             footer={() => (
                 <div className="flex justify-end gap-4">
@@ -260,7 +290,7 @@ const AddStudentModalFormContainer = () => {
                             )}
                             onClick={handleSubmit(onSubmit)}
                         >
-                            Add with fee
+                            Add Student
                         </StaticBtn>
                     )}
                     {step === 2 && (
@@ -275,7 +305,7 @@ const AddStudentModalFormContainer = () => {
                             Previous
                         </StaticBtn>
                     )}
-                    {step === 1 ? (
+                    {step === 1 && (
                         <StaticBtn
                             className="cursor-pointer gap-x-2 rounded-[4px] border-2 border-blue-400 bg-transparent text-blue-400 hover:bg-blue-500 hover:text-white"
                             onClick={handleSubmit(handleNextStep)}
@@ -283,7 +313,8 @@ const AddStudentModalFormContainer = () => {
                             Add with fee
                             {/* <FaArrowCircleRight className="text-2xl text-white" /> */}
                         </StaticBtn>
-                    ) : (
+                    )}
+                    {step === 2 && (
                         <SubmitBtn
                             loadingIndicator={isLoading}
                             btnText={'Add Student'}
