@@ -4,7 +4,7 @@ import { usePage } from '@inertiajs/react';
 import { forwardRef } from 'react';
 import { FaPhone } from 'react-icons/fa6';
 const AdmissionFeePrintReceiptComponent = forwardRef((props, ref) => {
-    const { data, month = '', admissionFee, comments } = props;
+    const { data, month = '', admissionFee, comments, receiver } = props;
     const formattedDate = new Date()
         .toLocaleString('en-US', {
             hour: '2-digit',
@@ -111,11 +111,15 @@ const AdmissionFeePrintReceiptComponent = forwardRef((props, ref) => {
                 <div className="w-full space-y-2">
                     <div className="flex justify-between">
                         <span>মোট:</span>
-                        <span>{admissionFee + Number(data?.academics?.academic_fee || 0) + Number(data?.academics?.boarding_fee || 0)} টাকা</span>
+                        <span>
+                            {Number(admissionFee) + Number(data?.academics?.academic_fee || 0) + Number(data?.academics?.boarding_fee || 0)} টাকা
+                        </span>
                     </div>
                     <div className="flex justify-between border-t border-dashed pt-2">
                         <span>পরিশোধিত:</span>
-                        <span>{admissionFee + Number(data?.academics?.academic_fee || 0) + Number(data?.academics?.boarding_fee || 0)} টাকা</span>
+                        <span>
+                            {Number(admissionFee) + Number(data?.academics?.academic_fee || 0) + Number(data?.academics?.boarding_fee || 0)} টাকা
+                        </span>
                     </div>
                 </div>
             </div>
@@ -130,11 +134,11 @@ const AdmissionFeePrintReceiptComponent = forwardRef((props, ref) => {
             <div className="flex items-center justify-center gap-2">
                 যোগ করেছেন :
                 <img
-                    src={getAvatarImage(user?.img, 'staff_images', user?.name)}
+                    src={getAvatarImage(receiver?.img, 'staff_images', receiver?.name) || getAvatarImage(user?.img, 'staff_images', user?.name)}
                     alt=""
                     className="h-[20px] w-[20px] rounded-sm print:h-[10px] print:w-[10px]"
                 />
-                {user?.name} আইডি: {user?.unique_id}
+                {receiver?.name || user?.name} আইডি: {receiver?.unique_id || user?.unique_id}
             </div>
         </div>
     );

@@ -3,6 +3,7 @@ import { getAvatarImage } from '@/lib/avatarImageUrlUtils';
 import { router } from '@inertiajs/react';
 import { Copy } from 'lucide-react';
 import { useState } from 'react';
+import StudentAdmissionFeeTableListContainer from './StudentAdmissionFeeTableListContainer';
 import StudentMonthlyFeeTableListContainer from './StudentMonthlyFeeTableListContainer';
 
 const StudentDetailsContainer = ({ student, department }) => {
@@ -116,6 +117,44 @@ const StudentDetailsContainer = ({ student, department }) => {
 
                             {/* Transactions Table */}
                             <StudentMonthlyFeeTableListContainer
+                                data={student?.monthly_fee_history}
+                                academicFee={student?.academic?.academic_fee}
+                                boardingFee={student?.academic?.boarding_fee}
+                                student={student}
+                                year={year}
+                            />
+                        </div>
+                    </CardContent>
+                    <CardContent className="p-6">
+                        <div className="space-y-4">
+                            <h3 className="text-base font-medium text-gray-900">Academic Admission transactions</h3>
+                            <hr className="border-gray-200" />
+
+                            {/* Summary and Year Selector */}
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <span className="text-sm text-gray-500">Admission Year</span>
+                                </div>
+
+                                <select
+                                    className="w-[78px] cursor-pointer rounded-[4px] border-[1px] border-[#AFAFAF] px-[8px] py-[4px] text-black focus:outline-0"
+                                    value={year}
+                                    onChange={(e) => {
+                                        setYear(e.target.value);
+                                        getData(e.target.value);
+                                    }}
+                                >
+                                    <option disabled>Year</option>
+                                    {['2025', '2026', '2027', '2028', '2029', '2030'].map((item) => (
+                                        <option key={item} value={item}>
+                                            {item}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            {/* Transactions Table */}
+                            <StudentAdmissionFeeTableListContainer
                                 data={student?.monthly_fee_history}
                                 academicFee={student?.academic?.academic_fee}
                                 boardingFee={student?.academic?.boarding_fee}
