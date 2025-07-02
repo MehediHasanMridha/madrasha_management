@@ -76,7 +76,7 @@ const AdmissionFeePrintReceiptComponent = forwardRef((props, ref) => {
                         <tr>
                             <td className="border-[0.5px] border-black px-4 py-2">{Number(1).toLocaleString('bn')}</td>
                             <td className="border-[0.5px] border-black px-4 py-2">আডমিশন ফি</td>
-                            <td className="border-[0.5px] border-black px-4 py-2 text-right">{admissionFee}</td>
+                            <td className="border-[0.5px] border-black px-4 py-2 text-right">{Number(admissionFee).toLocaleString('bn')}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -98,7 +98,7 @@ const AdmissionFeePrintReceiptComponent = forwardRef((props, ref) => {
                                 <td className="border-[0.5px] border-black px-4 py-2">{Number(1).toLocaleString('bn')}</td>
                                 <td className="border-[0.5px] border-black px-4 py-2">{new Date(month).toLocaleString('bn', { month: 'long' })}</td>
                                 <td className="border-[0.5px] border-black px-4 py-2 text-right">
-                                    {Number(data?.academics?.academic_fee) + Number(data?.academics?.boarding_fee)}
+                                    {(Number(data?.academics?.academic_fee) + Number(data?.academics?.boarding_fee)).toLocaleString('bn')}
                                 </td>
                             </tr>
                         </tbody>
@@ -112,13 +112,23 @@ const AdmissionFeePrintReceiptComponent = forwardRef((props, ref) => {
                     <div className="flex justify-between">
                         <span>মোট:</span>
                         <span>
-                            {Number(admissionFee) + Number(data?.academics?.academic_fee || 0) + Number(data?.academics?.boarding_fee || 0)} টাকা
+                            {(
+                                Number(admissionFee) +
+                                Number(data?.academics?.academic_fee || 0) +
+                                Number(data?.academics?.boarding_fee || 0)
+                            ).toLocaleString('bn')}{' '}
+                            টাকা
                         </span>
                     </div>
                     <div className="flex justify-between border-t border-dashed pt-2">
                         <span>পরিশোধিত:</span>
                         <span>
-                            {Number(admissionFee) + Number(data?.academics?.academic_fee || 0) + Number(data?.academics?.boarding_fee || 0)} টাকা
+                            {(
+                                Number(admissionFee) +
+                                Number(data?.academics?.academic_fee || 0) +
+                                Number(data?.academics?.boarding_fee || 0)
+                            ).toLocaleString('bn')}{' '}
+                            টাকা
                         </span>
                     </div>
                 </div>
