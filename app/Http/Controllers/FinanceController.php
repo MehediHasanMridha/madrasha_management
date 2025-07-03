@@ -5,6 +5,7 @@ use App\Actions\Finance\Due\DownloadDueList;
 use App\Actions\Finance\Due\DueFilterGroup;
 use App\Actions\Finance\Due\DueList;
 use App\Actions\Finance\Earning\AddAdmissionFee;
+use App\Actions\Finance\Earning\AddDueFee;
 use App\Actions\Finance\Earning\AddExamFee;
 use App\Actions\Finance\Earning\AddMonthlyFee;
 use App\Actions\Finance\Earning\MonthlyDiscount;
@@ -176,6 +177,7 @@ class FinanceController extends Controller
             'academic_fee'  => round(getStudentFee($user->academics, 'academic'), 2),
             'income_logs'   => $user->incomeLogs->map(function ($item) {
                 return [
+                    'id'     => $item->id,
                     'amount' => round($item->amount, 2),
                     'type'   => $item->feeType->slug ?? 'Unknown',
                     'due'    => $item->studentDue ? round($item->studentDue->due_amount, 2) : 0,
@@ -291,6 +293,20 @@ class FinanceController extends Controller
         }
 
     }
+
+    public function add_due_money(Request $request)
+    {
+        $request->validate([
+            'academic_income_id' => 'required|exists:income_logs,id',
+            'boarding_income_id' => 'required|exists:income_logs,id',
+            'academic_due'       => 'required|numeric|min:0',
+            'boarding_due'       => 'required|numeric|min:0',
+        ]);
+
+        AddDueFee::run($request);
+        return redirect()->back()->with('success', 'Due money added successfully');
+    }
+
     public function add_voucher(Request $request)
     {
         $request->validate([

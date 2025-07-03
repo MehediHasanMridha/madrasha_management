@@ -1,7 +1,11 @@
 <?php
 
-it('returns a successful response', function () {
+it('redirects to the dashboard or login page when visiting the homepage', function () {
     $response = $this->get('/');
 
-    $response->assertStatus(200);
+    // Assert that the response is a redirect (status 302)
+    $response->assertRedirect();
+
+    // Optionally, assert the redirect location
+    // $response->assertRedirect('/dashboard'); // or '/login'
 });

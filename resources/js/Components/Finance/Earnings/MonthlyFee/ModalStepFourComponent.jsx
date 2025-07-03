@@ -142,9 +142,8 @@ const ModalStepFourComponent = ({
                         <div className="absolute right-3 bottom-2 text-sm text-[#AFAFAF]">{comments?.length}/200</div>
                     </div>
                 </div>
-
-                {/* Calculation Summary */}
             </FieldSet>
+            {/* Calculation Summary */}
             <div className="space-y-2 rounded-lg bg-[#F2F2F2] p-3">
                 <div className="flex items-center justify-between">
                     <span className="text-base text-[#4A4A4A]">Total :</span>

@@ -69,8 +69,8 @@ class DashboardController extends Controller
                 'student_female_count' => $item->student_female_count,
                 'teacher_male_count'   => $item->teacher_male_count,
                 'teacher_female_count' => $item->teacher_female_count,
-                'total_tk'             => $total_tk,
-                'monthly_income'       => $monthly_income,
+                'total_tk'             => intval($total_tk),
+                'monthly_income'       => intval($monthly_income),
             ];
         });
 
