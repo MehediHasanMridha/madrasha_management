@@ -3,7 +3,20 @@ import StudentMonthlyFeeListTableContainer from '@/Container/Finance/Earnings/St
 import { getAvatarImage } from '@/lib/avatarImageUrlUtils';
 import { cn } from '@/lib/utils';
 
-const ModalStepOneComponent = ({ data, setStep, setMonthlyFeeStep, year, setYear, fee, setFee, setSelectedRows, selectedRows, getData, loading }) => {
+const ModalStepOneComponent = ({
+    data,
+    setStep,
+    setMonthlyFeeStep,
+    year,
+    setYear,
+    fee,
+    setFee,
+    setSelectedRows,
+    selectedRows,
+    getData,
+    loading,
+    setSelectedDueData,
+}) => {
     return (
         <>
             <div className="space-y-4">
@@ -54,6 +67,8 @@ const ModalStepOneComponent = ({ data, setStep, setMonthlyFeeStep, year, setYear
                         setSelectedRows={setSelectedRows}
                         selectedRows={selectedRows}
                         fee={fee}
+                        setMonthlyFeeStep={setMonthlyFeeStep}
+                        setSelectedDueData={setSelectedDueData}
                     />
                 </div>
                 <div className="space-y-[8px] rounded-[8px] bg-[#F2F2F2] p-[12px]">

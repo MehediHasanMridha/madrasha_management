@@ -2,7 +2,7 @@ import TableUI from '@/Components/UI/TableUI';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
 
-const StudentMonthlyFeeListTableContainer = ({ data, setFee, setSelectedRows, selectedRows, fee }) => {
+const StudentMonthlyFeeListTableContainer = ({ data, setFee, setSelectedRows, selectedRows, fee, setMonthlyFeeStep, setSelectedDueData }) => {
     const columns = [
         {
             title: 'Month',
@@ -81,7 +81,10 @@ const StudentMonthlyFeeListTableContainer = ({ data, setFee, setSelectedRows, se
                     return (
                         <span
                             className="w-fit cursor-pointer border-b-[1px] border-blue-500 text-[14px] font-semibold text-blue-500 hover:border-blue-600 hover:text-blue-600"
-                            onClick={() => setStep((prev) => prev + 1)}
+                            onClick={() => {
+                                setMonthlyFeeStep(5);
+                                setSelectedDueData(record);
+                            }}
                         >
                             Pay Due
                         </span>
@@ -120,6 +123,10 @@ const StudentMonthlyFeeListTableContainer = ({ data, setFee, setSelectedRows, se
             return {
                 key: index,
                 month: month,
+                boarding_fee_id: boardingFeeLog?.id || null,
+                academic_fee_id: academicFeeLog?.id || null,
+                boarding_fee_due: boardingFeeDue,
+                academic_fee_due: academicFeeDue,
                 boarding_fee: boardingFeeDue ? data?.boarding_fee - boardingFeeDue : boardingFee,
                 academic_fee: academicFeeDue ? data?.academic_fee - academicFeeDue : academicFee,
                 due: boardingFeeDue + academicFeeDue,

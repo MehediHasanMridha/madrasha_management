@@ -6,6 +6,7 @@ import LoadingUI from '@/Components/UI/LoadingUI';
 import { router } from '@inertiajs/react';
 import { notification } from 'antd';
 import { useEffect, useState } from 'react';
+import MonthlyDueFeeContainer from './MonthlyDueFeeContainer';
 
 const MonthlyFeeContainer = ({ data, year, setYear, getData, loading, setStep, setType, setStudentId, setModal }) => {
     const [monthlyFeeStep, setMonthlyFeeStep] = useState(1);
@@ -20,6 +21,7 @@ const MonthlyFeeContainer = ({ data, year, setYear, getData, loading, setStep, s
     const [selectedRows, setSelectedRows] = useState([]);
     const [comments, setComments] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [selectedDueData, setSelectedDueData] = useState(null);
     useEffect(() => {
         setFee({
             ...fee,
@@ -117,6 +119,7 @@ const MonthlyFeeContainer = ({ data, year, setYear, getData, loading, setStep, s
                     selectedRows={selectedRows}
                     getData={getData}
                     loading={loading}
+                    setSelectedDueData={setSelectedDueData}
                 />
             );
             break;
@@ -171,6 +174,17 @@ const MonthlyFeeContainer = ({ data, year, setYear, getData, loading, setStep, s
                 />
             );
             break;
+        case 5:
+            content = (
+                <MonthlyDueFeeContainer
+                    data={data}
+                    setMonthlyFeeStep={setMonthlyFeeStep}
+                    selectedRows={selectedRows}
+                    loading={loading}
+                    selectedDueData={selectedDueData}
+                    handleClose={handleClose}
+                />
+            );
         default:
             break;
     }

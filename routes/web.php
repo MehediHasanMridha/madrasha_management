@@ -133,6 +133,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/reports/daily-report/set_approve', [FinanceController::class, 'approve_daily_report'])->name('finance.approve_daily_report');
         Route::get('/get_user_data/{user_id}', [FinanceController::class, 'get_user_data'])->name('finance.get_user_data');
         Route::post('/add_money', [FinanceController::class, 'add_money'])->name('finance.add_money');
+        Route::post('/add_due_money', [FinanceController::class, 'add_due_money'])->name('finance.add_due_money');
         Route::post('/add_voucher', [FinanceController::class, 'add_voucher'])->name('finance.add_voucher');
         Route::delete('/delete_voucher/{voucher_id}', [FinanceController::class, 'delete_voucher'])->name('finance.delete_voucher');
         Route::get('/due-list', [FinanceController::class, 'due_list'])->name('finance.due_list');
