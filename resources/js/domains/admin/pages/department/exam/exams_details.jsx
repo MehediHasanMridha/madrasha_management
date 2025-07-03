@@ -4,7 +4,7 @@ import ExamDetailsContainer from '@/Container/Department/Exams/ExamDetailsContai
 import AuthenticatedLayout from '@/layouts/AuthenticatedLayout';
 import { Link } from '@inertiajs/react';
 
-const Exams_details = ({ exam, department }) => {
+const Exams_details = ({ exam, department, classes }) => {
     return (
         <AuthenticatedLayout>
             <DepartmentTabSectionComponent type="exams" department={department} className="mb-5" />
@@ -23,7 +23,7 @@ const Exams_details = ({ exam, department }) => {
                     ]}
                 />
             </div>
-            <ExamDetailsContainer exam={exam} department={department} />
+            <ExamDetailsContainer exam={exam} department={department} classes={classes} />
         </AuthenticatedLayout>
     );
 };

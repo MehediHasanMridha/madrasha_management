@@ -463,12 +463,44 @@ class DepartmentController extends Controller
     public function exams_details($exam_slug, $department_slug)
     {
         $exam = Exam::where('slug', $exam_slug)
+            ->with(['feeType', 'classes.academics.student.incomeLogs.feeType'])
             ->whereHas('department', fn($q) => $q->where('slug', $department_slug))
-            ->with(['classes', 'examSubjects.subject', 'creator'])
             ->firstOrFail();
+
+        $examFee = $exam->feeType?->amount ?? 0;
+
+        $data = $exam->classes->map(function ($class) use ($examFee, $exam) {
+            $totalStudents = $class->academics->count();
+
+            $paidStudents = $class->academics->filter(function ($academic) use ($exam) {
+                return $exam->feeType && $academic->student->incomeLogs
+                    ->where('fee_type_id', $exam->feeType->id)
+                    ->isNotEmpty();
+            })->count();
+
+            $totalPaidAmount = $class->academics->sum(function ($academic) use ($exam) {
+                return $exam->feeType ? $academic->student->incomeLogs
+                    ->where('fee_type_id', $exam->feeType->id)
+                    ->sum('amount') : 0;
+            });
+
+            return [
+                'class'               => [
+                    'id'   => $class->id,
+                    'name' => $class->name,
+                    'slug' => $class->slug,
+                ],
+                'total_paid_students' => $paidStudents,
+                'total_paid_amount'   => $totalPaidAmount,
+                'total_students'      => $totalStudents,
+                'expected_total_fee'  => $totalStudents * $examFee,
+            ];
+        });
+
         return Inertia::render('admin::department/exam/exams_details', [
             'exam'       => $exam,
             'department' => $exam->department,
+            'classes'    => $data,
         ]);
     }
 
