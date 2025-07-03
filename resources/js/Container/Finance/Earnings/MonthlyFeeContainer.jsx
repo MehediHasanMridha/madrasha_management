@@ -179,8 +179,6 @@ const MonthlyFeeContainer = ({ data, year, setYear, getData, loading, setStep, s
                 <MonthlyDueFeeContainer
                     data={data}
                     setMonthlyFeeStep={setMonthlyFeeStep}
-                    selectedRows={selectedRows}
-                    loading={loading}
                     selectedDueData={selectedDueData}
                     handleClose={handleClose}
                 />

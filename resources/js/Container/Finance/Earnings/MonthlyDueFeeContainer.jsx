@@ -4,7 +4,7 @@ import { router } from '@inertiajs/react';
 import { notification } from 'antd';
 import { useState } from 'react';
 
-const MonthlyDueFeeContainer = ({ setMonthlyFeeStep, selectedRows, loading, data, selectedDueData, handleClose }) => {
+const MonthlyDueFeeContainer = ({ setMonthlyFeeStep, data, selectedDueData, handleClose }) => {
     const [monthlyDueFeeStep, setMonthlyDueFeeStep] = useState(1);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [comments, setComments] = useState('');
@@ -75,6 +75,7 @@ const MonthlyDueFeeContainer = ({ setMonthlyFeeStep, selectedRows, loading, data
                     selectedDueData={selectedDueData}
                     loading={isSubmitting}
                     comments={comments}
+                    handleClose={handleClose}
                 />
             );
 
