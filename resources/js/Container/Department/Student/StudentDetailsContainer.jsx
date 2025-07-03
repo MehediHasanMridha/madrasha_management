@@ -22,6 +22,26 @@ const StudentDetailsContainer = ({ student, department }) => {
     ];
     const totalPayableAmount = Number(student?.academic?.academic_fee) + Number(student?.academic?.boarding_fee);
     const [year, setYear] = useState(new Date().getFullYear().toString());
+    const [copied, setCopied] = useState(false);
+
+    const copyToClipboard = async (text) => {
+        try {
+            await navigator.clipboard.writeText(text);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000); // Reset after 2 seconds
+        } catch (err) {
+            console.error('Failed to copy text: ', err);
+            // Fallback for older browsers
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        }
+    };
 
     const getData = (year) => {
         router.get(
@@ -58,7 +78,13 @@ const StudentDetailsContainer = ({ student, department }) => {
 
                                 <div className="flex items-center gap-2 rounded bg-gray-50 px-3 py-1 text-sm text-gray-600">
                                     <span>ID: {student?.unique_id}</span>
-                                    <Copy size={16} className="cursor-pointer text-gray-400 hover:text-gray-600" />
+                                    <Copy
+                                        size={16}
+                                        className="cursor-pointer text-gray-400 hover:text-gray-600"
+                                        onClick={() => copyToClipboard(student?.unique_id)}
+                                        title={copied ? 'Copied!' : 'Copy ID'}
+                                    />
+                                    {copied && <span className="ml-1 text-xs text-green-600">Copied!</span>}
                                 </div>
                             </div>
                         </div>
