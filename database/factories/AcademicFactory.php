@@ -18,11 +18,8 @@ class AcademicFactory extends Factory
     public function definition(): array
     {
         return [
+            'user_id'       => User::factory(),
             'department_id' => Department::factory(),
-            'student_id'    => User::factory(),
-            'user_id'       => function (array $attributes) {
-                return $attributes['student_id'];
-            },
             'class_id'      => null,
             'academic_fee'  => fake()->numberBetween(3000, 8000),
             'boarding_fee'  => fake()->numberBetween(2000, 5000),

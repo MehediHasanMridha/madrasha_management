@@ -2,6 +2,7 @@
 namespace Database\Factories;
 
 use App\Models\FeeType;
+use App\Models\PaymentMethod;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -19,14 +20,11 @@ class IncomeLogFactory extends Factory
     {
         return [
             'user_id'           => User::factory(),
-            'student_id'        => function (array $attributes) {
-                return $attributes['user_id'];
-            },
-            'source_type'       => 'fee_payment',
+            'source_type'       => fake()->randomElement(['student', 'donation', 'sponsor', 'other']),
             'source_details'    => fake()->sentence(),
             'amount'            => fake()->numberBetween(1000, 5000),
             'fee_type_id'       => FeeType::factory(),
-            'payment_method_id' => null,
+            'payment_method_id' => PaymentMethod::factory(),
             'payment_period'    => fake()->date('Y-m'),
             'status'            => 'paid',
             'receiver_id'       => User::factory(),

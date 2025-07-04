@@ -25,15 +25,14 @@ class FeeTypeFactory extends Factory
         ]);
 
         return [
-            'name'           => $name,
-            'slug'           => Str::slug($name),
-            'amount'         => fake()->numberBetween(1000, 5000),
-            'default_amount' => fake()->numberBetween(1000, 5000),
-            'class_id'       => null,
-            'department_id'  => null,
-            'status'         => true,
-            'created_at'     => now(),
-            'updated_at'     => now(),
+            'name'          => $name,
+            'slug'          => Str::slug($name),
+            'amount'        => fake()->numberBetween(1000, 5000),
+            'class_id'      => null,
+            'department_id' => null,
+            'status'        => true,
+            'created_at'    => now(),
+            'updated_at'    => now(),
         ];
     }
 }
