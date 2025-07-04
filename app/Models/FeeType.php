@@ -18,8 +18,8 @@ class FeeType extends Model
     ];
 
     protected $casts = [
-        'default_amount' => 'decimal:2',
-        'status'         => 'boolean',
+        'amount' => 'decimal:2',
+        'status' => 'boolean',
     ];
 
     public function studentDues()

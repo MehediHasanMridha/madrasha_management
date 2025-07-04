@@ -340,7 +340,7 @@ class DepartmentController extends Controller
 
             $examData = [
                 'name'               => $request->examName,
-                'slug'               => Str::slug($request->examName),
+                'slug'               => Str::slug($request->examName) . '-' . $department->slug,
                 'description'        => $request->description,
                 'department_id'      => $department->id,
                 'start_date'         => $request->startDate,
