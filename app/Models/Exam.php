@@ -248,4 +248,16 @@ class Exam extends Model
                 ->orWhere('description', 'like', "%{$term}%");
         });
     }
+
+    /**
+     * Scope for filtering exams by year.
+     */
+    public function scopeByYear($query, $year)
+    {
+        if ($year && $year !== 'all') {
+            return $query->whereYear('start_date', $year);
+        }
+
+        return $query;
+    }
 }

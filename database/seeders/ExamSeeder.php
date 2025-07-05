@@ -42,7 +42,12 @@ class ExamSeeder extends Seeder
                 $examTypes    = ['midterm', 'final', 'quiz', 'assessment'];
                 $examStatuses = ['draft', 'scheduled', 'ongoing', 'completed'];
 
-                $startDate = now()->addDays(rand(-30, 60));
+                // Create exams across multiple years for better testing
+                $years        = [2023, 2024, 2025];
+                $selectedYear = $years[array_rand($years)];
+
+                $baseDate  = now()->setYear($selectedYear)->setMonth(rand(1, 12))->setDay(1);
+                $startDate = $baseDate->copy()->addDays(rand(0, 28));
                 $endDate   = $startDate->copy()->addDays(rand(1, 14));
 
                 $exam = Exam::create([

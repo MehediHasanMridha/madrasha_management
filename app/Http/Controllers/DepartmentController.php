@@ -275,13 +275,19 @@ class DepartmentController extends Controller
     public function exams_show($department_slug)
     {
         try {
+            $request = request();
+            $year    = $request->input('year', date('Y')); // Default to current year
+
             $department = Department::where('slug', $department_slug)->firstOrFail();
 
             // Get exams for this department with related data
-            $exams = $department->exams()
-                ->with(['classes', 'examSubjects.subject', 'creator'])
-                ->latest()
-                ->get();
+            $examsQuery = $department->exams()
+                ->with(['classes', 'examSubjects.subject', 'creator']);
+
+            // Apply year filter if provided
+            $examsQuery->byYear($year);
+
+            $exams = $examsQuery->latest()->get();
 
             // Transform exams to include status with time
             $exams->transform(function ($exam) {
@@ -292,10 +298,21 @@ class DepartmentController extends Controller
                 return $exam;
             });
 
+            // Get available years for the dropdown
+            $availableYears = $department->exams()
+                ->selectRaw('YEAR(start_date) as year')
+                ->distinct()
+                ->orderBy('year', 'desc')
+                ->pluck('year')
+                ->filter()
+                ->values();
+
             return Inertia::render('admin::department/exam/exams', [
-                'department' => $department,
-                'classes'    => $department->classes->load('subjects'),
-                'exams'      => $exams,
+                'department'     => $department,
+                'classes'        => $department->classes->load('subjects'),
+                'exams'          => $exams,
+                'availableYears' => $availableYears,
+                'selectedYear'   => $year,
             ]);
         } catch (Exception $e) {
             return redirect()->back()->with('error', 'Department not found.');
