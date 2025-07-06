@@ -1,6 +1,7 @@
 <?php
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -9,6 +10,7 @@ use Illuminate\Support\Str;
 
 class Exam extends Model
 {
+    use HasFactory;
     protected $fillable = [
         'name',
         'slug',
@@ -245,5 +247,17 @@ class Exam extends Model
             $q->where('name', 'like', "%{$term}%")
                 ->orWhere('description', 'like', "%{$term}%");
         });
+    }
+
+    /**
+     * Scope for filtering exams by year.
+     */
+    public function scopeByYear($query, $year)
+    {
+        if ($year && $year !== 'all') {
+            return $query->whereYear('start_date', $year);
+        }
+
+        return $query;
     }
 }

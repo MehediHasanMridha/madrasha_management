@@ -155,7 +155,7 @@ ${admitCardData.exams.map((exam, index) => `${index + 1}. ${exam}`).join('\n')}
             {/* Navigation Buttons */}
             <div className="mt-5 flex w-full gap-[18px]">
                 <StaticBtn
-                    onClick={() => setStep(3)}
+                    onClick={() => setStep((prev) => prev - 1)}
                     className="flex h-14 flex-1 cursor-pointer items-center justify-center rounded-lg bg-[#F2F2F2] text-[#4A4A4A] hover:bg-[#0267FF] hover:text-white"
                     disabled={loading}
                 >

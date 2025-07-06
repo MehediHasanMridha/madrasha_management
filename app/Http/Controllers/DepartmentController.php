@@ -275,13 +275,19 @@ class DepartmentController extends Controller
     public function exams_show($department_slug)
     {
         try {
+            $request = request();
+            $year    = $request->input('year', date('Y')); // Default to current year
+
             $department = Department::where('slug', $department_slug)->firstOrFail();
 
             // Get exams for this department with related data
-            $exams = $department->exams()
-                ->with(['classes', 'examSubjects.subject', 'creator'])
-                ->latest()
-                ->get();
+            $examsQuery = $department->exams()
+                ->with(['classes', 'examSubjects.subject', 'creator']);
+
+            // Apply year filter if provided
+            $examsQuery->byYear($year);
+
+            $exams = $examsQuery->latest()->get();
 
             // Transform exams to include status with time
             $exams->transform(function ($exam) {
@@ -292,10 +298,21 @@ class DepartmentController extends Controller
                 return $exam;
             });
 
+            // Get available years for the dropdown
+            $availableYears = $department->exams()
+                ->selectRaw('YEAR(start_date) as year')
+                ->distinct()
+                ->orderBy('year', 'desc')
+                ->pluck('year')
+                ->filter()
+                ->values();
+
             return Inertia::render('admin::department/exam/exams', [
-                'department' => $department,
-                'classes'    => $department->classes->load('subjects'),
-                'exams'      => $exams,
+                'department'     => $department,
+                'classes'        => $department->classes->load('subjects'),
+                'exams'          => $exams,
+                'availableYears' => $availableYears,
+                'selectedYear'   => $year,
             ]);
         } catch (Exception $e) {
             return redirect()->back()->with('error', 'Department not found.');
@@ -340,7 +357,7 @@ class DepartmentController extends Controller
 
             $examData = [
                 'name'               => $request->examName,
-                'slug'               => Str::slug($request->examName),
+                'slug'               => Str::slug($request->examName) . '-' . $department->slug . '-' . date('Y'),
                 'description'        => $request->description,
                 'department_id'      => $department->id,
                 'start_date'         => $request->startDate,
@@ -368,9 +385,8 @@ class DepartmentController extends Controller
             return redirect()->back()->with('success', 'Exam created successfully!');
 
         } catch (Exception $e) {
-            Log::error('Error creating exam: ' . $e->getMessage());
             DB::rollBack();
-            return back()->with('error', 'Failed to create exam. Please try again.');
+            return back()->with('error', 'This name of exam already exists for this department or an error occurred while creating the exam. Please try again.');
         }
     }
 
@@ -415,7 +431,7 @@ class DepartmentController extends Controller
 
             $examData = [
                 'name'               => $request->examName,
-                'slug'               => Str::slug($request->examName),
+                'slug'               => Str::slug($request->examName) . '-' . $department->slug . '-' . date('Y'),
                 'description'        => $request->description,
                 'start_date'         => $request->startDate,
                 'end_date'           => $request->endDate,
@@ -463,12 +479,44 @@ class DepartmentController extends Controller
     public function exams_details($exam_slug, $department_slug)
     {
         $exam = Exam::where('slug', $exam_slug)
+            ->with(['feeType', 'classes.academics.student.incomeLogs.feeType'])
             ->whereHas('department', fn($q) => $q->where('slug', $department_slug))
-            ->with(['classes', 'examSubjects.subject', 'creator'])
             ->firstOrFail();
+
+        $examFee = $exam->feeType?->amount ?? 0;
+
+        $data = $exam->classes->map(function ($class) use ($examFee, $exam) {
+            $totalStudents = $class->academics->count();
+
+            $paidStudents = $class->academics->filter(function ($academic) use ($exam) {
+                return $exam->feeType && $academic->student->incomeLogs
+                    ->where('fee_type_id', $exam->feeType->id)
+                    ->isNotEmpty();
+            })->count();
+
+            $totalPaidAmount = $class->academics->sum(function ($academic) use ($exam) {
+                return $exam->feeType ? $academic->student->incomeLogs
+                    ->where('fee_type_id', $exam->feeType->id)
+                    ->sum('amount') : 0;
+            });
+
+            return [
+                'class'               => [
+                    'id'   => $class->id,
+                    'name' => $class->name,
+                    'slug' => $class->slug,
+                ],
+                'total_paid_students' => $paidStudents,
+                'total_paid_amount'   => $totalPaidAmount,
+                'total_students'      => $totalStudents,
+                'expected_total_fee'  => $totalStudents * $examFee,
+            ];
+        });
+
         return Inertia::render('admin::department/exam/exams_details', [
             'exam'       => $exam,
             'department' => $exam->department,
+            'classes'    => $data,
         ]);
     }
 
@@ -482,7 +530,7 @@ class DepartmentController extends Controller
         }
 
         $feeTypeName = 'Exam Fee';
-        $feeTypeSlug = Str::slug($examName . ' ' . $department->slug);
+        $feeTypeSlug = Str::slug($examName . '-' . $department->slug . '-' . date('Y'));
         if ($existingFeeType) {
             // Update existing fee type
             $existingFeeType->update([

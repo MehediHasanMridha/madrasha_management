@@ -1,7 +1,8 @@
 import TableUI from '@/Components/UI/TableUI';
 import { cn } from '@/lib/utils';
+import { useState } from 'react';
 
-const StudentMonthlyFeeListTableContainer = ({ data, setFee, setSelectedRows, selectedRows, fee }) => {
+const StudentMonthlyFeeListTableContainer = ({ data, setFee, setSelectedRows, selectedRows, fee, setMonthlyFeeStep, setSelectedDueData }) => {
     const columns = [
         {
             title: 'Month',
@@ -78,7 +79,13 @@ const StudentMonthlyFeeListTableContainer = ({ data, setFee, setSelectedRows, se
             render: (text, record) => {
                 if (record?.status === 'Due') {
                     return (
-                        <span className="cursor-pointer border-b-[1px] border-blue-500 text-[14px] font-semibold text-blue-500 hover:font-bold">
+                        <span
+                            className="w-fit cursor-pointer border-b-[1px] border-blue-500 text-[14px] font-semibold text-blue-500 hover:border-blue-600 hover:text-blue-600"
+                            onClick={() => {
+                                setMonthlyFeeStep(5);
+                                setSelectedDueData(record);
+                            }}
+                        >
                             Pay Due
                         </span>
                     );
@@ -99,6 +106,8 @@ const StudentMonthlyFeeListTableContainer = ({ data, setFee, setSelectedRows, se
         },
     ];
 
+    const [step, setStep] = useState(1);
+
     const dataSource = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'].map(
         (month, index) => {
             const monthLog = data?.income_logs?.find((item) => item?.month === month);
@@ -114,6 +123,10 @@ const StudentMonthlyFeeListTableContainer = ({ data, setFee, setSelectedRows, se
             return {
                 key: index,
                 month: month,
+                boarding_fee_id: boardingFeeLog?.id || null,
+                academic_fee_id: academicFeeLog?.id || null,
+                boarding_fee_due: boardingFeeDue,
+                academic_fee_due: academicFeeDue,
                 boarding_fee: boardingFeeDue ? data?.boarding_fee - boardingFeeDue : boardingFee,
                 academic_fee: academicFeeDue ? data?.academic_fee - academicFeeDue : academicFee,
                 due: boardingFeeDue + academicFeeDue,
@@ -122,31 +135,42 @@ const StudentMonthlyFeeListTableContainer = ({ data, setFee, setSelectedRows, se
         },
     );
 
-    return (
-        <TableUI
-            dataSource={dataSource}
-            columns={columns}
-            pagination={false}
-            rowSelection={{
-                type: 'checkbox',
-                onChange: (selectedRowKeys, selectedRows, info) => {
-                    setSelectedRows(selectedRows);
-                    setFee({
-                        ...fee,
-                        boarding_fee: selectedRows.reduce((acc, curr) => acc + curr?.boarding_fee, 0),
-                        academic_fee: selectedRows.reduce((acc, curr) => acc + curr?.academic_fee, 0),
-                        total: selectedRows.reduce((acc, curr) => acc + curr?.boarding_fee + curr?.academic_fee, 0),
-                    });
-                },
-                selectedRowKeys: selectedRows.map((item) => item?.key),
-                getCheckboxProps: (record) => ({
-                    disabled: record?.status === 'Paid' || record?.status === 'Due', // Column configuration not to be checked
-                    // defaultChecked: record?.status === 'Paid' ? false : true,
-                }),
-            }}
-            rowKey={(record) => record?.key}
-        />
-    );
+    let content = null;
+
+    switch (step) {
+        case 1:
+            content = (
+                <TableUI
+                    dataSource={dataSource}
+                    columns={columns}
+                    pagination={false}
+                    rowSelection={{
+                        type: 'checkbox',
+                        onChange: (selectedRowKeys, selectedRows, info) => {
+                            setSelectedRows(selectedRows);
+                            setFee({
+                                ...fee,
+                                boarding_fee: selectedRows.reduce((acc, curr) => acc + curr?.boarding_fee, 0),
+                                academic_fee: selectedRows.reduce((acc, curr) => acc + curr?.academic_fee, 0),
+                                total: selectedRows.reduce((acc, curr) => acc + curr?.boarding_fee + curr?.academic_fee, 0),
+                            });
+                        },
+                        selectedRowKeys: selectedRows.map((item) => item?.key),
+                        getCheckboxProps: (record) => ({
+                            disabled: record?.status === 'Paid' || record?.status === 'Due', // Column configuration not to be checked
+                            // defaultChecked: record?.status === 'Paid' ? false : true,
+                        }),
+                    }}
+                    rowKey={(record) => record?.key}
+                />
+            );
+            break;
+        default:
+            content = <>sdhfsd</>;
+            break;
+    }
+
+    return content;
 };
 
 export default StudentMonthlyFeeListTableContainer;

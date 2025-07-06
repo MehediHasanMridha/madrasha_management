@@ -31,6 +31,9 @@ class ExamController extends Controller
             $query->where('status', $request->status);
         }
 
+        // Filter by year if provided
+        $query->byYear($request->input('year'));
+
         $exams = $query->paginate(15);
 
         // Transform exams to include status with time
@@ -41,9 +44,21 @@ class ExamController extends Controller
             return $exam;
         });
 
+        // Get available years for the dropdown
+        $availableYears = Exam::selectRaw('YEAR(start_date) as year')
+            ->distinct()
+            ->orderBy('year', 'desc')
+            ->pluck('year')
+            ->filter()
+            ->values();
+
         return Inertia::render('admin::exams/index', [
-            'exams'       => $exams,
-            'departments' => Department::select('id', 'name')->get(),
+            'exams'              => $exams,
+            'departments'        => Department::select('id', 'name')->get(),
+            'availableYears'     => $availableYears,
+            'selectedYear'       => $request->input('year', date('Y')),
+            'selectedStatus'     => $request->input('status'),
+            'selectedDepartment' => $request->input('department_id'),
         ]);
     }
 
