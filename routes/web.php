@@ -41,6 +41,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::put('{department_slug}/{exam_id}/update', [DepartmentController::class, 'updateExam'])->name('department.exams.update');
             Route::delete('/{exam}', [DepartmentController::class, 'destroyExam'])->name('department.exams.delete');
             Route::get('{exam_slug}/{department_slug}', [DepartmentController::class, 'exams_details'])->name('department.exams_details');
+
+            // Exam Subjects Management
+            Route::post('{exam_id}/subjects', [DepartmentController::class, 'storeExamSubjects'])->name('department.exams.subjects.store');
+            Route::put('{exam_id}/subjects', [DepartmentController::class, 'updateExamSubjects'])->name('department.exams.subjects.update');
         });
 
         // Global Exam Management Routes

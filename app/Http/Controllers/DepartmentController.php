@@ -5,6 +5,7 @@ use App\Http\Resources\showStaffData;
 use App\Http\Resources\showStudentData;
 use App\Models\Department;
 use App\Models\Exam;
+use App\Models\ExamSubject;
 use App\Models\FeeType;
 use App\Models\User;
 use Exception;
@@ -479,7 +480,7 @@ class DepartmentController extends Controller
     public function exams_details($exam_slug, $department_slug)
     {
         $exam = Exam::where('slug', $exam_slug)
-            ->with(['feeType', 'classes.academics.student.incomeLogs.feeType'])
+            ->with(['feeType', 'classes.academics.student.incomeLogs.feeType', 'classes.subjects'])
             ->whereHas('department', fn($q) => $q->where('slug', $department_slug))
             ->firstOrFail();
 
@@ -512,11 +513,13 @@ class DepartmentController extends Controller
                 'expected_total_fee'  => $totalStudents * $examFee,
             ];
         });
-
         return Inertia::render('admin::department/exam/exams_details', [
             'exam'       => $exam,
             'department' => $exam->department,
             'classes'    => $data,
+            'subjects'   => Inertia::defer(fn() => $exam->classes->flatMap(function ($class) {
+                return $class->subjects->load('examSubjects');
+            })->unique('id')->values()),
         ]);
     }
 
@@ -590,5 +593,86 @@ class DepartmentController extends Controller
                 'message' => 'Failed to retrieve exam fee details: ' . $e->getMessage(),
             ], 500);
         }
+    }
+
+    /**
+     * Store or update exam subjects
+     */
+    public function storeExamSubjects(Request $request, $exam_id)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'subjects'               => 'required|array|min:1',
+                'subjects.*.subject_id'  => 'required|exists:subjects,id',
+                'subjects.*.class_id'    => 'required|exists:classes,id',
+                'subjects.*.exam_date'   => 'required|date',
+                'subjects.*.start_time'  => 'required|date_format:H:i',
+                'subjects.*.end_time'    => 'nullable|date_format:H:i',
+                'subjects.*.total_marks' => 'required|integer|min:1|max:1000',
+                'subjects.*.pass_marks'  => 'required|integer|min:1',
+            ]);
+
+            // Custom validation for pass_marks to be less than or equal to total_marks
+            $validator->after(function ($validator) use ($request) {
+                foreach ($request->subjects as $index => $subject) {
+                    if (isset($subject['pass_marks'], $subject['total_marks']) &&
+                        $subject['pass_marks'] > $subject['total_marks']) {
+                        $validator->errors()->add(
+                            "subjects.{$index}.pass_marks",
+                            'Pass marks must be less than or equal to total marks.'
+                        );
+                    }
+                }
+            });
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation failed',
+                    'errors'  => $validator->errors(),
+                ], 422);
+            }
+
+            $exam = Exam::findOrFail($exam_id);
+
+            DB::beginTransaction();
+
+            foreach ($request->subjects as $subjectData) {
+                ExamSubject::updateOrCreate(
+                    [
+                        'exam_id'    => $exam->id,
+                        'subject_id' => $subjectData['subject_id'],
+                        'class_id'   => $subjectData['class_id'],
+                    ],
+                    [
+                        'exam_date'   => $subjectData['exam_date'],
+                        'start_time'  => $subjectData['start_time'],
+                        'end_time'    => $subjectData['end_time'] ?? null,
+                        'total_marks' => $subjectData['total_marks'],
+                        'pass_marks'  => $subjectData['pass_marks'],
+                        'status'      => 'scheduled',
+                    ]
+                );
+            }
+
+            DB::commit();
+
+            return redirect()->back()->with('success', 'Exam subjects updated successfully.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update exam subjects: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Update exam subjects
+     */
+    public function updateExamSubjects(Request $request, $exam_id)
+    {
+        return $this->storeExamSubjects($request, $exam_id);
     }
 }

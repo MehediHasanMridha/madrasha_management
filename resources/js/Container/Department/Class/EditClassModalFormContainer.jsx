@@ -40,6 +40,7 @@ const EditClassModalFormContainer = () => {
             // Set subjects data
             if (modal.data.subjects && modal.data.subjects.length > 0) {
                 const subjectsData = modal.data.subjects.map((subject) => ({
+                    id: subject.id,
                     name: subject.name,
                     code: subject.code || '',
                 }));
@@ -209,6 +210,9 @@ const EditClassModalFormContainer = () => {
                             {/* Table Rows */}
                             {fields.map((item, index) => (
                                 <div key={item.id} className="grid grid-cols-12 border-b-[0.5px] border-[#AFAFAF] last:border-b-0">
+                                    <div className="hidden">
+                                        <input type="hidden" {...register(`subjects.${index}.id`)} />
+                                    </div>
                                     <div className="col-span-5 border-r-[0.5px] border-[#AFAFAF] px-4 py-4">
                                         <input
                                             type="text"
