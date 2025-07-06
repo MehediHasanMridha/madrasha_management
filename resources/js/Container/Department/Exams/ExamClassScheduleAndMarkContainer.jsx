@@ -9,8 +9,6 @@ const ExamClassScheduleAndMarkContainer = ({ exam, department, classes }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentClassId, setCurrentClassId] = useState(null);
     const { subjects } = usePage().props;
-    console.log('🚀 ~ ExamClassScheduleAndMarkContainer ~ subjects:', subjects);
-
     // Get exam subjects for a specific class
     const getExamSubjectsForClass = (classId) => {
         if (!subjects) return [];
