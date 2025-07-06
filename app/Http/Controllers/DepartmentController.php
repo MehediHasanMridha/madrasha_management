@@ -618,8 +618,8 @@ class DepartmentController extends Controller
                 'subjects.*.subject_id'  => 'required|exists:subjects,id',
                 'subjects.*.class_id'    => 'required|exists:classes,id',
                 'subjects.*.exam_date'   => 'required|date',
-                'subjects.*.start_time'  => 'required|date_format:H:i',
-                'subjects.*.end_time'    => 'nullable|date_format:H:i',
+                // 'subjects.*.start_time'  => 'required|date_format:H:i',
+                // 'subjects.*.end_time'    => 'nullable|date_format:H:i',
                 'subjects.*.total_marks' => 'required|integer|min:1|max:1000',
                 'subjects.*.pass_marks'  => 'required|integer|min:1',
             ]);
@@ -638,11 +638,9 @@ class DepartmentController extends Controller
             });
 
             if ($validator->fails()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Validation failed',
-                    'errors'  => $validator->errors(),
-                ], 422);
+                return redirect()->back()
+                    ->withErrors($validator)
+                    ->withInput();
             }
 
             $exam = Exam::findOrFail($exam_id);

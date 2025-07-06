@@ -21,8 +21,6 @@ class ExamSubject extends Model
 
     protected $casts = [
         'exam_date'   => 'datetime',
-        'start_time'  => 'datetime',
-        'end_time'    => 'datetime',
         'total_marks' => 'integer',
         'pass_marks'  => 'integer',
     ];
@@ -70,12 +68,28 @@ class ExamSubject extends Model
     /**
      * Check if exam subject is currently ongoing.
      */
-    public function isOngoing(): bool
-    {
-        $now       = now();
-        $examStart = $this->exam_date->setTimeFromTimeString($this->start_time);
-        $examEnd   = $this->exam_date->setTimeFromTimeString($this->end_time);
+    // public function isOngoing(): bool
+    // {
+    //     $now = now();
+    //     // $examStart = $this->exam_date->setTimeFromTimeString($this->start_time);
+    //     // $examEnd   = $this->exam_date->setTimeFromTimeString($this->end_time);
 
-        return $now->between($examStart, $examEnd) && $this->status === 'scheduled';
+    //     return $now->between($examStart, $examEnd) && $this->status === 'scheduled';
+    // }
+
+    /**
+     * Get the start time formatted as HH:MM
+     */
+    public function getFormattedStartTimeAttribute(): string
+    {
+        return $this->start_time ? substr($this->start_time, 0, 5) : '';
+    }
+
+    /**
+     * Get the end time formatted as HH:MM
+     */
+    public function getFormattedEndTimeAttribute(): string
+    {
+        return $this->end_time ? substr($this->end_time, 0, 5) : '';
     }
 }

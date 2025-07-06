@@ -1,15 +1,15 @@
-import { router } from '@inertiajs/react';
-import { notification } from 'antd';
-import dayjs from 'dayjs';
-import React, { useEffect, useMemo } from 'react';
-import { useFieldArray, useForm } from 'react-hook-form';
-
 import Field from '@/Components/UI/Field';
 import ModalUI from '@/Components/UI/ModalUI';
 import StaticBtn from '@/Components/UI/StaticBtn';
 import SubmitBtn from '@/Components/UI/SubmitBtn';
 import { cn } from '@/lib/utils';
-
+import { router } from '@inertiajs/react';
+import { notification } from 'antd';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import React, { useEffect, useMemo } from 'react';
+import { useFieldArray, useForm } from 'react-hook-form';
+dayjs.extend(utc);
 const EditScheduleModalContainer = ({ isOpen, onClose, examData, classId, subjects }) => {
     // Prepare initial form data
     const initialFormData = useMemo(
@@ -21,15 +21,15 @@ const EditScheduleModalContainer = ({ isOpen, onClose, examData, classId, subjec
                 class_name: subject.class_name,
                 exam_date:
                     subject.exam_subjects?.[0]?.exam_date && subject?.exam_subjects[0]?.exam_id == examData.id
-                        ? dayjs(subject.exam_subjects[0].exam_date).format('YYYY-MM-DD')
+                        ? new Date(subject.exam_subjects[0].exam_date).toISOString().split('T')[0]
                         : '',
                 start_time:
                     subject.exam_subjects?.[0]?.start_time && subject?.exam_subjects[0]?.exam_id == examData.id
-                        ? dayjs(subject.exam_subjects[0].start_time, 'HH:mm:ss').format('HH:mm')
+                        ? subject.exam_subjects[0].start_time
                         : '',
                 end_time:
                     subject.exam_subjects?.[0]?.end_time && subject?.exam_subjects[0]?.exam_id == examData.id
-                        ? dayjs(subject.exam_subjects[0].end_time, 'HH:mm:ss').format('HH:mm')
+                        ? subject.exam_subjects[0].end_time
                         : '',
                 total_marks: subject.exam_subjects?.[0]?.total_marks || 100,
                 pass_marks: subject.exam_subjects?.[0]?.pass_marks || 33,
@@ -63,7 +63,7 @@ const EditScheduleModalContainer = ({ isOpen, onClose, examData, classId, subjec
 
     // Reset form when modal opens/closes or data changes
     useEffect(() => {
-        if (isOpen && subjects.length > 0) {
+        if (isOpen && subjects?.length > 0) {
             reset(initialFormData);
         } else if (!isOpen) {
             reset();
