@@ -6,7 +6,7 @@ const ExamDetailsContainer = ({ exam, department, classes }) => {
     return (
         <div className="my-5 w-full">
             <ExamFinanceContainer exam={exam} classes={classes} />
-            <WhenVisible data={'subjects'} fallback={<div>Loading Mehedi...</div>}>
+            <WhenVisible data={'subjects'} fallback={<div>Loading...</div>}>
                 <ExamClassScheduleAndMarkContainer exam={exam} department={department} classes={classes} />
             </WhenVisible>
         </div>
