@@ -9,6 +9,7 @@ const ExamClassScheduleAndMarkContainer = ({ exam, department, classes }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentClassId, setCurrentClassId] = useState(null);
     const { subjects } = usePage().props;
+    console.log('🚀 ~ ExamClassScheduleAndMarkContainer ~ subjects:', subjects);
 
     // Get exam subjects for a specific class
     const getExamSubjectsForClass = (classId) => {
@@ -74,7 +75,7 @@ const ExamClassScheduleAndMarkContainer = ({ exam, department, classes }) => {
                                     <div key={subIndex} className={`grid grid-cols-4 gap-4 p-3 ${subIndex % 2 === 0 ? 'bg-white' : 'bg-[#F2F2F2]'}`}>
                                         <div className="text-base text-[#4A4A4A]">{examSubject?.name || 'N/A'}</div>
                                         <div className={`text-base ${!examSubject.exam_date ? 'text-[#AFAFAF]' : 'text-[#4A4A4A]'}`}>
-                                            {examSubject?.exam_subjects?.length > 0 && examSubject?.exam_subjects[0]?.exam_id == exam.id
+                                            {examSubject?.exam_subjects?.length > 0 && examSubject?.exam_subjects[0]?.exam_id === exam.id
                                                 ? new Date(examSubject?.exam_subjects[0]?.exam_date).toLocaleDateString('en-US', {
                                                       year: 'numeric',
                                                       month: 'long',

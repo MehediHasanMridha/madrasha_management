@@ -513,12 +513,24 @@ class DepartmentController extends Controller
                 'expected_total_fee'  => $totalStudents * $examFee,
             ];
         });
+
         return Inertia::render('admin::department/exam/exams_details', [
             'exam'       => $exam,
             'department' => $exam->department,
             'classes'    => $data,
-            'subjects'   => Inertia::defer(fn() => $exam->classes->flatMap(function ($class) {
-                return $class->subjects->load('examSubjects');
+            'subjects'   => Inertia::defer(fn() => $exam->classes->flatMap(function ($class) use ($exam) {
+                return $class->subjects->load('examSubjects')->filter(function ($subject) use ($exam) {
+                    return $subject->examSubjects;
+                })->map(function ($subject) use ($class, $exam) {
+                    return [
+                        'id'            => $subject->id,
+                        'name'          => $subject->name,
+                        'code'          => $subject->code,
+                        'class_id'      => $class->id,
+                        'class_name'    => $class->name,
+                        'exam_subjects' => $subject->examSubjects->where('exam_id', $exam->id)->values(),
+                    ];
+                });
             })->unique('id')->values()),
         ]);
     }
