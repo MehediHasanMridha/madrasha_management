@@ -1,8 +1,6 @@
 import AccordionUI from '@/Components/UI/AccordionUI';
 import EditScheduleModalContainer from '@/Container/Department/Exams/EditScheduleModalContainer';
-import { router, usePage } from '@inertiajs/react';
-import { notification } from 'antd';
-import axios from 'axios';
+import { usePage } from '@inertiajs/react';
 import { ArrowBigDown, Download, Edit } from 'lucide-react';
 import { useState } from 'react';
 
@@ -13,93 +11,6 @@ const ExamClassScheduleAndMarkContainer = ({ exam, department, classes }) => {
     const [loading, setLoading] = useState(false);
     const [currentClassId, setCurrentClassId] = useState(null);
     const { subjects } = usePage().props;
-
-    // Extract subjects from classes for each class
-    const getSubjectsForClass = (classId) => {
-        const classItem = classes.find((c) => c.class.id === classId);
-        return classItem?.class?.subjects || [];
-    };
-
-    // Fetch exam subjects data when opening modal
-    const handleEditScheduleClick = async (classId) => {
-        setCurrentClassId(classId);
-        setLoading(true);
-        try {
-            const response = await axios.get(route('department.get_exams_subjects', { exam_id: exam?.id }));
-            console.log('🚀 ~ handleEditScheduleClick ~ response:', response);
-
-            if (response.ok) {
-                const data = await response.json();
-                if (data.success) {
-                    // Filter exam subjects for the current class
-                    const classExamSubjects = data.data.exam_subjects?.filter((subject) => subject.class_id === classId) || [];
-                    // Filter available subjects for the current class
-                    const classAvailableSubjects = data.data.available_subjects?.filter((subject) => subject.class_id === classId) || [];
-
-                    setExamSubjects(classExamSubjects);
-                    setAvailableSubjects(classAvailableSubjects);
-                    setIsModalOpen(true);
-                } else {
-                    throw new Error(data.message || 'Failed to load exam subjects');
-                }
-            } else {
-                throw new Error('Failed to load exam subjects');
-            }
-        } catch (error) {
-            console.log('Error fetching exam subjects:', error);
-            notification.error({
-                message: 'Error',
-                description: error.message || 'Failed to load exam subjects',
-                placement: 'bottomRight',
-            });
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    // Save exam subjects
-    const handleSaveSchedule = async (scheduleData) => {
-        try {
-            router.post(
-                route('department.exams.subjects.store', { exam_id: exam?.id }),
-                {
-                    subjects: scheduleData
-                        .filter((subject) => subject.exam_date && subject.start_time) // Only save subjects with required data
-                        .map((subject) => ({
-                            subject_id: subject.subject_id,
-                            class_id: subject.class_id,
-                            exam_date: subject.exam_date,
-                            start_time: subject.start_time,
-                            end_time: subject.end_time || null,
-                            total_marks: subject.total_marks,
-                            pass_marks: subject.pass_marks,
-                        })),
-                },
-                {
-                    onSuccess: (data) => {
-                        notification.success({
-                            message: 'Success',
-                            description: 'Exam schedule updated successfully',
-                            placement: 'bottomRight',
-                        });
-                        // Refresh page to show updated data
-                        router.reload();
-                    },
-                    onError: (errors) => {
-                        throw new Error(errors.message || 'Failed to save schedule');
-                    },
-                },
-            );
-        } catch (error) {
-            console.error('Error saving schedule:', error);
-            notification.error({
-                message: 'Error',
-                description: error.message || 'Failed to save exam schedule',
-                placement: 'bottomRight',
-            });
-            throw error;
-        }
-    };
 
     // Get exam subjects for a specific class
     const getExamSubjectsForClass = (classId) => {
