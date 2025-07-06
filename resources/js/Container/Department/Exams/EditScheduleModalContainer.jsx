@@ -312,17 +312,13 @@ const EditScheduleModalContainer = ({ isOpen, onClose, examData, classId, subjec
 
             {/* Action Buttons */}
             <div className="flex justify-end gap-4 pt-4">
-                <StaticBtn
-                    onClick={handleCancel}
-                    className="rounded-lg bg-[#F2F2F2] px-6 py-3 text-[#4A4A4A] hover:bg-gray-300"
-                    disabled={isSubmitting}
-                >
+                <StaticBtn onClick={handleCancel} className="rounded bg-[#F2F2F2] px-6 py-3 text-[#4A4A4A] hover:bg-gray-300" disabled={isSubmitting}>
                     Cancel
                 </StaticBtn>
                 <SubmitBtn
                     loadingIndicator={isSubmitting}
                     btnText="Save Schedule"
-                    className="rounded-lg bg-[#0267FF] px-6 py-3 text-white hover:bg-blue-600 disabled:opacity-50"
+                    className="cursor-pointer bg-blue-400 px-6 py-3 text-white hover:bg-blue-500 disabled:opacity-50"
                     type="submit"
                     disabled={isSubmitting || fields.length === 0}
                 />
