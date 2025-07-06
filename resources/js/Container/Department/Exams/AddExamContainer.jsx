@@ -35,12 +35,21 @@ const AddExamContainer = ({ classes, department }) => {
             onStart: () => setLoading(true),
             onSuccess: (response) => {
                 setLoading(false);
-                setStep('success');
-                api.success({
-                    message: 'Success',
-                    description: 'Exam created successfully!',
-                    placement: 'bottomRight',
-                });
+                if (response?.props?.flash?.success) {
+                    setStep('success');
+                    api.success({
+                        message: 'Success',
+                        description: 'Exam created successfully!',
+                        placement: 'bottomRight',
+                    });
+                }
+                if (response?.props?.flash?.error) {
+                    api.error({
+                        message: 'Error',
+                        description: response.props.flash.error,
+                        placement: 'bottomRight',
+                    });
+                }
             },
             onError: (errors) => {
                 setLoading(false);
