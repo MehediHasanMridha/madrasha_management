@@ -9,7 +9,6 @@ import { useEffect, useState } from 'react';
 const EditExamContainer = ({ classes, department }) => {
     const [loading, setLoading] = useState(false);
     const [step, setStep] = useState('form'); // 'form' | 'success'
-    const [api, contextHolder] = notification.useNotification();
     const { modal, setModal, data, setData, resetData } = useDepartmentStore((state) => state);
     const [isFeeEnabled, setIsFeeEnabled] = useState(false);
 
@@ -66,11 +65,20 @@ const EditExamContainer = ({ classes, department }) => {
                 onSuccess: (response) => {
                     setLoading(false);
                     setStep('success');
-                    api.success({
-                        message: 'Success',
-                        description: 'Exam updated successfully!',
-                        placement: 'bottomRight',
-                    });
+                    if (response?.props?.flash?.success) {
+                        notification.success({
+                            message: 'Success',
+                            description: response.props.flash.success,
+                            placement: 'bottomRight',
+                        });
+                    }
+                    if (response?.props?.flash?.error) {
+                        notification.error({
+                            message: 'Error',
+                            description: response.props.flash.error,
+                            placement: 'bottomRight',
+                        });
+                    }
                 },
                 onError: (errors) => {
                     setLoading(false);
@@ -86,7 +94,7 @@ const EditExamContainer = ({ classes, department }) => {
                         }
                     }
 
-                    api.error({
+                    notification.error({
                         message: 'Error',
                         description: errorMessage,
                         placement: 'bottomRight',
@@ -148,12 +156,7 @@ const EditExamContainer = ({ classes, department }) => {
             break;
     }
 
-    return (
-        <>
-            {contextHolder}
-            <ExamModalComponent modal={modal.editExam} handleCancel={handleCancel} content={content} title="Edit exam" />
-        </>
-    );
+    return <ExamModalComponent modal={modal.editExam} handleCancel={handleCancel} content={content} title="Edit exam" />;
 };
 
 export default EditExamContainer;

@@ -357,7 +357,7 @@ class DepartmentController extends Controller
 
             $examData = [
                 'name'               => $request->examName,
-                'slug'               => Str::slug($request->examName) . '-' . $department->slug,
+                'slug'               => Str::slug($request->examName) . '-' . $department->slug . '-' . date('Y'),
                 'description'        => $request->description,
                 'department_id'      => $department->id,
                 'start_date'         => $request->startDate,
@@ -385,9 +385,8 @@ class DepartmentController extends Controller
             return redirect()->back()->with('success', 'Exam created successfully!');
 
         } catch (Exception $e) {
-            Log::error('Error creating exam: ' . $e->getMessage());
             DB::rollBack();
-            return back()->with('error', 'Failed to create exam. Please try again.');
+            return back()->with('error', 'This name of exam already exists for this department or an error occurred while creating the exam. Please try again.');
         }
     }
 
@@ -432,7 +431,7 @@ class DepartmentController extends Controller
 
             $examData = [
                 'name'               => $request->examName,
-                'slug'               => Str::slug($request->examName),
+                'slug'               => Str::slug($request->examName) . '-' . $department->slug . '-' . date('Y'),
                 'description'        => $request->description,
                 'start_date'         => $request->startDate,
                 'end_date'           => $request->endDate,
@@ -531,7 +530,7 @@ class DepartmentController extends Controller
         }
 
         $feeTypeName = 'Exam Fee';
-        $feeTypeSlug = Str::slug($examName . ' ' . $department->slug);
+        $feeTypeSlug = Str::slug($examName . '-' . $department->slug . '-' . date('Y'));
         if ($existingFeeType) {
             // Update existing fee type
             $existingFeeType->update([
