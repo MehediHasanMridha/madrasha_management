@@ -19,9 +19,18 @@ const EditScheduleModalContainer = ({ isOpen, onClose, examData, classId, subjec
                 class_id: subject.class_id,
                 subject_name: subject.name,
                 class_name: subject.class_name,
-                exam_date: subject.exam_subjects?.[0]?.exam_date ? dayjs(subject.exam_subjects[0].exam_date).format('YYYY-MM-DD') : '',
-                start_time: subject.exam_subjects?.[0]?.start_time ? dayjs(subject.exam_subjects[0].start_time, 'HH:mm:ss').format('HH:mm') : '',
-                end_time: subject.exam_subjects?.[0]?.end_time ? dayjs(subject.exam_subjects[0].end_time, 'HH:mm:ss').format('HH:mm') : '',
+                exam_date:
+                    subject.exam_subjects?.[0]?.exam_date && subject?.exam_subjects[0]?.exam_id == examData.id
+                        ? dayjs(subject.exam_subjects[0].exam_date).format('YYYY-MM-DD')
+                        : '',
+                start_time:
+                    subject.exam_subjects?.[0]?.start_time && subject?.exam_subjects[0]?.exam_id == examData.id
+                        ? dayjs(subject.exam_subjects[0].start_time, 'HH:mm:ss').format('HH:mm')
+                        : '',
+                end_time:
+                    subject.exam_subjects?.[0]?.end_time && subject?.exam_subjects[0]?.exam_id == examData.id
+                        ? dayjs(subject.exam_subjects[0].end_time, 'HH:mm:ss').format('HH:mm')
+                        : '',
                 total_marks: subject.exam_subjects?.[0]?.total_marks || 100,
                 pass_marks: subject.exam_subjects?.[0]?.pass_marks || 33,
                 status: subject.exam_subjects?.[0]?.status || 'scheduled',
