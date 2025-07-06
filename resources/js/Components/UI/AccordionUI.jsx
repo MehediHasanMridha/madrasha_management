@@ -108,7 +108,7 @@ const AccordionUI = ({
             },
             components: {
                 Collapse: {
-                    headerBg: '#fafafa',
+                    headerBg: '#ffffff',
                     contentBg: '#ffffff',
                     headerPadding: '16px 20px',
                     contentPadding: '16px 20px',
