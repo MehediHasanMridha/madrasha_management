@@ -8,6 +8,7 @@ use App\Http\Controllers\ExamController;
 use App\Http\Controllers\FeeController;
 use App\Http\Controllers\FinanceController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\VoucherTypeController;
@@ -41,6 +42,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::put('{department_slug}/{exam_id}/update', [DepartmentController::class, 'updateExam'])->name('department.exams.update');
             Route::delete('/{exam}', [DepartmentController::class, 'destroyExam'])->name('department.exams.delete');
             Route::get('{exam_slug}/{department_slug}', [DepartmentController::class, 'exams_details'])->name('department.exams_details');
+
+            // Exam Subjects Management
+            Route::post('{exam_id}/subjects', [DepartmentController::class, 'storeExamSubjects'])->name('department.exams.subjects.store');
+            Route::put('{exam_id}/subjects', [DepartmentController::class, 'updateExamSubjects'])->name('department.exams.subjects.update');
+
+            // Exam Marks Management
+            Route::post('{exam_id}/marks', [DepartmentController::class, 'storeExamMarks'])->name('department.exams.marks.store');
+            Route::put('{exam_id}/marks', [DepartmentController::class, 'updateExamMarks'])->name('department.exams.marks.update');
         });
 
         // Global Exam Management Routes
@@ -120,6 +129,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
             'update'  => 'settings.voucher-types.update',
             'destroy' => 'settings.voucher-types.destroy',
         ]);
+
+        // Branding Settings
+        Route::get('branding', [SettingsController::class, 'branding'])->name('settings.branding.index');
+
     });
 
     // Finance

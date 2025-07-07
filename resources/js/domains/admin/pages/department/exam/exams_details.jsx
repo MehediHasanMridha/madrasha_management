@@ -1,6 +1,6 @@
 import DepartmentTabSectionComponent from '@/Components/Department/DepartmentTabSectionComponent';
 import BreadcrumbUI from '@/Components/UI/BreadcrumbUI';
-import ExamDetailsContainer from '@/Container/Department/Exams/ExamDetailsContainer';
+import ExamDetailsContainer from '@/Container/Department/Exams/ExamDetails/ExamDetailsContainer';
 import AuthenticatedLayout from '@/layouts/AuthenticatedLayout';
 import { Link } from '@inertiajs/react';
 
