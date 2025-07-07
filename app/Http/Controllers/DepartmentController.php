@@ -541,7 +541,7 @@ class DepartmentController extends Controller
                         'id'         => $academic->student->id,
                         'name'       => $academic->student->name,
                         'email'      => $academic->student->email,
-                        'roll'       => $academic->roll,
+                        'unique_id'  => $academic->student->unique_id,
                         'class_id'   => $class->id,
                         'class_name' => $class->name,
                         'exam_marks' => $academic->student->examMarks,

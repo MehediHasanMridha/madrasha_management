@@ -70,7 +70,6 @@ const AddMoneyContainer = ({ modal, setModal }) => {
                         loading={loading}
                         setType={setType}
                         setStudentId={setStudentId}
-                        setModal={setModal}
                     />
                 );
             } else {

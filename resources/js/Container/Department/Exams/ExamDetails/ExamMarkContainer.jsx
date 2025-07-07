@@ -22,46 +22,13 @@ const ExamMarkContainer = ({ classItem, exam }) => {
     const classStudents = getStudentsForClass(classItem.class.id);
     const classSubjects = getSubjectsForClass(classItem.class.id);
 
-    // Prepare data for TableUI
-    const tableData = useMemo(() => {
-        if (!classStudents || classStudents.length === 0) return { data: [] };
-
-        return {
-            data: classStudents.map((student, index) => ({
-                key: student.id,
-                id: student.id,
-                roll: student.roll || index + 1,
-                student_info: {
-                    name: student.name || 'Unknown Student',
-                    id: student.id,
-                    avatar: student.name?.charAt(0) || 'S',
-                },
-                ...classSubjects.reduce((acc, subject) => {
-                    const mark = student.exam_marks?.find((mark) => mark.subject_id === subject.id && mark.exam_id === exam.id);
-                    acc[`subject_${subject.id}`] = mark?.marks_obtained || '--';
-                    return acc;
-                }, {}),
-                average: (() => {
-                    const marks = student.exam_marks?.filter((mark) => mark.exam_id === exam.id);
-                    if (!marks || marks.length === 0) return '--';
-                    const total = marks.reduce((sum, mark) => sum + (Number(mark.marks_obtained) || 0), 0);
-                    return (total / marks.length).toFixed(1);
-                })(),
-                total:
-                    student.exam_marks
-                        ?.filter((mark) => mark.exam_id === exam.id)
-                        .reduce((total, mark) => total + (Number(mark.marks_obtained) || 0), 0) || '--',
-            })),
-        };
-    }, [classStudents, classSubjects, exam.id]);
-
     // Prepare columns for TableUI
     const tableColumns = useMemo(() => {
         const columns = [
             {
-                title: 'Roll',
-                dataIndex: 'roll',
-                key: 'roll',
+                title: 'Sl. No.',
+                dataIndex: 'sl',
+                key: 'sl',
                 width: 60,
                 align: 'center',
             },
@@ -72,12 +39,12 @@ const ExamMarkContainer = ({ classItem, exam }) => {
                 width: 250,
                 render: (studentInfo) => (
                     <div className="flex items-center gap-2">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-300 text-xs font-medium text-white">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-300 text-xs font-medium text-white">
                             {studentInfo.avatar}
                         </div>
                         <div className="flex flex-col">
                             <span className="text-sm text-[#4A4A4A]">{studentInfo.name}</span>
-                            <span className="text-xs text-[#4A4A4A]">{studentInfo.id}</span>
+                            <span className="text-xs text-[#4A4A4A]">{studentInfo.student_id}</span>
                         </div>
                     </div>
                 ),
@@ -111,9 +78,48 @@ const ExamMarkContainer = ({ classItem, exam }) => {
         return columns;
     }, [classSubjects]);
 
+    // Prepare data for TableUI
+    const tableData = useMemo(() => {
+        if (!classStudents || classStudents.length === 0) return { data: [] };
+
+        return {
+            data: classStudents.map((student, index) => ({
+                key: student.id,
+                id: student.id,
+                sl: index + 1,
+                student_info: {
+                    name: student.name || 'Unknown Student',
+                    student_id: student.unique_id || 'N/A',
+                    avatar: student.name?.charAt(0) || 'S',
+                },
+                ...classSubjects.reduce((acc, subject) => {
+                    const mark = student.exam_marks?.find((mark) => mark.subject_id === subject.id && mark.exam_id === exam.id);
+                    acc[`subject_${subject.id}`] = mark?.marks_obtained || '--';
+                    return acc;
+                }, {}),
+                average: (() => {
+                    const marks = student.exam_marks?.filter((mark) => mark.exam_id === exam.id);
+                    if (!marks || marks.length === 0) return '--';
+                    const total = marks.reduce((sum, mark) => sum + (Number(mark.marks_obtained) || 0), 0);
+                    return (total / marks.length).toFixed(1);
+                })(),
+                total:
+                    student.exam_marks
+                        ?.filter((mark) => mark.exam_id === exam.id)
+                        .reduce((total, mark) => total + (Number(mark.marks_obtained) || 0), 0) || '--',
+            })),
+        };
+    }, [classStudents, classSubjects, exam.id]);
+
     let content = null;
     if (classStudents.length === 0) {
         content = <div className="p-6 text-center text-[#AFAFAF]">No students available for this class.</div>;
+    }
+
+    if (classStudents.length > 0) {
+        content = (
+            <TableUI data={tableData} columns={tableColumns} showLoading={false} pagination={false} size="small" scroll={{ x: 'max-content' }} />
+        );
     }
 
     return (
@@ -141,20 +147,7 @@ const ExamMarkContainer = ({ classItem, exam }) => {
                         </StaticBtn>
                     </div>
                 </div>
-
-                {/* Mark Sheet Table */}
-                {classStudents.length === 0 ? (
-                    content
-                ) : (
-                    <TableUI
-                        data={tableData}
-                        columns={tableColumns}
-                        showLoading={false}
-                        pagination={false}
-                        size="small"
-                        scroll={{ x: 'max-content' }}
-                    />
-                )}
+                {content}
             </div>
 
             {/* Edit Mark Modal */}
