@@ -153,6 +153,7 @@ const EditScheduleModalContainer = ({ isOpen, onClose, examData, classId, subjec
                         description: 'Exam schedule updated successfully',
                         placement: 'bottomRight',
                     });
+                    router.reload({ only: ['subjects'] });
                     onClose();
                 },
                 onError: (errors) => {
@@ -161,6 +162,9 @@ const EditScheduleModalContainer = ({ isOpen, onClose, examData, classId, subjec
                         description: errors.message || 'Failed to save exam schedule',
                         placement: 'bottomRight',
                     });
+                },
+                onFinish: () => {
+                    router.reload({ only: ['subjects'] });
                 },
             },
         );
