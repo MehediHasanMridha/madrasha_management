@@ -2,10 +2,11 @@ import Field from '@/Components/UI/Field';
 import ModalUI from '@/Components/UI/ModalUI';
 import StaticBtn from '@/Components/UI/StaticBtn';
 import SubmitBtn from '@/Components/UI/SubmitBtn';
+import TableUI from '@/Components/UI/TableUI';
 import { cn } from '@/lib/utils';
 import { router } from '@inertiajs/react';
 import { notification } from 'antd';
-import React, { useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 
 const EditMarkModalContainer = ({ isOpen, onClose, examData, classItem, students, subjects }) => {
@@ -143,89 +144,99 @@ const EditMarkModalContainer = ({ isOpen, onClose, examData, classItem, students
         </div>
     );
 
-    const renderFormField = (studentIndex, subjectIndex, fieldName, inputProps = {}) => {
-        const error = errors?.students?.[studentIndex]?.subjects?.[subjectIndex]?.[fieldName];
-        const fieldRegister = register(`students.${studentIndex}.subjects.${subjectIndex}.${fieldName}`, validationRules[fieldName]);
+    // Prepare data for TableUI
+    const tableData = useMemo(() => {
+        if (!students || students.length === 0) return { data: [] };
 
-        return (
-            <Field className="relative" error={error}>
-                <input
-                    {...fieldRegister}
-                    {...inputProps}
-                    className={cn(
-                        'w-full rounded border p-2 text-sm focus:outline-none',
-                        error ? 'border-red-500 focus:border-red-500' : 'border-[#AFAFAF] focus:border-[#0267FF]',
-                    )}
-                />
-            </Field>
-        );
-    };
+        return {
+            data: fields.map((student, studentIndex) => ({
+                key: student.student_id,
+                id: student.student_id,
+                roll: student.student_roll,
+                student_name: student.student_name,
+                studentIndex, // Store index for form handling
+                ...subjects.reduce((acc, subject, subjectIndex) => {
+                    acc[`subject_${subject.id}`] = {
+                        subjectIndex,
+                        value: watchedValues.students?.[studentIndex]?.subjects?.[subjectIndex]?.marks_obtained || '',
+                        totalMarks: subject.exam_subjects?.[0]?.total_marks || 100,
+                    };
+                    return acc;
+                }, {}),
+            })),
+        };
+    }, [fields, subjects, watchedValues]);
+
+    // Prepare columns for TableUI
+    const tableColumns = useMemo(() => {
+        const columns = [
+            {
+                title: 'Roll',
+                dataIndex: 'roll',
+                key: 'roll',
+                width: 60,
+                align: 'center',
+            },
+            {
+                title: 'Student Name',
+                dataIndex: 'student_name',
+                key: 'student_name',
+                width: 200,
+                render: (name) => <span className="text-sm text-[#4A4A4A]">{name}</span>,
+            },
+            // Dynamic subject columns
+            ...subjects.map((subject) => ({
+                title: (
+                    <div>
+                        <div className="text-sm font-medium text-[#131313]">{subject.name}</div>
+                        <div className="mt-1 text-xs text-[#4A4A4A]">/{subject.exam_subjects?.[0]?.total_marks || 100}</div>
+                    </div>
+                ),
+                dataIndex: `subject_${subject.id}`,
+                key: `subject_${subject.id}`,
+                align: 'center',
+                render: (subjectData, record) => {
+                    const error = errors?.students?.[record.studentIndex]?.subjects?.[subjectData.subjectIndex]?.marks_obtained;
+                    const fieldRegister = register(
+                        `students.${record.studentIndex}.subjects.${subjectData.subjectIndex}.marks_obtained`,
+                        validationRules.marks_obtained,
+                    );
+
+                    return (
+                        <Field className="relative" error={error}>
+                            <input
+                                {...fieldRegister}
+                                type="number"
+                                min={0}
+                                max={subjectData.totalMarks}
+                                step={0.01}
+                                placeholder="0"
+                                className={cn(
+                                    'w-full rounded border p-2 text-sm focus:outline-none',
+                                    error ? 'border-red-500 focus:border-red-500' : 'border-[#AFAFAF] focus:border-[#0267FF]',
+                                )}
+                            />
+                        </Field>
+                    );
+                },
+            })),
+        ];
+
+        return columns;
+    }, [subjects, errors, register, validationRules]);
 
     const renderMarksTable = () => (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div className="rounded border-[0.5px] border-[#AFAFAF]">
-                <div className="overflow-x-auto">
-                    <div className="grid min-w-[1000px] gap-0" style={{ gridTemplateColumns: `60px 200px ${'1fr '.repeat(subjects.length)}` }}>
-                        {/* Header Row */}
-                        <div className="border-b-[0.5px] border-[#AFAFAF] bg-[#F2F2F2] p-3">
-                            <span className="text-sm font-medium text-[#131313]">Roll</span>
-                        </div>
-                        <div className="border-b-[0.5px] border-l-[0.5px] border-[#AFAFAF] bg-[#F2F2F2] p-3">
-                            <span className="text-sm font-medium text-[#131313]">Student</span>
-                        </div>
-                        {subjects.map((subject, index) => (
-                            <div key={index} className="border-b-[0.5px] border-l-[0.5px] border-[#AFAFAF] bg-[#F2F2F2] p-3">
-                                <div className="text-sm font-medium text-[#131313]">{subject.name}</div>
-                                <div className="mt-1 text-xs text-[#4A4A4A]">/{subject.exam_subjects?.[0]?.total_marks || 100}</div>
-                            </div>
-                        ))}
-
-                        {/* Student Rows */}
-                        {fields.map((student, studentIndex) => (
-                            <React.Fragment key={student.id}>
-                                {/* Roll */}
-                                <div
-                                    className={cn(
-                                        'flex items-center border-b-[0.5px] border-[#AFAFAF] p-3',
-                                        studentIndex % 2 === 0 ? 'bg-white' : 'bg-[#F2F2F2]',
-                                    )}
-                                >
-                                    <span className="text-sm text-[#4A4A4A]">{student.student_roll}</span>
-                                </div>
-
-                                {/* Student Name */}
-                                <div
-                                    className={cn(
-                                        'flex items-center border-b-[0.5px] border-l-[0.5px] border-[#AFAFAF] p-3',
-                                        studentIndex % 2 === 0 ? 'bg-white' : 'bg-[#F2F2F2]',
-                                    )}
-                                >
-                                    <span className="text-sm text-[#4A4A4A]">{student.student_name}</span>
-                                </div>
-
-                                {/* Subject Marks */}
-                                {subjects.map((subject, subjectIndex) => (
-                                    <div
-                                        key={subjectIndex}
-                                        className={cn(
-                                            'border-b-[0.5px] border-l-[0.5px] border-[#AFAFAF] p-2',
-                                            studentIndex % 2 === 0 ? 'bg-white' : 'bg-[#F2F2F2]',
-                                        )}
-                                    >
-                                        {renderFormField(studentIndex, subjectIndex, 'marks_obtained', {
-                                            type: 'number',
-                                            min: 0,
-                                            max: subject.exam_subjects?.[0]?.total_marks || 100,
-                                            step: 0.01,
-                                            placeholder: '0',
-                                        })}
-                                    </div>
-                                ))}
-                            </React.Fragment>
-                        ))}
-                    </div>
-                </div>
-            </div>
+            <TableUI
+                data={tableData}
+                columns={tableColumns}
+                showLoading={false}
+                pagination={false}
+                size="small"
+                scroll={{ x: 'max-content' }}
+                rowClassName={(record, index) => (index % 2 === 0 ? 'bg-white' : 'bg-gray-50')}
+                className="max-h-[550px] overflow-y-auto"
+            />
 
             {/* Action Buttons */}
             <div className="flex justify-end gap-4 pt-4">
@@ -251,6 +262,7 @@ const EditMarkModalContainer = ({ isOpen, onClose, examData, classItem, students
             width="90%"
             title={<h1 className="border-b border-[#AFAFAF] pb-3 text-[20px] font-semibold text-[#111827]">Edit Marks</h1>}
             footer={null}
+            style={{ top: 0 }}
         >
             <div className="space-y-6 p-6">{fields.length === 0 ? renderEmptyState() : renderMarksTable()}</div>
         </ModalUI>
