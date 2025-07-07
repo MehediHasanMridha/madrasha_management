@@ -53,13 +53,14 @@ const ExamMarkContainer = ({ classItem, exam }) => {
                     {(() => {
                         const marks = student.exam_marks?.filter((mark) => mark.exam_id === exam.id);
                         if (!marks || marks.length === 0) return '--';
-                        const total = marks.reduce((sum, mark) => sum + (mark.marks_obtained || 0), 0);
+                        const total = marks.reduce((sum, mark) => sum + (Number(mark.marks_obtained) || 0), 0);
                         return (total / marks.length).toFixed(1);
                     })()}
                 </div>
                 <div className="text-sm text-[#4A4A4A]">
-                    {student.exam_marks?.filter((mark) => mark.exam_id === exam.id).reduce((total, mark) => total + (mark.marks_obtained || 0), 0) ||
-                        '--'}
+                    {student.exam_marks
+                        ?.filter((mark) => mark.exam_id === exam.id)
+                        .reduce((total, mark) => total + (Number(mark.marks_obtained) || 0), 0) || '--'}
                 </div>
             </div>
         ));

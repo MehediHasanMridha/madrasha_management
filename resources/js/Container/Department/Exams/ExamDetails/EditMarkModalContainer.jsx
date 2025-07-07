@@ -12,24 +12,25 @@ const EditMarkModalContainer = ({ isOpen, onClose, examData, classItem, students
     // Prepare initial form data
     const initialFormData = useMemo(
         () => ({
-            marks:
-                students?.flatMap((student) =>
-                    subjects?.map((subject) => ({
-                        student_id: student.id,
-                        subject_id: subject.id,
-                        class_id: classItem.class.id,
-                        student_name: student.name,
-                        subject_name: subject.name,
-                        student_roll: student.roll || students.indexOf(student) + 1,
-                        marks_obtained:
-                            student.exam_marks?.find((mark) => mark.subject_id === subject.id && mark.exam_id === examData.id)?.marks_obtained || '',
-                        total_marks: subject.exam_subjects?.[0]?.total_marks || 100,
-                        pass_marks: subject.exam_subjects?.[0]?.pass_marks || 40,
-                        status:
-                            student.exam_marks?.find((mark) => mark.subject_id === subject.id && mark.exam_id === examData.id)?.status || 'present',
-                        remarks: student.exam_marks?.find((mark) => mark.subject_id === subject.id && mark.exam_id === examData.id)?.remarks || '',
-                    })),
-                ) || [],
+            students:
+                students?.map((student) => ({
+                    student_id: student.id,
+                    student_name: student.name,
+                    student_roll: student.roll || students.indexOf(student) + 1,
+                    class_id: classItem.class.id,
+                    subjects:
+                        subjects?.map((subject) => ({
+                            subject_id: subject.id,
+                            marks_obtained:
+                                student.exam_marks?.find((mark) => mark.subject_id === subject.id && mark.exam_id === examData.id)?.marks_obtained ||
+                                '',
+                            total_marks: subject.exam_subjects?.[0]?.total_marks || 100,
+                            pass_marks: subject.exam_subjects?.[0]?.pass_marks || 40,
+                            status:
+                                student.exam_marks?.find((mark) => mark.subject_id === subject.id && mark.exam_id === examData.id)?.status ||
+                                'present',
+                        })) || [],
+                })) || [],
         }),
         [students, subjects, classItem, examData],
     );
@@ -50,7 +51,7 @@ const EditMarkModalContainer = ({ isOpen, onClose, examData, classItem, students
     // Use field array for dynamic form handling
     const { fields } = useFieldArray({
         control,
-        name: 'marks',
+        name: 'students',
     });
 
     // Watch all form values for validation
@@ -68,9 +69,9 @@ const EditMarkModalContainer = ({ isOpen, onClose, examData, classItem, students
     // Form validation rules
     const validationRules = {
         marks_obtained: {
-            validate: (value, formValues, index) => {
+            validate: (value, formValues, studentIndex, subjectIndex) => {
                 if (!value) return true; // Allow empty values
-                const totalMarks = watchedValues.marks?.[index]?.total_marks;
+                const totalMarks = watchedValues.students?.[studentIndex]?.subjects?.[subjectIndex]?.total_marks;
                 if (totalMarks && Number(value) > Number(totalMarks)) {
                     return 'Marks cannot exceed total marks';
                 }
@@ -84,23 +85,29 @@ const EditMarkModalContainer = ({ isOpen, onClose, examData, classItem, students
 
     // Form submission handler
     const onSubmit = (formData) => {
-        // Filter only marks that have values
-        const marksWithValues = formData.marks.filter((mark) => mark.marks_obtained !== '');
+        // Transform data to the expected format
+        const marksData = [];
+
+        formData.students.forEach((student) => {
+            student.subjects.forEach((subject) => {
+                if (subject.marks_obtained !== '') {
+                    marksData.push({
+                        student_id: student.student_id,
+                        subject_id: subject.subject_id,
+                        class_id: student.class_id,
+                        marks_obtained: Number(subject.marks_obtained),
+                        total_marks: Number(subject.total_marks),
+                        pass_marks: Number(subject.pass_marks),
+                        status: subject.status,
+                        remarks: subject.remarks || '',
+                    });
+                }
+            });
+        });
 
         router.post(
             route('department.exams.marks.store', { exam_id: examData?.id }),
-            {
-                marks: marksWithValues.map((mark) => ({
-                    student_id: mark.student_id,
-                    subject_id: mark.subject_id,
-                    class_id: mark.class_id,
-                    marks_obtained: Number(mark.marks_obtained),
-                    total_marks: Number(mark.total_marks),
-                    pass_marks: Number(mark.pass_marks),
-                    status: mark.status,
-                    remarks: mark.remarks,
-                })),
-            },
+            { marks: marksData },
             {
                 onSuccess: () => {
                     notification.success({
@@ -136,9 +143,9 @@ const EditMarkModalContainer = ({ isOpen, onClose, examData, classItem, students
         </div>
     );
 
-    const renderFormField = (field, index, fieldName, inputProps = {}) => {
-        const error = errors?.marks?.[index]?.[fieldName];
-        const fieldRegister = register(`marks.${index}.${fieldName}`, validationRules[fieldName]);
+    const renderFormField = (studentIndex, subjectIndex, fieldName, inputProps = {}) => {
+        const error = errors?.students?.[studentIndex]?.subjects?.[subjectIndex]?.[fieldName];
+        const fieldRegister = register(`students.${studentIndex}.subjects.${subjectIndex}.${fieldName}`, validationRules[fieldName]);
 
         return (
             <Field className="relative" error={error}>
@@ -158,102 +165,62 @@ const EditMarkModalContainer = ({ isOpen, onClose, examData, classItem, students
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="rounded border-[0.5px] border-[#AFAFAF]">
                 <div className="overflow-x-auto">
-                    <div className="grid min-w-[1000px] grid-cols-6 gap-0">
+                    <div className="grid min-w-[1000px] gap-0" style={{ gridTemplateColumns: `60px 200px ${'1fr '.repeat(subjects.length)}` }}>
                         {/* Header Row */}
-                        <div className="border-b-[0.5px] border-[#AFAFAF] bg-[#F2F2F2] p-4">
-                            <span className="text-base font-medium text-[#131313]">Roll</span>
+                        <div className="border-b-[0.5px] border-[#AFAFAF] bg-[#F2F2F2] p-3">
+                            <span className="text-sm font-medium text-[#131313]">Roll</span>
                         </div>
-                        <div className="border-b-[0.5px] border-l-[0.5px] border-[#AFAFAF] bg-[#F2F2F2] p-4">
-                            <span className="text-base font-medium text-[#131313]">Student</span>
+                        <div className="border-b-[0.5px] border-l-[0.5px] border-[#AFAFAF] bg-[#F2F2F2] p-3">
+                            <span className="text-sm font-medium text-[#131313]">Student</span>
                         </div>
-                        <div className="border-b-[0.5px] border-l-[0.5px] border-[#AFAFAF] bg-[#F2F2F2] p-4">
-                            <span className="text-base font-medium text-[#131313]">Subject</span>
-                        </div>
-                        <div className="border-b-[0.5px] border-l-[0.5px] border-[#AFAFAF] bg-[#F2F2F2] p-4">
-                            <span className="text-base font-medium text-[#131313]">Marks Obtained</span>
-                        </div>
-                        <div className="border-b-[0.5px] border-l-[0.5px] border-[#AFAFAF] bg-[#F2F2F2] p-4">
-                            <span className="text-base font-medium text-[#131313]">Total Marks</span>
-                        </div>
-                        <div className="border-b-[0.5px] border-l-[0.5px] border-[#AFAFAF] bg-[#F2F2F2] p-4">
-                            <span className="text-base font-medium text-[#131313]">Status</span>
-                        </div>
+                        {subjects.map((subject, index) => (
+                            <div key={index} className="border-b-[0.5px] border-l-[0.5px] border-[#AFAFAF] bg-[#F2F2F2] p-3">
+                                <div className="text-sm font-medium text-[#131313]">{subject.name}</div>
+                                <div className="mt-1 text-xs text-[#4A4A4A]">/{subject.exam_subjects?.[0]?.total_marks || 100}</div>
+                            </div>
+                        ))}
 
-                        {/* Data Rows */}
-                        {fields.map((field, index) => (
-                            <React.Fragment key={field.id}>
+                        {/* Student Rows */}
+                        {fields.map((student, studentIndex) => (
+                            <React.Fragment key={student.id}>
                                 {/* Roll */}
                                 <div
                                     className={cn(
-                                        'flex items-center border-b-[0.5px] border-[#AFAFAF] p-4',
-                                        index % 2 === 0 ? 'bg-white' : 'bg-[#F2F2F2]',
+                                        'flex items-center border-b-[0.5px] border-[#AFAFAF] p-3',
+                                        studentIndex % 2 === 0 ? 'bg-white' : 'bg-[#F2F2F2]',
                                     )}
                                 >
-                                    <span className="text-base text-[#4A4A4A]">{field.student_roll}</span>
+                                    <span className="text-sm text-[#4A4A4A]">{student.student_roll}</span>
                                 </div>
 
                                 {/* Student Name */}
                                 <div
                                     className={cn(
-                                        'flex items-center border-b-[0.5px] border-l-[0.5px] border-[#AFAFAF] p-4',
-                                        index % 2 === 0 ? 'bg-white' : 'bg-[#F2F2F2]',
+                                        'flex items-center border-b-[0.5px] border-l-[0.5px] border-[#AFAFAF] p-3',
+                                        studentIndex % 2 === 0 ? 'bg-white' : 'bg-[#F2F2F2]',
                                     )}
                                 >
-                                    <span className="text-base text-[#4A4A4A]">{field.student_name}</span>
+                                    <span className="text-sm text-[#4A4A4A]">{student.student_name}</span>
                                 </div>
 
-                                {/* Subject Name */}
-                                <div
-                                    className={cn(
-                                        'flex items-center border-b-[0.5px] border-l-[0.5px] border-[#AFAFAF] p-4',
-                                        index % 2 === 0 ? 'bg-white' : 'bg-[#F2F2F2]',
-                                    )}
-                                >
-                                    <span className="text-base text-[#4A4A4A]">{field.subject_name}</span>
-                                </div>
-
-                                {/* Marks Obtained */}
-                                <div
-                                    className={cn(
-                                        'relative border-b-[0.5px] border-l-[0.5px] border-[#AFAFAF] p-2',
-                                        index % 2 === 0 ? 'bg-white' : 'bg-[#F2F2F2]',
-                                    )}
-                                >
-                                    {renderFormField(field, index, 'marks_obtained', {
-                                        type: 'number',
-                                        min: 0,
-                                        max: field.total_marks,
-                                        step: 0.01,
-                                        placeholder: 'Enter marks',
-                                    })}
-                                </div>
-
-                                {/* Total Marks */}
-                                <div
-                                    className={cn(
-                                        'flex items-center border-b-[0.5px] border-l-[0.5px] border-[#AFAFAF] p-4',
-                                        index % 2 === 0 ? 'bg-white' : 'bg-[#F2F2F2]',
-                                    )}
-                                >
-                                    <span className="text-base text-[#4A4A4A]">{field.total_marks}</span>
-                                </div>
-
-                                {/* Status */}
-                                <div
-                                    className={cn(
-                                        'relative border-b-[0.5px] border-l-[0.5px] border-[#AFAFAF] p-2',
-                                        index % 2 === 0 ? 'bg-white' : 'bg-[#F2F2F2]',
-                                    )}
-                                >
-                                    <select
-                                        {...register(`marks.${index}.status`)}
-                                        className="w-full rounded border border-[#AFAFAF] p-2 text-sm focus:border-[#0267FF] focus:outline-none"
+                                {/* Subject Marks */}
+                                {subjects.map((subject, subjectIndex) => (
+                                    <div
+                                        key={subjectIndex}
+                                        className={cn(
+                                            'border-b-[0.5px] border-l-[0.5px] border-[#AFAFAF] p-2',
+                                            studentIndex % 2 === 0 ? 'bg-white' : 'bg-[#F2F2F2]',
+                                        )}
                                     >
-                                        <option value="present">Present</option>
-                                        <option value="absent">Absent</option>
-                                        <option value="incomplete">Incomplete</option>
-                                    </select>
-                                </div>
+                                        {renderFormField(studentIndex, subjectIndex, 'marks_obtained', {
+                                            type: 'number',
+                                            min: 0,
+                                            max: subject.exam_subjects?.[0]?.total_marks || 100,
+                                            step: 0.01,
+                                            placeholder: '0',
+                                        })}
+                                    </div>
+                                ))}
                             </React.Fragment>
                         ))}
                     </div>
