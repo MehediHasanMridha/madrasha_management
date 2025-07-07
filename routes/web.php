@@ -45,6 +45,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
             // Exam Subjects Management
             Route::post('{exam_id}/subjects', [DepartmentController::class, 'storeExamSubjects'])->name('department.exams.subjects.store');
             Route::put('{exam_id}/subjects', [DepartmentController::class, 'updateExamSubjects'])->name('department.exams.subjects.update');
+
+            // Exam Marks Management
+            Route::post('{exam_id}/marks', [DepartmentController::class, 'storeExamMarks'])->name('department.exams.marks.store');
+            Route::put('{exam_id}/marks', [DepartmentController::class, 'updateExamMarks'])->name('department.exams.marks.update');
         });
 
         // Global Exam Management Routes

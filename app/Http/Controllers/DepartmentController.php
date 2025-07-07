@@ -5,6 +5,7 @@ use App\Http\Resources\showStaffData;
 use App\Http\Resources\showStudentData;
 use App\Models\Department;
 use App\Models\Exam;
+use App\Models\ExamMark;
 use App\Models\ExamSubject;
 use App\Models\FeeType;
 use App\Models\User;
@@ -532,6 +533,21 @@ class DepartmentController extends Controller
                     ];
                 });
             })->unique('id')->values()),
+            'students'   => Inertia::defer(fn() => $exam->classes->flatMap(function ($class) use ($exam) {
+                return $class->academics->load(['student.examMarks' => function ($query) use ($exam) {
+                    $query->where('exam_id', $exam->id);
+                }])->map(function ($academic) use ($class) {
+                    return [
+                        'id'         => $academic->student->id,
+                        'name'       => $academic->student->name,
+                        'email'      => $academic->student->email,
+                        'roll'       => $academic->roll,
+                        'class_id'   => $class->id,
+                        'class_name' => $class->name,
+                        'exam_marks' => $academic->student->examMarks,
+                    ];
+                });
+            })->unique('id')->values()),
         ]);
     }
 
@@ -684,5 +700,94 @@ class DepartmentController extends Controller
     public function updateExamSubjects(Request $request, $exam_id)
     {
         return $this->storeExamSubjects($request, $exam_id);
+    }
+
+    /**
+     * Store or update exam marks
+     */
+    public function storeExamMarks(Request $request, $exam_id)
+    {
+        try {
+            $request->validate([
+                'marks'                  => 'required|array',
+                'marks.*.student_id'     => 'required|exists:users,id',
+                'marks.*.subject_id'     => 'required|exists:subjects,id',
+                'marks.*.class_id'       => 'required|exists:classes,id',
+                'marks.*.marks_obtained' => 'required|numeric|min:0',
+                'marks.*.total_marks'    => 'required|numeric|min:1',
+                'marks.*.pass_marks'     => 'required|numeric|min:1',
+                'marks.*.status'         => 'required|in:present,absent,incomplete',
+                'marks.*.remarks'        => 'nullable|string',
+            ]);
+
+            DB::beginTransaction();
+
+            foreach ($request->marks as $markData) {
+                $grade = $this->calculateGrade($markData['marks_obtained'], $markData['total_marks']);
+
+                ExamMark::updateOrCreate(
+                    [
+                        'exam_id'    => $exam_id,
+                        'student_id' => $markData['student_id'],
+                        'subject_id' => $markData['subject_id'],
+                        'class_id'   => $markData['class_id'],
+                    ],
+                    [
+                        'marks_obtained' => $markData['marks_obtained'],
+                        'total_marks'    => $markData['total_marks'],
+                        'pass_marks'     => $markData['pass_marks'],
+                        'grade'          => $grade,
+                        'status'         => $markData['status'],
+                        'remarks'        => $markData['remarks'] ?? null,
+                    ]
+                );
+            }
+
+            DB::commit();
+
+            return redirect()->back()->with('success', 'Exam marks updated successfully.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update exam marks: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Update exam marks
+     */
+    public function updateExamMarks(Request $request, $exam_id)
+    {
+        return $this->storeExamMarks($request, $exam_id);
+    }
+
+    /**
+     * Calculate grade based on marks
+     */
+    private function calculateGrade($marks_obtained, $total_marks)
+    {
+        if (! $marks_obtained || ! $total_marks) {
+            return 'F';
+        }
+
+        $percentage = ($marks_obtained / $total_marks) * 100;
+
+        return match (true) {
+            $percentage >= 95 => 'A+',
+            $percentage >= 90 => 'A',
+            $percentage >= 85 => 'A-',
+            $percentage >= 80 => 'B+',
+            $percentage >= 75 => 'B',
+            $percentage >= 70 => 'B-',
+            $percentage >= 65 => 'C+',
+            $percentage >= 60 => 'C',
+            $percentage >= 55 => 'C-',
+            $percentage >= 50 => 'D+',
+            $percentage >= 40 => 'D',
+            default => 'F'
+        };
     }
 }
