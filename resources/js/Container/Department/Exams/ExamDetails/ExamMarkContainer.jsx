@@ -1,7 +1,8 @@
 import StaticBtn from '@/Components/UI/StaticBtn';
+import TableUI from '@/Components/UI/TableUI';
 import { usePage } from '@inertiajs/react';
 import { Download, Edit, Upload } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import EditMarkModalContainer from './EditMarkModalContainer';
 
 const ExamMarkContainer = ({ classItem, exam }) => {
@@ -21,49 +22,98 @@ const ExamMarkContainer = ({ classItem, exam }) => {
     const classStudents = getStudentsForClass(classItem.class.id);
     const classSubjects = getSubjectsForClass(classItem.class.id);
 
+    // Prepare data for TableUI
+    const tableData = useMemo(() => {
+        if (!classStudents || classStudents.length === 0) return { data: [] };
+
+        return {
+            data: classStudents.map((student, index) => ({
+                key: student.id,
+                id: student.id,
+                roll: student.roll || index + 1,
+                student_info: {
+                    name: student.name || 'Unknown Student',
+                    id: student.id,
+                    avatar: student.name?.charAt(0) || 'S',
+                },
+                ...classSubjects.reduce((acc, subject) => {
+                    const mark = student.exam_marks?.find((mark) => mark.subject_id === subject.id && mark.exam_id === exam.id);
+                    acc[`subject_${subject.id}`] = mark?.marks_obtained || '--';
+                    return acc;
+                }, {}),
+                average: (() => {
+                    const marks = student.exam_marks?.filter((mark) => mark.exam_id === exam.id);
+                    if (!marks || marks.length === 0) return '--';
+                    const total = marks.reduce((sum, mark) => sum + (Number(mark.marks_obtained) || 0), 0);
+                    return (total / marks.length).toFixed(1);
+                })(),
+                total:
+                    student.exam_marks
+                        ?.filter((mark) => mark.exam_id === exam.id)
+                        .reduce((total, mark) => total + (Number(mark.marks_obtained) || 0), 0) || '--',
+            })),
+        };
+    }, [classStudents, classSubjects, exam.id]);
+
+    // Prepare columns for TableUI
+    const tableColumns = useMemo(() => {
+        const columns = [
+            {
+                title: 'Roll',
+                dataIndex: 'roll',
+                key: 'roll',
+                width: 60,
+                align: 'center',
+            },
+            {
+                title: 'Student Name',
+                dataIndex: 'student_info',
+                key: 'student_info',
+                width: 250,
+                render: (studentInfo) => (
+                    <div className="flex items-center gap-2">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-300 text-xs font-medium text-white">
+                            {studentInfo.avatar}
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="text-sm text-[#4A4A4A]">{studentInfo.name}</span>
+                            <span className="text-xs text-[#4A4A4A]">{studentInfo.id}</span>
+                        </div>
+                    </div>
+                ),
+            },
+            // Dynamic subject columns
+            ...classSubjects.map((subject) => ({
+                title: subject.name,
+                dataIndex: `subject_${subject.id}`,
+                key: `subject_${subject.id}`,
+                align: 'center',
+                render: (marks) => <span className="text-sm text-[#4A4A4A]">{marks}</span>,
+            })),
+            {
+                title: 'Average',
+                dataIndex: 'average',
+                key: 'average',
+                width: 100,
+                align: 'center',
+                render: (average) => <span className="text-sm text-[#4A4A4A]">{average}</span>,
+            },
+            {
+                title: 'Total',
+                dataIndex: 'total',
+                key: 'total',
+                width: 100,
+                align: 'center',
+                render: (total) => <span className="text-sm text-[#4A4A4A]">{total}</span>,
+            },
+        ];
+
+        return columns;
+    }, [classSubjects]);
+
     let content = null;
     if (classStudents.length === 0) {
         content = <div className="p-6 text-center text-[#AFAFAF]">No students available for this class.</div>;
-    }
-
-    if (classStudents.length > 0) {
-        const totalColumns = classSubjects.length + 4; // Roll + Name + Subjects + Average + Total
-        content = classStudents.map((student, studentIndex) => (
-            <div
-                key={studentIndex}
-                className={`grid items-center gap-4 p-3 ${studentIndex % 2 === 0 ? 'bg-white' : 'bg-[#F2F2F2]'}`}
-                style={{ gridTemplateColumns: `60px 250px ${'1fr '.repeat(classSubjects.length)}100px 100px` }}
-            >
-                <div className="text-sm text-[#4A4A4A]">{student.roll || studentIndex + 1}</div>
-                <div className="flex items-center gap-2">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-300 text-xs font-medium text-white">
-                        {student.name?.charAt(0) || 'S'}
-                    </div>
-                    <div className="flex flex-col">
-                        <span className="text-sm text-[#4A4A4A]">{student.name || 'Unknown Student'}</span>
-                        <span className="text-xs text-[#4A4A4A]">{student.id}</span>
-                    </div>
-                </div>
-                {classSubjects.map((subject, subjectIndex) => (
-                    <div key={subjectIndex} className="text-sm text-[#4A4A4A]">
-                        {student.exam_marks?.find((mark) => mark.subject_id === subject.id && mark.exam_id === exam.id)?.marks_obtained || '--'}
-                    </div>
-                ))}
-                <div className="text-sm text-[#4A4A4A]">
-                    {(() => {
-                        const marks = student.exam_marks?.filter((mark) => mark.exam_id === exam.id);
-                        if (!marks || marks.length === 0) return '--';
-                        const total = marks.reduce((sum, mark) => sum + (Number(mark.marks_obtained) || 0), 0);
-                        return (total / marks.length).toFixed(1);
-                    })()}
-                </div>
-                <div className="text-sm text-[#4A4A4A]">
-                    {student.exam_marks
-                        ?.filter((mark) => mark.exam_id === exam.id)
-                        .reduce((total, mark) => total + (Number(mark.marks_obtained) || 0), 0) || '--'}
-                </div>
-            </div>
-        ));
     }
 
     return (
@@ -93,24 +143,18 @@ const ExamMarkContainer = ({ classItem, exam }) => {
                 </div>
 
                 {/* Mark Sheet Table */}
-                <div className="overflow-x-auto rounded border-[0.5px] border-[#AFAFAF]">
-                    {/* Table Header */}
-                    <div
-                        className="grid min-w-[1200px] gap-4 border-b-[0.5px] border-[#AFAFAF] bg-[#F2F2F2] p-3"
-                        style={{ gridTemplateColumns: `60px 250px ${'1fr '.repeat(classSubjects.length)}100px 100px` }}
-                    >
-                        <div className="text-sm font-medium text-[#131313]">Roll</div>
-                        <div className="text-sm font-medium text-[#131313]">Student name</div>
-                        {classSubjects.map((subject, index) => (
-                            <div key={index} className="text-sm font-medium text-[#131313]">
-                                {subject.name}
-                            </div>
-                        ))}
-                        <div className="text-sm font-medium text-[#131313]">Average</div>
-                        <div className="text-sm font-medium text-[#131313]">Total</div>
-                    </div>
-                    <div className="min-w-[1200px]">{content}</div>
-                </div>
+                {classStudents.length === 0 ? (
+                    content
+                ) : (
+                    <TableUI
+                        data={tableData}
+                        columns={tableColumns}
+                        showLoading={false}
+                        pagination={false}
+                        size="small"
+                        scroll={{ x: 'max-content' }}
+                    />
+                )}
             </div>
 
             {/* Edit Mark Modal */}
