@@ -8,6 +8,7 @@ use App\Http\Controllers\ExamController;
 use App\Http\Controllers\FeeController;
 use App\Http\Controllers\FinanceController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\VoucherTypeController;
@@ -128,6 +129,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
             'update'  => 'settings.voucher-types.update',
             'destroy' => 'settings.voucher-types.destroy',
         ]);
+
+        // Branding Settings
+        Route::get('branding', [SettingsController::class, 'branding'])->name('settings.branding.index');
+
     });
 
     // Finance
