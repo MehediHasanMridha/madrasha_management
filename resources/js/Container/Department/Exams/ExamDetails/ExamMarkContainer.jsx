@@ -20,6 +20,7 @@ const ExamMarkContainer = ({ classItem, exam }) => {
     };
 
     const classStudents = getStudentsForClass(classItem.class.id);
+    console.log('🚀 ~ ExamMarkContainer ~ classStudents:', classStudents);
     const classSubjects = getSubjectsForClass(classItem.class.id);
 
     // Prepare columns for TableUI
@@ -55,7 +56,12 @@ const ExamMarkContainer = ({ classItem, exam }) => {
                 dataIndex: `subject_${subject.id}`,
                 key: `subject_${subject.id}`,
                 align: 'center',
-                render: (marks) => <span className="text-sm text-[#4A4A4A]">{marks}</span>,
+                render: ({ marks_obtained, grade }) => (
+                    <span className="text-sm text-[#4A4A4A]">
+                        {marks_obtained}
+                        {grade ? ` - (${grade})` : '--'}
+                    </span>
+                ),
             })),
             {
                 title: 'Average',
@@ -94,7 +100,7 @@ const ExamMarkContainer = ({ classItem, exam }) => {
                 },
                 ...classSubjects.reduce((acc, subject) => {
                     const mark = student.exam_marks?.find((mark) => mark.subject_id === subject.id && mark.exam_id === exam.id);
-                    acc[`subject_${subject.id}`] = mark?.marks_obtained || '--';
+                    acc[`subject_${subject.id}`] = { marks_obtained: mark?.marks_obtained, grade: mark?.grade } || '--';
                     return acc;
                 }, {}),
                 average: (() => {
