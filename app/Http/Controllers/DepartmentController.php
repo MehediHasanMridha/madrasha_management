@@ -5,6 +5,8 @@ use App\Http\Resources\showStaffData;
 use App\Http\Resources\showStudentData;
 use App\Models\Department;
 use App\Models\Exam;
+use App\Models\ExamMark;
+use App\Models\ExamSubject;
 use App\Models\FeeType;
 use App\Models\User;
 use Exception;
@@ -479,7 +481,7 @@ class DepartmentController extends Controller
     public function exams_details($exam_slug, $department_slug)
     {
         $exam = Exam::where('slug', $exam_slug)
-            ->with(['feeType', 'classes.academics.student.incomeLogs.feeType'])
+            ->with(['feeType', 'classes.academics.student.incomeLogs.feeType', 'classes.subjects'])
             ->whereHas('department', fn($q) => $q->where('slug', $department_slug))
             ->firstOrFail();
 
@@ -517,6 +519,35 @@ class DepartmentController extends Controller
             'exam'       => $exam,
             'department' => $exam->department,
             'classes'    => $data,
+            'subjects'   => Inertia::defer(fn() => $exam->classes->flatMap(function ($class) use ($exam) {
+                return $class->subjects->load('examSubjects')->filter(function ($subject) use ($exam) {
+                    return $subject->examSubjects;
+                })->map(function ($subject) use ($class, $exam) {
+                    return [
+                        'id'            => $subject->id,
+                        'name'          => $subject->name,
+                        'code'          => $subject->code,
+                        'class_id'      => $class->id,
+                        'class_name'    => $class->name,
+                        'exam_subjects' => $subject->examSubjects->where('exam_id', $exam->id)->values(),
+                    ];
+                });
+            })->unique('id')->values()),
+            'students'   => Inertia::defer(fn() => $exam->classes->flatMap(function ($class) use ($exam) {
+                return $class->academics->load(['student.examMarks' => function ($query) use ($exam) {
+                    $query->where('exam_id', $exam->id);
+                }])->map(function ($academic) use ($class) {
+                    return [
+                        'id'         => $academic->student->id,
+                        'name'       => $academic->student->name,
+                        'email'      => $academic->student->email,
+                        'unique_id'  => $academic->student->unique_id,
+                        'class_id'   => $class->id,
+                        'class_name' => $class->name,
+                        'exam_marks' => $academic->student->examMarks,
+                    ];
+                });
+            })->unique('id')->values()),
         ]);
     }
 
@@ -590,5 +621,173 @@ class DepartmentController extends Controller
                 'message' => 'Failed to retrieve exam fee details: ' . $e->getMessage(),
             ], 500);
         }
+    }
+
+    /**
+     * Store or update exam subjects
+     */
+    public function storeExamSubjects(Request $request, $exam_id)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'subjects'               => 'required|array|min:1',
+                'subjects.*.subject_id'  => 'required|exists:subjects,id',
+                'subjects.*.class_id'    => 'required|exists:classes,id',
+                'subjects.*.exam_date'   => 'required|date',
+                // 'subjects.*.start_time'  => 'required|date_format:H:i',
+                // 'subjects.*.end_time'    => 'nullable|date_format:H:i',
+                'subjects.*.total_marks' => 'required|integer|min:1|max:1000',
+                'subjects.*.pass_marks'  => 'required|integer|min:1',
+            ]);
+
+            // Custom validation for pass_marks to be less than or equal to total_marks
+            $validator->after(function ($validator) use ($request) {
+                foreach ($request->subjects as $index => $subject) {
+                    if (isset($subject['pass_marks'], $subject['total_marks']) &&
+                        $subject['pass_marks'] > $subject['total_marks']) {
+                        $validator->errors()->add(
+                            "subjects.{$index}.pass_marks",
+                            'Pass marks must be less than or equal to total marks.'
+                        );
+                    }
+                }
+            });
+
+            if ($validator->fails()) {
+                return redirect()->back()
+                    ->withErrors($validator)
+                    ->withInput();
+            }
+
+            $exam = Exam::findOrFail($exam_id);
+
+            DB::beginTransaction();
+
+            foreach ($request->subjects as $subjectData) {
+                ExamSubject::updateOrCreate(
+                    [
+                        'exam_id'    => $exam->id,
+                        'subject_id' => $subjectData['subject_id'],
+                        'class_id'   => $subjectData['class_id'],
+                    ],
+                    [
+                        'exam_date'   => $subjectData['exam_date'],
+                        'start_time'  => $subjectData['start_time'],
+                        'end_time'    => $subjectData['end_time'] ?? null,
+                        'total_marks' => $subjectData['total_marks'],
+                        'pass_marks'  => $subjectData['pass_marks'],
+                        'status'      => 'scheduled',
+                    ]
+                );
+            }
+
+            DB::commit();
+
+            return redirect()->back()->with('success', 'Exam subjects updated successfully.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update exam subjects: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Update exam subjects
+     */
+    public function updateExamSubjects(Request $request, $exam_id)
+    {
+        return $this->storeExamSubjects($request, $exam_id);
+    }
+
+    /**
+     * Store or update exam marks
+     */
+    public function storeExamMarks(Request $request, $exam_id)
+    {
+        try {
+            $request->validate([
+                'marks'                  => 'required|array',
+                'marks.*.student_id'     => 'required|exists:users,id',
+                'marks.*.subject_id'     => 'required|exists:subjects,id',
+                'marks.*.class_id'       => 'required|exists:classes,id',
+                'marks.*.marks_obtained' => 'required|numeric|min:0',
+                'marks.*.total_marks'    => 'required|numeric|min:1',
+                'marks.*.pass_marks'     => 'required|numeric|min:1',
+                'marks.*.status'         => 'required|in:present,absent,incomplete',
+                'marks.*.remarks'        => 'nullable|string',
+            ]);
+
+            DB::beginTransaction();
+
+            foreach ($request->marks as $markData) {
+                $grade = $this->calculateGrade($markData['marks_obtained'], $markData['total_marks']);
+
+                ExamMark::updateOrCreate(
+                    [
+                        'exam_id'    => $exam_id,
+                        'student_id' => $markData['student_id'],
+                        'subject_id' => $markData['subject_id'],
+                        'class_id'   => $markData['class_id'],
+                    ],
+                    [
+                        'marks_obtained' => $markData['marks_obtained'],
+                        'total_marks'    => $markData['total_marks'],
+                        'pass_marks'     => $markData['pass_marks'],
+                        'grade'          => $grade,
+                        'status'         => $markData['status'],
+                        'remarks'        => $markData['remarks'] ?? null,
+                    ]
+                );
+            }
+
+            DB::commit();
+
+            return redirect()->back()->with('success', 'Exam marks updated successfully.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update exam marks: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Update exam marks
+     */
+    public function updateExamMarks(Request $request, $exam_id)
+    {
+        return $this->storeExamMarks($request, $exam_id);
+    }
+
+    /**
+     * Calculate grade based on marks
+     */
+    private function calculateGrade($marks_obtained, $total_marks)
+    {
+        if (! $marks_obtained || ! $total_marks) {
+            return 'F';
+        }
+
+        $percentage = ($marks_obtained / $total_marks) * 100;
+
+        return match (true) {
+            $percentage >= 95 => 'A+',
+            $percentage >= 90 => 'A',
+            $percentage >= 85 => 'A-',
+            $percentage >= 80 => 'B+',
+            $percentage >= 75 => 'B',
+            $percentage >= 70 => 'B-',
+            $percentage >= 65 => 'C+',
+            $percentage >= 60 => 'C',
+            $percentage >= 55 => 'C-',
+            $percentage >= 50 => 'D+',
+            $percentage >= 40 => 'D',
+            default => 'F'
+        };
     }
 }

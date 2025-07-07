@@ -105,4 +105,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(BlogPost::class)->where('status', 'published');
     }
+
+    public function examMarks()
+    {
+        return $this->hasMany(ExamMark::class, 'student_id');
+    }
 }

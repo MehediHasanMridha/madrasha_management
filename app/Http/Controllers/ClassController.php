@@ -8,6 +8,7 @@ use App\Models\Subject;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class ClassController extends Controller
@@ -124,9 +125,11 @@ class ClassController extends Controller
             }
 
             $class->name = $request->input('name');
-            $class->slug = Str::slug($request->input('name')) . '-' . ($class->department->slug ?? uniqid());
-            $class->des  = $request->input('description') ?? null;
-            $class->img  = $request->input('icon') ?? null;
+            if ($class->name !== $request->input('name')) {
+                $class->slug = Str::slug($request->input('name')) . '-' . ($class->department->slug ?? uniqid());
+            }
+            $class->des = $request->input('description') ?? null;
+            $class->img = $request->input('icon') ?? null;
 
             $class->save();
 
@@ -164,28 +167,54 @@ class ClassController extends Controller
             }
 
             // Update subjects for the class
-            // First, delete existing subjects for this class
-            Subject::where('class_id', $class->id)->delete();
+            $existingSubjects    = Subject::where('class_id', $class->id)->get()->keyBy('id');
+            $submittedSubjectIds = [];
 
-            // Then create new subjects
             if ($request->has('subjects') && is_array($request->input('subjects'))) {
                 foreach ($request->input('subjects') as $subjectData) {
                     if (! empty($subjectData['name'])) {
-                        Subject::create([
-                            'name'     => $subjectData['name'],
-                            'slug'     => Str::slug($subjectData['name']) . '-' . $class->slug,
-                            'code'     => $subjectData['code'] ?? null,
-                            'class_id' => $class->id,
-                        ]);
+                        $subjectId = $subjectData['id'] ?? null;
+                        if ($subjectId && $existingSubjects->has($subjectId)) {
+                            // Update existing subject
+                            $subject    = $existingSubjects->get($subjectId);
+                            $updateData = [
+                                'name' => $subjectData['name'],
+                                'code' => $subjectData['code'] ?? null,
+                            ];
+
+                            if ($subjectData['name'] !== $subject->name) {
+                                $updateData['slug'] = Str::slug($subjectData['name']) . '-' . $class->slug;
+                            }
+
+                            $subject->update($updateData);
+                            $submittedSubjectIds[] = $subjectId;
+                        } else {
+                            // Create new subject
+                            $newSubject = Subject::create([
+                                'name'     => $subjectData['name'],
+                                'slug'     => Str::slug($subjectData['name']) . '-' . $class->slug,
+                                'code'     => $subjectData['code'] ?? null,
+                                'class_id' => $class->id,
+                            ]);
+                            $submittedSubjectIds[] = $newSubject->id;
+                        }
                     }
                 }
             }
+
+            // Delete subjects that were not submitted (removed from form)
+            Subject::where('class_id', $class->id)
+                ->whereNotIn('id', $submittedSubjectIds)
+                ->delete();
 
             DB::commit();
             return redirect()->back()->with('success', 'Class updated successfully.');
 
         } catch (QueryException $e) {
             DB::rollBack();
+            Log::info('Error updating class', [
+                'error' => $e->getMessage(),
+            ]);
             if ($e->getCode() === '23000') {
                 return redirect()
                     ->back()
