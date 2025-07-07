@@ -45,3 +45,10 @@ jobs:
                       **/.git*/**
                       **/node_modules/**
                   # **/vendor/**
+
+            # send notification to telegram
+            - name: Send notification to Telegram
+              uses: appleboy/telegram-action@master
+              with:
+                  to: ${{ secrets.TELEGRAM_TO }}
+                  token: ${{ secrets.TELEGRAM_TOKEN }}
