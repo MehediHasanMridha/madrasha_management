@@ -17,13 +17,13 @@ const Welcome = () => {
                 <ApplicationLogo className="h-20 w-20 rounded-full fill-current" />
                 <div className="ml-auto">
                     <nav className="flex space-x-6">
-                        <a href="/contact" className="text-gray-700 transition-colors hover:text-blue-600">
+                        <a href="/#" className="text-gray-700 transition-colors hover:text-blue-600">
                             Contact
                         </a>
-                        <a href="/admission" className="text-gray-700 transition-colors hover:text-blue-600">
+                        <a href="/#" className="text-gray-700 transition-colors hover:text-blue-600">
                             Admission
                         </a>
-                        <a href="/about" className="text-gray-700 transition-colors hover:text-blue-600">
+                        <a href="/#" className="text-gray-700 transition-colors hover:text-blue-600">
                             About Us
                         </a>
                         <Link href={route('login')} className="text-gray-700 transition-colors hover:text-blue-600">
