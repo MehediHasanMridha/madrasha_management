@@ -24,7 +24,8 @@ class BrandingRequest extends FormRequest
             'institute_name'        => 'sometimes|string|max:255',
             'institute_name_bangla' => 'sometimes|string|max:255',
             'logo'                  => 'sometimes|nullable|file|image|max:2048',
-            'favicon'               => 'sometimes|nullable|file|image|max:1024|dimensions:max_width=64,max_height=64',
+            // 'favicon'               => 'sometimes|nullable|file|image|max:1024|dimensions:max_width=64,max_height=64',
+            'favicon'               => 'sometimes|nullable|file|image|max:1024',
         ];
     }
 
