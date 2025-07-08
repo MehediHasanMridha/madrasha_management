@@ -132,6 +132,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Branding Settings
         Route::get('branding', [SettingsController::class, 'branding'])->name('settings.branding.index');
+        Route::post('branding', [SettingsController::class, 'updateBranding'])->name('settings.branding.update');
 
     });
 

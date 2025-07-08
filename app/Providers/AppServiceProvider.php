@@ -1,8 +1,11 @@
 <?php
 namespace App\Providers;
 
+use App\Models\Setting;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\ServiceProvider;
+use Inertia\Inertia;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -42,6 +45,20 @@ class AppServiceProvider extends ServiceProvider
 
                 return new \Illuminate\Filesystem\FilesystemAdapter($driver, $adapter);
             });
+            if (DB::connection()->getPdo()) {
+                $brandingSettings = Setting::getSettings([
+                    'institute_name',
+                    'institute_name_bangla',
+                    'logo_path',
+                ]);
+                Inertia::share([
+                    'institute' => [
+                        'name'        => $brandingSettings['institute_name'] ?? config('app.institute_name'),
+                        'name_bangla' => $brandingSettings['institute_name_bangla'] ?? config('app.institute_name_bangla'),
+                        'logo'        => $brandingSettings['logo_path'] ?? config('app.logo_path'),
+                    ],
+                ]);
+            }
         } catch (\Exception $e) {
             // your exception handling logic
         }

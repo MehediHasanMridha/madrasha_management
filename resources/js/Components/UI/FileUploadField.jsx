@@ -11,7 +11,7 @@ const getBase64 = (file) =>
         reader.onerror = (error) => reject(error);
     });
 
-const FileUploadField = ({ control, fieldName, type = 'picture-card', className, text, required = false, ...props }) => {
+const FileUploadField = ({ control, fieldName, type = 'picture-card', className, text, required = false, onChange, ...props }) => {
     const [previewOpen, setPreviewOpen] = useState(false);
     const [fileList, setFileList] = useState([]);
     const [previewImage, setPreviewImage] = useState('');
@@ -23,6 +23,12 @@ const FileUploadField = ({ control, fieldName, type = 'picture-card', className,
         //     file: newFileList[0],
         //     fileList: newFileList,
         // });
+        if (onChange) {
+            onChange({
+                file: newFileList[0]?.originFileObj,
+                fileList: newFileList,
+            });
+        }
     };
 
     const handlePreview = async (file) => {
