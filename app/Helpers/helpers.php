@@ -7,7 +7,7 @@ use Intervention\Image\Laravel\Facades\Image;
 
 //image processing & uploading function
 if (! function_exists('uploadImage')) {
-    function uploadImage($modelAttribute, $image, $path, $width = 300, $height = 300, $quality = 90, $type = 'webp')
+    function uploadImage($modelAttribute, $image, $path, $name = null, $width = 300, $height = 300, $quality = 90, $type = 'webp')
     {
         if ($modelAttribute && file_exists(public_path($path . $modelAttribute))) {
             unlink(public_path($path . $modelAttribute));
@@ -26,6 +26,9 @@ if (! function_exists('uploadImage')) {
         if ($type == 'png') {
             $filename = time() . '.' . 'png';
             $imageProcessed->toPng();
+        }
+        if ($name) {
+            $filename = $name . '.' . $type;
         }
 
         $imageUrl = public_path($path . $filename);

@@ -12,11 +12,13 @@ use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\VoucherTypeController;
+use App\Http\Controllers\WelcomeController;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::redirect('/', '/login');
+// Route::redirect('/', '/login');
+Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
 
 Route::middleware(['auth', 'verified'])->group(function () {
 
@@ -132,6 +134,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Branding Settings
         Route::get('branding', [SettingsController::class, 'branding'])->name('settings.branding.index');
+        Route::post('branding', [SettingsController::class, 'updateBranding'])->name('settings.branding.update');
 
     });
 

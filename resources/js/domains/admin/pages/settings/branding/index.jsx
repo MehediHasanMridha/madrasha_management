@@ -1,7 +1,12 @@
-import SettingLeftSide from '@/Container/SettingsContainer/SettingLeftSide';
+import BrandingContainer from '@/Container/SettingsContainer/Branding/BrandingContainer';
+import SettingsLayout from '@/layouts/settings/SettingsLayout';
 
-const Branding = () => {
-    return <SettingLeftSide></SettingLeftSide>;
+const Branding = ({ settings = {} }) => {
+    return (
+        <SettingsLayout>
+            <BrandingContainer settings={settings} />
+        </SettingsLayout>
+    );
 };
 
 export default Branding;
