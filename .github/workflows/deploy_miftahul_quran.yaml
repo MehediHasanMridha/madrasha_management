@@ -51,4 +51,7 @@ jobs:
               with:
                   to: ${{ secrets.TELEGRAM_TO }}
                   token: ${{ secrets.TELEGRAM_TOKEN }}
-                  message: 'Miftahul Quran server has been updated successfully.'
+                  message: |
+                      Miftahul Quran server has been updated successfully.
+                      Branch: `${{ github.ref }}`
+                      Commit: `${{ github.sha }}`
