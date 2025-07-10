@@ -49,7 +49,7 @@ class SettingsController extends Controller
                 $faviconPath       = uploadImage($oldFaviconPath, $request->file('favicon'), '/', name: 'favicon', type: 'png', width: 32, height: 32);
                 $publicFaviconPath = public_path('favicon.ico');
                 // Copy the uploaded file as favicon.ico
-                copy($faviconPath, $publicFaviconPath);
+                copy(public_path($faviconPath), $publicFaviconPath);
                 Setting::setValue('favicon_path', $faviconPath);
             }
 
