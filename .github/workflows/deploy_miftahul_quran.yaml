@@ -38,7 +38,7 @@ jobs:
                   server: ${{ secrets.MIFTAHUL_HOST }}
                   port: 21
                   username: ${{ secrets.MIFTAHUL_USER }}
-                  password: ${{ secrets.MAIN_PASS }}
+                  password: ${{ secrets.MIFTAHUL_PASS }}
                   server-dir: public_html/
                   exclude: |
                       **/.git*
