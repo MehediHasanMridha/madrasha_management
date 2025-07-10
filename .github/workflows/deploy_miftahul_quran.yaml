@@ -1,4 +1,4 @@
-name: deploy to server
+name: deploy to Miftahul Quran server
 
 on:
     push:
@@ -51,3 +51,4 @@ jobs:
               with:
                   to: ${{ secrets.TELEGRAM_TO }}
                   token: ${{ secrets.TELEGRAM_TOKEN }}
+                  message: 'Miftahul Quran server has been updated successfully.'
