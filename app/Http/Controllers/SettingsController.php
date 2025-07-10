@@ -39,7 +39,7 @@ class SettingsController extends Controller
             // Handle logo upload
             if ($request->hasFile('logo')) {
                 $data     = Setting::getValue('logo_path'); // Get old logo path
-                $logoPath = uploadImage($data, $request->file('logo'), '/', name: 'logo');
+                $logoPath = uploadImage($data, $request->file('logo'), null, name: 'logo');
                 Setting::setValue('logo_path', $logoPath);
             }
 
