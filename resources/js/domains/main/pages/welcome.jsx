@@ -6,7 +6,6 @@ import language_education from '@/assets/images/curriculum/language-education.pn
 import moral_education from '@/assets/images/curriculum/moral-education.png';
 import HeroImg from '@/assets/images/hero_img.webp'; // Ensure this path is correct
 import ApplicationLogo from '@/Components/ApplicationLogo';
-import StaticBtn from '@/Components/UI/StaticBtn';
 import { Link } from '@inertiajs/react';
 import Marquee from 'react-fast-marquee';
 const Welcome = () => {
@@ -68,7 +67,7 @@ const Welcome = () => {
                                 সময়ের চাহিদা অনুসারে শিক্ষার সুষম সমন্বয়।
                             </p>
                         </div>
-                        <StaticBtn className="mx-auto w-fit text-sm sm:text-base lg:mx-0">এখনই রেজিস্ট্রেশন করুন</StaticBtn>
+                        {/* <StaticBtn className="mx-auto w-fit text-sm sm:text-base lg:mx-0">এখনই রেজিস্ট্রেশন করুন</StaticBtn> */}
                     </div>
                     <div className="order-1 h-[250px] w-full overflow-hidden rounded-lg bg-gray-200 sm:h-[300px] md:h-[350px] lg:order-2 lg:h-[450px] lg:w-[588px]">
                         <img
