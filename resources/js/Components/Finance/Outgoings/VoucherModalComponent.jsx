@@ -94,7 +94,13 @@ const VoucherModalComponent = ({
                             JSON.parse(data?.details)?.map((item, index) => (
                                 <div key={index} className="flex items-center justify-between">
                                     <span className="text-gray-700">{item.name}</span>
-                                    <span className="font-medium text-gray-900">{item.amount.toLocaleString()} BDT</span>
+                                    <span className="font-medium text-gray-900">
+                                        {Number(item.amount).toLocaleString('bn', {
+                                            minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2,
+                                        })}{' '}
+                                        টাকা
+                                    </span>
                                 </div>
                             ))}
                     </div>
@@ -103,7 +109,7 @@ const VoucherModalComponent = ({
                     <div className="mt-6 border-t pt-4">
                         <div className="flex items-center justify-between">
                             <span className="font-medium text-gray-700">Total :</span>
-                            <span className="font-semibold text-gray-900">{data?.amount.toLocaleString()} BDT</span>
+                            <span className="font-semibold text-gray-900">{Number(data?.amount).toLocaleString('bn')} টাকা</span>
                         </div>
                     </div>
 
