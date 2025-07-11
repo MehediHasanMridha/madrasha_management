@@ -1,4 +1,4 @@
-import Logo from '@/assets/images/logo.png';
+import ApplicationLogo from '@/Components/ApplicationLogo';
 import StaticBtn from '@/Components/UI/StaticBtn';
 import { getAvatarImage } from '@/lib/avatarImageUrlUtils';
 import { cn } from '@/lib/utils';
@@ -8,6 +8,7 @@ import { FaPhone } from 'react-icons/fa6';
 import { useReactToPrint } from 'react-to-print';
 const DueModalStepTwoComponent = ({ data, setMonthlyDueFeeStep, selectedDueData, comments, handleClose }) => {
     const { user } = usePage().props.auth;
+    const { institute } = usePage().props;
     const [loading, setLoading] = useState(false);
     const printComponentRef = useRef(null);
     const formattedDate = new Date()
@@ -57,10 +58,10 @@ const DueModalStepTwoComponent = ({ data, setMonthlyDueFeeStep, selectedDueData,
             <div ref={printComponentRef} className="space-y-4">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <img src={Logo} alt="School Logo" className="h-12 print:h-[37px]" />
+                        <ApplicationLogo alt="School Logo" className="h-12 print:h-[37px]" />
                         <div>
-                            <h1 className="text-lg font-bold print:text-[20px]">মাদরাসাতুল হেরা টাঙ্গাইল</h1>
-                            <p className="text-sm text-black print:text-[12px]">মনোয়ারা রশিদ ভিলা, রহমান ভবন, কোদালিয়া, টাঙ্গাইল</p>
+                            <h1 className="text-lg font-bold print:text-[20px]">{institute?.name_bangla || 'এখানে মাদরাসার নায়া'}</h1>
+                            <p className="text-sm text-black print:text-[12px]">{institute?.address || 'এখানে মাদরাসার ঠিকানা'}</p>
                         </div>
                     </div>
                     <div className="text-right text-sm print:text-[10px]">
