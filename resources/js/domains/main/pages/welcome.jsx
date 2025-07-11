@@ -169,26 +169,151 @@ const Welcome = () => {
                     </div>
                 );
 
+            case 'hero-custom':
+                // Custom hero section with similar structure to main hero
+                return (
+                    <div key={content.id} className="flex flex-col items-center justify-between gap-6 lg:flex-row lg:gap-10">
+                        <div className="order-2 flex w-full flex-col gap-6 lg:order-1 lg:w-[610px] lg:gap-15">
+                            <div className="flex flex-col gap-4 text-center lg:gap-6 lg:text-left">
+                                <h1 className="font-poppins text-3xl leading-tight font-semibold text-gray-900 sm:text-4xl md:text-5xl lg:text-6xl">
+                                    {content.content || content.title || 'Custom Hero Section'}
+                                </h1>
+                                <p className="font-poppins max-w-full px-2 text-sm leading-6 text-gray-600 sm:text-base lg:max-w-[593px] lg:px-0 lg:leading-7">
+                                    {content.data?.subtitle || content.data?.description || 'Custom hero section description'}
+                                </p>
+                            </div>
+                        </div>
+                        <div className="order-1 h-[250px] w-full overflow-hidden rounded-lg bg-gray-200 sm:h-[300px] md:h-[350px] lg:order-2 lg:h-[450px] lg:w-[588px]">
+                            <img
+                                src={content.data?.image || HeroImg}
+                                alt={content.title || 'Custom Hero'}
+                                className="h-full w-full object-cover"
+                                onError={(e) => {
+                                    e.target.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                                    e.target.src = '';
+                                }}
+                            />
+                        </div>
+                    </div>
+                );
+
+            case 'notice-custom':
+                // Custom notice section with marquee
+                return (
+                    <div key={content.id} className="w-full">
+                        <div
+                            className="w-full overflow-hidden p-3 text-white sm:p-4"
+                            style={{ backgroundColor: content.data?.backgroundColor || '#2563eb' }}
+                        >
+                            <Marquee speed={content.data?.speed || 60} className="text-xs sm:text-sm md:text-base">
+                                {(content.content || 'Custom notice content').split('|').map((text, index) => (
+                                    <span key={index} className="mr-4 sm:mr-8">
+                                        {text.trim()}
+                                        {index < content.content.split('|').length - 1 && <span className="ml-4 sm:ml-8">|</span>}
+                                    </span>
+                                ))}
+                            </Marquee>
+                        </div>
+                        <hr className="invisible my-6" />
+                    </div>
+                );
+
+            case 'stats-custom':
+                // Custom stats section
+                const customStats = content.data?.stats || [
+                    { label: 'Custom Stat 1', value: '0+' },
+                    { label: 'Custom Stat 2', value: '0+' },
+                    { label: 'Custom Stat 3', value: '0+' },
+                    { label: 'Custom Stat 4', value: '0+' },
+                ];
+                return (
+                    <div
+                        key={content.id}
+                        className="flex flex-col items-start justify-between gap-4 rounded-lg bg-gray-100 p-4 sm:flex-row sm:gap-6 sm:p-6 lg:gap-8 lg:p-8"
+                    >
+                        {customStats.map((stat, index) => (
+                            <div key={index} className="flex min-w-0 flex-1 flex-col gap-2 border-l border-gray-300 pl-3 lg:gap-3.5">
+                                <div className="flex items-center gap-1.5">
+                                    <span className="font-poppins text-2xl font-semibold text-gray-900 sm:text-3xl lg:text-4xl">{stat.value}</span>
+                                </div>
+                                <p className="font-satoshi text-sm font-medium text-gray-500 sm:text-base lg:text-lg">{stat.label}</p>
+                            </div>
+                        ))}
+                    </div>
+                );
+
+            case 'curriculum-custom':
+                // Custom curriculum section with pillars
+                const customPillars = content.data?.pillars || [
+                    { title: 'Custom Pillar 1', description: 'Description for custom pillar 1', icon: 'islamic_knowledge', color: 'blue' },
+                    { title: 'Custom Pillar 2', description: 'Description for custom pillar 2', icon: 'general_education', color: 'green' },
+                    { title: 'Custom Pillar 3', description: 'Description for custom pillar 3', icon: 'language_education', color: 'purple' },
+                ];
+                return (
+                    <div key={content.id} className="flex flex-col items-center justify-between gap-8 py-12 sm:gap-10 sm:py-16 lg:gap-13 lg:py-25">
+                        <h2 className="px-4 text-center text-2xl font-semibold text-gray-900 sm:text-3xl md:text-4xl lg:text-5xl">
+                            {content.content || content.title || 'Custom Curriculum Section'}
+                        </h2>
+
+                        <div className="flex w-full flex-col gap-4 lg:gap-5">
+                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-5">
+                                {customPillars.map((pillar, index) => (
+                                    <div
+                                        key={index}
+                                        className={`flex h-auto min-h-[200px] w-full flex-col items-center gap-4 rounded-lg bg-${pillar.color}-50 p-4 sm:min-h-[220px] sm:p-6 lg:gap-6`}
+                                    >
+                                        <img
+                                            src={iconMap[pillar.icon] || iconMap['islamic_knowledge']}
+                                            alt={pillar.title}
+                                            className="h-10 w-10 object-contain sm:h-12 sm:w-12"
+                                        />
+                                        <div className="flex flex-col items-center gap-2 text-center">
+                                            <h3 className="font-poppins text-lg font-medium text-gray-900 sm:text-xl lg:text-2xl">{pillar.title}</h3>
+                                            <p className="font-poppins text-sm text-gray-600 sm:text-base">{pillar.description}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                );
+
             default:
-                // Render custom sections
+                // Default custom sections design
                 return (
                     <div key={content.id} className="space-y-6">
                         {/* Section Title */}
-                        {content.title && (
-                            <h2 className="text-center text-2xl font-semibold text-gray-900 sm:text-3xl md:text-4xl lg:text-5xl">{content.title}</h2>
+                        {(content.title || content.content) && (
+                            <h2 className="text-center text-2xl font-semibold text-gray-900 sm:text-3xl md:text-4xl lg:text-5xl">
+                                {content.title || content.content}
+                            </h2>
                         )}
 
                         {/* Section Content */}
-                        {content.content && (
+                        {content.content && content.title && (
                             <div className="prose prose-lg mx-auto max-w-4xl text-center">
                                 <p className="text-lg leading-relaxed text-gray-700">{content.content}</p>
                             </div>
                         )}
 
-                        {/* Section Data (if it's JSON, display it nicely) */}
-                        {content.data && Object.keys(content.data).length > 0 && (
+                        {/* Section Image */}
+                        {content.data?.image && (
+                            <div className="mx-auto h-[250px] w-full max-w-2xl overflow-hidden rounded-lg bg-gray-200 sm:h-[300px] md:h-[350px] lg:h-[400px]">
+                                <img
+                                    src={content.data.image}
+                                    alt={content.title || 'Section Image'}
+                                    className="h-full w-full object-cover"
+                                    onError={(e) => {
+                                        e.target.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                                        e.target.src = '';
+                                    }}
+                                />
+                            </div>
+                        )}
+
+                        {/* Section Data */}
+                        {content.data && Object.keys(content.data).length > 0 && !content.data.image && (
                             <div className="space-y-4">
-                                {/* Try to render data intelligently */}
                                 {content.data.items && Array.isArray(content.data.items) ? (
                                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                                         {content.data.items.map((item, index) => (
@@ -201,14 +326,14 @@ const Welcome = () => {
                                     </div>
                                 ) : content.data.text ? (
                                     <p className="text-center text-gray-600">{content.data.text}</p>
-                                ) : content.data.subtitle ? (
+                                ) : content.data.subtitle && !content.data.image ? (
                                     <p className="text-center text-lg text-gray-600">{content.data.subtitle}</p>
-                                ) : (
+                                ) : !content.data.image && !content.data.subtitle && !content.data.text && !content.data.items ? (
                                     <div className="rounded-lg bg-gray-50 p-4">
                                         <h4 className="mb-2 font-medium text-gray-900">Additional Information:</h4>
                                         <pre className="text-sm whitespace-pre-wrap text-gray-600">{JSON.stringify(content.data, null, 2)}</pre>
                                     </div>
-                                )}
+                                ) : null}
                             </div>
                         )}
                     </div>
