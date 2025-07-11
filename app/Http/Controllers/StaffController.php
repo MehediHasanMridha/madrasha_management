@@ -28,7 +28,7 @@ class StaffController extends Controller
         $filters = request()->input('filters', []);
         $search  = request()->input('search', '');
 
-        $staff = User::with(['academics', 'guardians'])->whereHas('roles', function ($q) {
+        $staff = User::with(['academics', 'guardians', 'address'])->whereHas('roles', function ($q) {
             $q->where('name', 'staff');
         });
 
