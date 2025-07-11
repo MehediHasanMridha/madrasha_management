@@ -6,9 +6,10 @@ import language_education from '@/assets/images/curriculum/language-education.pn
 import moral_education from '@/assets/images/curriculum/moral-education.png';
 import HeroImg from '@/assets/images/hero_img.webp'; // Ensure this path is correct
 import ApplicationLogo from '@/Components/ApplicationLogo';
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import Marquee from 'react-fast-marquee';
 const Welcome = () => {
+    const { institute } = usePage().props;
     return (
         <>
             <div className="mx-auto w-full space-y-12 px-4 sm:space-y-16 md:space-y-20 lg:w-[1300px] lg:space-y-24">
@@ -63,8 +64,8 @@ const Welcome = () => {
                                 ইসলামী শিক্ষায় একটি নতুন দিগন্ত
                             </h1>
                             <p className="font-poppins max-w-full px-2 text-sm leading-6 text-gray-600 sm:text-base lg:max-w-[593px] lg:px-0 lg:leading-7">
-                                মাদ্রাসাতুল হেরা একটি আদর্শ ইসলামি শিক্ষা প্রতিষ্ঠান, যেখানে আধুনিক কারিকুলামের সঙ্গে রয়েছে নৈতিকতা, আধ্যাত্মিকতা ও
-                                সময়ের চাহিদা অনুসারে শিক্ষার সুষম সমন্বয়।
+                                {institute?.name_bangla || '...........'} একটি আদর্শ ইসলামি শিক্ষা প্রতিষ্ঠান, যেখানে আধুনিক কারিকুলামের সঙ্গে রয়েছে
+                                নৈতিকতা, আধ্যাত্মিকতা ও সময়ের চাহিদা অনুসারে শিক্ষার সুষম সমন্বয়।
                             </p>
                         </div>
                         {/* <StaticBtn className="mx-auto w-fit text-sm sm:text-base lg:mx-0">এখনই রেজিস্ট্রেশন করুন</StaticBtn> */}
