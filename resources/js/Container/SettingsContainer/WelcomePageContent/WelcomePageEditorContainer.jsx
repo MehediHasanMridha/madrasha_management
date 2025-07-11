@@ -90,6 +90,52 @@ const WelcomePageEditorContainer = ({ contents }) => {
                 ],
             },
         },
+        {
+            section_key: 'divider-invisible',
+            title: 'Invisible Spacer',
+            content: '',
+            data: {
+                type: 'invisible',
+                spacing: 'medium',
+                customSpacing: '40px',
+            },
+        },
+        {
+            section_key: 'divider-line',
+            title: 'Line Divider',
+            content: '',
+            data: {
+                type: 'line',
+                spacing: 'medium',
+                customSpacing: '40px',
+                lineColor: '#d1d5db',
+                lineWidth: '1px',
+            },
+        },
+        {
+            section_key: 'divider-decorative',
+            title: 'Decorative Divider',
+            content: '',
+            data: {
+                type: 'decorative',
+                spacing: 'medium',
+                customSpacing: '40px',
+                lineColor: '#d1d5db',
+                decorativeText: '●',
+            },
+        },
+        {
+            section_key: 'divider-colored',
+            title: 'Colored Background Spacer',
+            content: '',
+            data: {
+                type: 'colored',
+                spacing: 'large',
+                customSpacing: '60px',
+                backgroundColor: '#f3f4f6',
+                pattern: 'none',
+            },
+        },
     ];
 
     return (

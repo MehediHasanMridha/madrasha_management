@@ -27,6 +27,98 @@ const Welcome = () => {
         if (!content || content.is_active === false) return null;
 
         switch (content.section_key) {
+            case 'divider':
+            case 'divider-invisible':
+            case 'divider-line':
+            case 'divider-decorative':
+            case 'divider-colored':
+                // Divider section with customizable spacing
+                const spacing = content.data?.spacing || 'medium';
+                const dividerType = content.data?.type || 'invisible';
+                const backgroundColor = content.data?.backgroundColor || 'transparent';
+                const pattern = content.data?.pattern || 'none';
+
+                // Calculate spacing in pixels
+                const spacingMap = {
+                    small: '20px',
+                    medium: '40px',
+                    large: '60px',
+                    'extra-large': '80px',
+                    custom: content.data?.customSpacing || '40px',
+                };
+
+                const spacingValue = spacingMap[spacing];
+
+                // Generate pattern CSS based on type
+                const getPatternStyle = () => {
+                    switch (pattern) {
+                        case 'dots':
+                            return {
+                                backgroundImage: 'radial-gradient(circle, #ccc 1px, transparent 1px)',
+                                backgroundSize: '20px 20px',
+                            };
+                        case 'lines':
+                            return {
+                                backgroundImage: 'linear-gradient(90deg, #ccc 1px, transparent 1px)',
+                                backgroundSize: '20px 100%',
+                            };
+                        case 'diagonal':
+                            return {
+                                backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 10px, #ccc 10px, #ccc 11px)',
+                            };
+                        default:
+                            return {};
+                    }
+                };
+
+                return (
+                    <div key={content.id} className="w-full">
+                        {dividerType === 'invisible' ? (
+                            <div style={{ height: spacingValue }} />
+                        ) : dividerType === 'line' ? (
+                            <div
+                                className="flex w-full items-center justify-center"
+                                style={{ paddingTop: spacingValue, paddingBottom: spacingValue }}
+                            >
+                                <hr
+                                    className="w-full border-gray-300"
+                                    style={{
+                                        borderColor: content.data?.lineColor || '#d1d5db',
+                                        borderWidth: content.data?.lineWidth || '1px',
+                                    }}
+                                />
+                            </div>
+                        ) : dividerType === 'decorative' ? (
+                            <div
+                                className="flex w-full items-center justify-center"
+                                style={{ paddingTop: spacingValue, paddingBottom: spacingValue }}
+                            >
+                                <div className="flex items-center">
+                                    <hr className="flex-1 border-gray-300" style={{ borderColor: content.data?.lineColor || '#d1d5db' }} />
+                                    <span className="px-4 text-gray-500">{content.data?.decorativeText || '●'}</span>
+                                    <hr className="flex-1 border-gray-300" style={{ borderColor: content.data?.lineColor || '#d1d5db' }} />
+                                </div>
+                            </div>
+                        ) : dividerType === 'colored' ? (
+                            <div
+                                className="w-full"
+                                style={{
+                                    height: spacingValue,
+                                    backgroundColor: backgroundColor,
+                                    ...getPatternStyle(),
+                                }}
+                            />
+                        ) : (
+                            <div style={{ height: spacingValue }} />
+                        )}
+                        {content.title && (
+                            <div className="py-2 text-center">
+                                <span className="text-sm text-gray-400">{content.title}</span>
+                            </div>
+                        )}
+                    </div>
+                );
+
             case 'hero':
                 return (
                     <div key={content.id} className="flex flex-col items-center justify-between gap-6 lg:flex-row lg:gap-10">

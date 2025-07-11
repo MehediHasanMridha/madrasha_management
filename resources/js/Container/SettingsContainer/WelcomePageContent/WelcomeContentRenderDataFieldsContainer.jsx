@@ -1,7 +1,7 @@
 import Field from '@/Components/UI/Field';
 import FieldSet from '@/Components/UI/FieldSet';
 
-const WelcomeContentRenderDataFieldsContainer = ({ sectionKey, handleDataChange, watch }) => {
+const WelcomeContentRenderDataFieldsContainer = ({ sectionKey, handleDataChange, watch, setValue }) => {
     const currentData = watch('data') || {};
 
     switch (sectionKey) {
@@ -98,6 +98,116 @@ const WelcomeContentRenderDataFieldsContainer = ({ sectionKey, handleDataChange,
                             placeholder='[{"title": "Title", "description": "Description", "icon": "icon_name", "color": "color"}]'
                         />
                     </Field>
+                </FieldSet>
+            );
+
+        case 'divider':
+        case 'divider-invisible':
+        case 'divider-line':
+        case 'divider-decorative':
+        case 'divider-colored':
+            return (
+                <FieldSet label={'Divider Section Settings'} labelClassName="text-[16px] font-bold" hr={true}>
+                    <Field label={'Divider Type'}>
+                        <select
+                            value={currentData.type || 'invisible'}
+                            onChange={(e) => handleDataChange('type', e.target.value)}
+                            className="rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
+                        >
+                            <option value="invisible">Invisible Spacer</option>
+                            <option value="line">Simple Line</option>
+                            <option value="decorative">Decorative Line</option>
+                            <option value="colored">Colored Background</option>
+                        </select>
+                    </Field>
+
+                    <Field label={'Spacing Size'}>
+                        <select
+                            value={currentData.spacing || 'medium'}
+                            onChange={(e) => handleDataChange('spacing', e.target.value)}
+                            className="rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
+                        >
+                            <option value="small">Small (20px)</option>
+                            <option value="medium">Medium (40px)</option>
+                            <option value="large">Large (60px)</option>
+                            <option value="extra-large">Extra Large (80px)</option>
+                            <option value="custom">Custom</option>
+                        </select>
+                    </Field>
+
+                    {currentData.spacing === 'custom' && (
+                        <Field label={'Custom Spacing (px)'}>
+                            <input
+                                type="text"
+                                className="rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
+                                placeholder="40px"
+                                value={currentData.customSpacing || '40px'}
+                                onChange={(e) => handleDataChange('customSpacing', e.target.value)}
+                            />
+                        </Field>
+                    )}
+
+                    {(currentData.type === 'line' || currentData.type === 'decorative') && (
+                        <>
+                            <Field label={'Line Color'}>
+                                <input
+                                    type="color"
+                                    className="h-[48px] rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
+                                    value={currentData.lineColor || '#d1d5db'}
+                                    onChange={(e) => handleDataChange('lineColor', e.target.value)}
+                                />
+                            </Field>
+                            <Field label={'Line Width'}>
+                                <select
+                                    value={currentData.lineWidth || '1px'}
+                                    onChange={(e) => handleDataChange('lineWidth', e.target.value)}
+                                    className="rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
+                                >
+                                    <option value="1px">Thin (1px)</option>
+                                    <option value="2px">Medium (2px)</option>
+                                    <option value="3px">Thick (3px)</option>
+                                    <option value="4px">Extra Thick (4px)</option>
+                                </select>
+                            </Field>
+                        </>
+                    )}
+
+                    {currentData.type === 'decorative' && (
+                        <Field label={'Decorative Text/Symbol'}>
+                            <input
+                                type="text"
+                                className="rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
+                                placeholder="●"
+                                value={currentData.decorativeText || '●'}
+                                onChange={(e) => handleDataChange('decorativeText', e.target.value)}
+                            />
+                        </Field>
+                    )}
+
+                    {currentData.type === 'colored' && (
+                        <>
+                            <Field label={'Background Color'}>
+                                <input
+                                    type="color"
+                                    className="h-[48px] rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
+                                    value={currentData.backgroundColor || '#f3f4f6'}
+                                    onChange={(e) => handleDataChange('backgroundColor', e.target.value)}
+                                />
+                            </Field>
+                            <Field label={'Pattern'}>
+                                <select
+                                    value={currentData.pattern || 'none'}
+                                    onChange={(e) => handleDataChange('pattern', e.target.value)}
+                                    className="rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
+                                >
+                                    <option value="none">No Pattern</option>
+                                    <option value="dots">Dots</option>
+                                    <option value="lines">Lines</option>
+                                    <option value="diagonal">Diagonal</option>
+                                </select>
+                            </Field>
+                        </>
+                    )}
                 </FieldSet>
             );
 

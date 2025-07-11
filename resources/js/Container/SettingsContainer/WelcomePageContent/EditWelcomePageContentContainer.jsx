@@ -156,7 +156,12 @@ const EditWelcomePageContentContainer = ({ isModalOpen, onClose, initialData = n
                 </FieldSet>
 
                 {/* Section-specific data fields */}
-                <WelcomeContentRenderDataFieldsContainer sectionKey={sectionKey} handleDataChange={handleDataChange} watch={watch} />
+                <WelcomeContentRenderDataFieldsContainer
+                    sectionKey={sectionKey}
+                    handleDataChange={handleDataChange}
+                    watch={watch}
+                    setValue={setValue}
+                />
             </form>
         </ModalUI>
     );

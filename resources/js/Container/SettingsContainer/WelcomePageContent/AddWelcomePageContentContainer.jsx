@@ -199,7 +199,12 @@ const AddWelcomePageContentContainer = ({ isModalOpen, onClose, defaultSections 
                     </Field>
                 </FieldSet>
 
-                <WelcomeContentRenderDataFieldsContainer sectionKey={selectedTemplate} handleDataChange={handleDataChange} watch={watch} />
+                <WelcomeContentRenderDataFieldsContainer
+                    sectionKey={selectedTemplate}
+                    handleDataChange={handleDataChange}
+                    watch={watch}
+                    setValue={setValue}
+                />
             </form>
         </ModalUI>
     );
