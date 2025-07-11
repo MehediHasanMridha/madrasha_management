@@ -1,8 +1,8 @@
-import Logo from '@/assets/images/logo.png';
 import { getAvatarImage } from '@/lib/avatarImageUrlUtils';
 import { usePage } from '@inertiajs/react';
 import { forwardRef } from 'react';
 import { FaPhone } from 'react-icons/fa6';
+import ApplicationLogo from '../ApplicationLogo';
 const MonthlyFeePrintReceiptComponent = forwardRef((props, ref) => {
     const { data, month = '', year, academicFee, boardingFee, comments = '', receiver } = props;
     const formattedDate = new Date()
@@ -16,15 +16,16 @@ const MonthlyFeePrintReceiptComponent = forwardRef((props, ref) => {
         })
         .replace('at', ' সময়:');
     const { user } = usePage().props.auth;
+    const { institute } = usePage().props;
     return (
         <div className="space-y-4" ref={ref}>
             {/* স্কুল হেডার */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                    <img src={Logo} alt="School Logo" className="h-12 print:h-[37px]" />
+                    <ApplicationLogo alt="School Logo" className="h-12 print:h-[37px]" />
                     <div>
-                        <h1 className="text-lg font-bold print:text-[20px]">মাদরাসাতুল হেরা টাঙ্গাইল</h1>
-                        <p className="text-sm text-black print:text-[12px]">মনোয়ারা রশিদ ভিলা, রহমান ভবন, কোদালিয়া, টাঙ্গাইল</p>
+                        <h1 className="text-lg font-bold print:text-[20px]">{institute?.name_bangla || 'এখানে মাদরাসার নায়া'}</h1>
+                        <p className="text-sm text-black print:text-[12px]">{institute?.address || 'এখানে মাদরাসার ঠিকানা'}</p>
                     </div>
                 </div>
                 <div className="text-right text-sm print:text-[10px]">

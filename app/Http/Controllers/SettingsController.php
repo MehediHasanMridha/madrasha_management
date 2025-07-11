@@ -14,6 +14,7 @@ class SettingsController extends Controller
             'institute_name',
             'institute_name_bangla',
             'logo_path',
+            'institute_address',
             'favicon_path',
         ]);
 
@@ -34,6 +35,11 @@ class SettingsController extends Controller
             // Update institute name bangla
             if ($request->has('institute_name_bangla')) {
                 Setting::setValue('institute_name_bangla', $request->input('institute_name_bangla'));
+            }
+
+            // Update institute address
+            if ($request->has('institute_address')) {
+                Setting::setValue('institute_address', $request->input('institute_address'));
             }
 
             // Handle logo upload

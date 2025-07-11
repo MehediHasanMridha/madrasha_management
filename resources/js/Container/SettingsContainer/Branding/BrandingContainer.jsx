@@ -19,6 +19,7 @@ const BrandingContainer = ({ settings }) => {
         defaultValues: {
             institute_name: settings.institute_name || '',
             institute_name_bangla: settings.institute_name_bangla || '',
+            institute_address: settings.institute_address || '',
         },
     });
 
@@ -104,6 +105,23 @@ const BrandingContainer = ({ settings }) => {
                             type="text"
                             className="rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:border-blue-500 focus:outline-0"
                             placeholder="প্রতিষ্ঠানের নাম বাংলায় লিখুন"
+                        />
+                    </Field>
+                </div>
+                <div className="flex w-full flex-col items-center justify-center rounded-lg bg-white">
+                    <Field
+                        label={'Institute Full Address'}
+                        className="w-full px-6 py-4"
+                        labelClassName={'text-base font-medium text-gray-700'}
+                        error={errors.institute_address}
+                    >
+                        <input
+                            {...register('institute_address', {
+                                required: 'Institute address is required',
+                            })}
+                            type="text"
+                            className="rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:border-blue-500 focus:outline-0"
+                            placeholder="প্রতিষ্ঠানের ঠিকানা লিখুন"
                         />
                     </Field>
                 </div>
