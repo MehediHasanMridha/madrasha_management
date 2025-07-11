@@ -1,7 +1,9 @@
 <?php
 namespace App\Providers;
 
+use App\Models\Department;
 use App\Models\Setting;
+use App\Models\VoucherType;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\ServiceProvider;
@@ -53,12 +55,14 @@ class AppServiceProvider extends ServiceProvider
                     'logo_path',
                 ]);
                 Inertia::share([
-                    'institute' => [
+                    'institute'    => [
                         'name'        => $brandingSettings['institute_name'] ?? config('app.institute_name'),
                         'name_bangla' => $brandingSettings['institute_name_bangla'] ?? config('app.institute_name_bangla'),
                         'address'     => $brandingSettings['institute_address'] ?? config('app.institute_address'),
                         'logo'        => $brandingSettings['logo_path'] ?? config('app.logo_path'),
                     ],
+                    'departments'  => Department::get(),
+                    'voucherTypes' => VoucherType::get(),
                 ]);
             }
         } catch (\Exception $e) {
