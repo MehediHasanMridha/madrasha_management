@@ -13,6 +13,7 @@ use App\Http\Controllers\StaffController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\VoucherTypeController;
 use App\Http\Controllers\WelcomeController;
+use App\Http\Controllers\WelcomePageController;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -131,6 +132,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
             'update'  => 'settings.voucher-types.update',
             'destroy' => 'settings.voucher-types.destroy',
         ]);
+
+        // Welcome Page Settings
+        Route::prefix('welcome-page')->group(function () {
+            Route::get('/', [WelcomePageController::class, 'index'])->name('settings.welcome-page.index');
+            Route::post('/', [WelcomePageController::class, 'store'])->name('settings.welcome-page.store');
+            Route::put('{welcomePageContent}', [WelcomePageController::class, 'update'])->name('settings.welcome-page.update');
+            Route::post('update-order', [WelcomePageController::class, 'updateOrder'])->name('settings.welcome-page.update-order');
+            Route::delete('{welcomePageContent}', [WelcomePageController::class, 'destroy'])->name('settings.welcome-page.destroy');
+        });
 
         // Branding Settings
         Route::get('branding', [SettingsController::class, 'branding'])->name('settings.branding.index');
