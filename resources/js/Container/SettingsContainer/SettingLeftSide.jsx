@@ -32,7 +32,7 @@ const SettingLeftSide = () => {
                 </SideBarUI.Item>
             </Link>
             <Link
-                href={route('settings.welcome_page_index')}
+                href={'/settings/welcome-page'}
                 prefetch
                 as="button"
                 className={cn('w-[300px] cursor-pointer items-center text-start text-[16px] font-medium', {
