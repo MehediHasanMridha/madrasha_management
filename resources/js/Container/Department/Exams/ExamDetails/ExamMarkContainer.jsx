@@ -102,6 +102,7 @@ const ExamMarkContainer = ({ classItem, exam }) => {
                     grade: mark?.grade || null,
                 };
             });
+            console.log('🚀 ~ data ~ subjectMarks:', subjectMarks);
 
             // Calculate totals
             const validMarks = examMarks.map((mark) => Number(mark.marks_obtained) || 0);
