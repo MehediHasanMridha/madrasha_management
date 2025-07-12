@@ -22,6 +22,7 @@ const ExamMarkContainer = ({ classItem, exam }) => {
     const classStudents = getStudentsForClass(classItem.class.id);
     console.log('🚀 ~ ExamMarkContainer ~ classStudents:', classStudents);
     const classSubjects = getSubjectsForClass(classItem.class.id);
+    console.log('🚀 ~ ExamMarkContainer ~ classSubjects:', classSubjects);
 
     // Prepare columns for TableUI
     const tableColumns = useMemo(() => {
