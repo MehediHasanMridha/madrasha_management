@@ -161,6 +161,7 @@ const EditWelcomePageContentContainer = ({ isModalOpen, onClose, initialData = n
                     handleDataChange={handleDataChange}
                     watch={watch}
                     setValue={setValue}
+                    control={control}
                 />
             </form>
         </ModalUI>

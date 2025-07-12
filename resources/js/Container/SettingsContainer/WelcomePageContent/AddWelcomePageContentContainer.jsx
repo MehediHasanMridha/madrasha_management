@@ -204,6 +204,7 @@ const AddWelcomePageContentContainer = ({ isModalOpen, onClose, defaultSections 
                     handleDataChange={handleDataChange}
                     watch={watch}
                     setValue={setValue}
+                    control={control}
                 />
             </form>
         </ModalUI>

@@ -1,7 +1,9 @@
+import ColorPickerUI from '@/Components/UI/ColorPickerUI';
 import Field from '@/Components/UI/Field';
 import FieldSet from '@/Components/UI/FieldSet';
+import { Controller } from 'react-hook-form';
 
-const WelcomeContentRenderDataFieldsContainer = ({ sectionKey, handleDataChange, watch, setValue }) => {
+const WelcomeContentRenderDataFieldsContainer = ({ sectionKey, handleDataChange, watch, setValue, control }) => {
     const currentData = watch('data') || {};
 
     switch (sectionKey) {
@@ -33,11 +35,21 @@ const WelcomeContentRenderDataFieldsContainer = ({ sectionKey, handleDataChange,
             return (
                 <FieldSet label={'Notice Section Data'} labelClassName="text-[16px] font-bold" hr={true}>
                     <Field label={'Background Color'}>
-                        <input
-                            type="color"
-                            className="h-[48px] rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
-                            value={currentData.backgroundColor || '#2563eb'}
-                            onChange={(e) => handleDataChange('backgroundColor', e.target.value)}
+                        <Controller
+                            control={control}
+                            defaultValue={currentData.backgroundColor || '#2563eb'}
+                            render={({ field }) => (
+                                <ColorPickerUI
+                                    className="w-fit"
+                                    defaultValue={field.value || '#2563eb'}
+                                    size="large"
+                                    onChange={(color) => {
+                                        field.onChange(color.toHexString());
+                                        handleDataChange('backgroundColor', color.toHexString());
+                                    }}
+                                />
+                            )}
+                            name="backgroundColor"
                         />
                     </Field>
                     <Field label={'Enable Scrolling'}>
@@ -150,11 +162,21 @@ const WelcomeContentRenderDataFieldsContainer = ({ sectionKey, handleDataChange,
                     {(currentData.type === 'line' || currentData.type === 'decorative') && (
                         <>
                             <Field label={'Line Color'}>
-                                <input
-                                    type="color"
-                                    className="h-[48px] rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
-                                    value={currentData.lineColor || '#d1d5db'}
-                                    onChange={(e) => handleDataChange('lineColor', e.target.value)}
+                                <Controller
+                                    control={control}
+                                    defaultValue={currentData.lineColor || '#2563eb'}
+                                    render={({ field }) => (
+                                        <ColorPickerUI
+                                            className="w-fit"
+                                            defaultValue={field.value || '#2563eb'}
+                                            size="large"
+                                            onChange={(color) => {
+                                                field.onChange(color.toHexString());
+                                                handleDataChange('lineColor', color.toHexString());
+                                            }}
+                                        />
+                                    )}
+                                    name="lineColor"
                                 />
                             </Field>
                             <Field label={'Line Width'}>
@@ -187,11 +209,21 @@ const WelcomeContentRenderDataFieldsContainer = ({ sectionKey, handleDataChange,
                     {currentData.type === 'colored' && (
                         <>
                             <Field label={'Background Color'}>
-                                <input
-                                    type="color"
-                                    className="h-[48px] rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
-                                    value={currentData.backgroundColor || '#f3f4f6'}
-                                    onChange={(e) => handleDataChange('backgroundColor', e.target.value)}
+                                <Controller
+                                    control={control}
+                                    name="backgroundColor"
+                                    defaultValue={currentData.backgroundColor || '#2563eb'}
+                                    render={({ field }) => (
+                                        <ColorPickerUI
+                                            className="w-fit"
+                                            defaultValue={field.value || '#2563eb'}
+                                            size="large"
+                                            onChange={(color) => {
+                                                field.onChange(color.toHexString());
+                                                handleDataChange('backgroundColor', color.toHexString());
+                                            }}
+                                        />
+                                    )}
                                 />
                             </Field>
                             <Field label={'Pattern'}>
