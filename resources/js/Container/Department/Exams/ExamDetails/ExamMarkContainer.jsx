@@ -87,8 +87,26 @@ const ExamMarkContainer = ({ classItem, exam }) => {
     const tableData = useMemo(() => {
         if (!classStudents || classStudents.length === 0) return { data: [] };
 
-        return {
-            data: classStudents.map((student, index) => ({
+        const data = classStudents.map((student, index) => {
+            // Get exam marks for this student and exam
+            const examMarks = student?.exam_marks?.filter((mark) => mark.exam_id === exam?.id) || [];
+
+            // Calculate subject marks
+            const subjectMarks = {};
+            classSubjects.forEach((subject) => {
+                const mark = examMarks.find((mark) => mark.subject_id === subject.id);
+                subjectMarks[`subject_${subject.id}`] = {
+                    marks_obtained: mark?.marks_obtained || null,
+                    grade: mark?.grade || null,
+                };
+            });
+
+            // Calculate totals
+            const validMarks = examMarks.map((mark) => Number(mark.marks_obtained) || 0);
+            const total = validMarks.length > 0 ? validMarks.reduce((sum, mark) => sum + mark, 0) : 0;
+            const average = validMarks.length > 0 ? (total / validMarks.length).toFixed(1) : '--';
+
+            return {
                 key: student.id,
                 id: student.id,
                 sl: index + 1,
@@ -97,26 +115,13 @@ const ExamMarkContainer = ({ classItem, exam }) => {
                     student_id: student.unique_id || 'N/A',
                     avatar: student.name?.charAt(0) || 'S',
                 },
-                ...classSubjects.reduce((acc, subject) => {
-                    const mark = student?.exam_marks?.find((mark) => {
-                        return mark.subject_id === subject.id && mark.exam_id === exam?.id;
-                    });
-                    console.log('🚀 ~ ...classSubjects.reduce ~ mark:', mark);
-                    acc[`subject_${subject?.id}`] = { marks_obtained: mark?.marks_obtained || null, grade: mark?.grade || null };
-                    return acc;
-                }, {}),
-                average: (() => {
-                    const marks = student.exam_marks?.filter((mark) => mark.exam_id === exam.id);
-                    if (!marks || marks.length === 0) return '--';
-                    const total = marks.reduce((sum, mark) => sum + (Number(mark.marks_obtained) || 0), 0);
-                    return (total / marks.length).toFixed(1);
-                })(),
-                total:
-                    student.exam_marks
-                        ?.filter((mark) => mark.exam_id === exam.id)
-                        .reduce((total, mark) => total + (Number(mark.marks_obtained) || 0), 0) || '--',
-            })),
-        };
+                ...subjectMarks,
+                average: average,
+                total: total || '--',
+            };
+        });
+
+        return { data };
     }, [classStudents, classSubjects, exam.id]);
 
     let content = null;
