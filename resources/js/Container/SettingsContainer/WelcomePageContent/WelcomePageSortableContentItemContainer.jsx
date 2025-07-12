@@ -1,4 +1,5 @@
 import StaticBtn from '@/Components/UI/StaticBtn';
+import TagUI from '@/Components/UI/TagUI';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Edit, Eye, GripVertical, ToggleLeft, ToggleRight, Trash2 } from 'lucide-react';
@@ -23,13 +24,13 @@ const WelcomePageSortableContentItemContainer = ({ content, index, onEdit, onDel
 
     const getSectionTypeColor = (sectionKey) => {
         const colors = {
-            hero: 'bg-blue-100 text-blue-800',
-            notice: 'bg-yellow-100 text-yellow-800',
-            stats: 'bg-green-100 text-green-800',
-            curriculum: 'bg-purple-100 text-purple-800',
-            custom: 'bg-gray-100 text-gray-800',
+            hero: '#0000ff',
+            notice: '#daa520',
+            stats: '#008000',
+            curriculum: '#c71585',
+            custom: '#708090',
         };
-        return colors[sectionKey] || 'bg-gray-100 text-gray-800';
+        return colors[sectionKey] || '#708090';
     };
 
     const getContentPreview = (content) => {
@@ -60,16 +61,17 @@ const WelcomePageSortableContentItemContainer = ({ content, index, onEdit, onDel
                 {/* Content Info */}
                 <div className="min-w-0 flex-1">
                     <div className="mb-2 flex items-center space-x-3">
-                        <span
+                        <TagUI
                             className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${getSectionTypeColor(content.section_key)}`}
+                            color={getSectionTypeColor(content.section_key)}
                         >
                             {getSectionTypeLabel(content.section_key)}
-                        </span>
+                        </TagUI>
                         <div className="flex items-center">
                             {content.is_active ? (
-                                <ToggleRight className="h-5 w-5 text-green-500" />
+                                <ToggleRight className="h-6 w-6 text-green-500" />
                             ) : (
-                                <ToggleLeft className="h-5 w-5 text-gray-400" />
+                                <ToggleLeft className="h-6 w-6 text-gray-400" />
                             )}
                             <span className={`ml-1 text-sm ${content.is_active ? 'text-green-600' : 'text-gray-500'}`}>
                                 {content.is_active ? 'Active' : 'Inactive'}
