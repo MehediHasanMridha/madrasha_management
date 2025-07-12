@@ -90,7 +90,8 @@ const ExamMarkContainer = ({ classItem, exam }) => {
         const data = classStudents.map((student, index) => {
             console.log('🚀 ~ data ~ student:', student);
             // Get exam marks for this student and exam
-            const examMarks = student?.exam_marks?.filter((mark) => mark.exam_id === exam?.id) || [];
+            const examMarks = student?.exam_marks?.filter((mark) => Number(mark.exam_id) === Number(exam?.id)) || [];
+            console.log('🚀 ~ data ~ exam?.id:', exam?.id);
             console.log('🚀 ~ data ~ examMarks:', examMarks);
 
             // Calculate subject marks
