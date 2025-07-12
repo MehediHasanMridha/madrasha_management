@@ -55,15 +55,12 @@ const ExamMarkContainer = ({ classItem, exam }) => {
                 dataIndex: `subject_${subject.id}`,
                 key: `subject_${subject.id}`,
                 align: 'center',
-                render: ({ marks_obtained, grade }) => {
-                    console.log('🚀 ~ ...classSubjects.map ~ marks_obtained:', marks_obtained);
-                    return (
-                        <span className="text-sm text-[#4A4A4A]">
-                            {marks_obtained ? marks_obtained : '-'}
-                            {grade ? `(${grade})` : '-'}
-                        </span>
-                    );
-                },
+                render: ({ marks_obtained, grade }) => (
+                    <span className="text-sm text-[#4A4A4A]">
+                        {marks_obtained ? marks_obtained : '-'}
+                        {grade ? `(${grade})` : '-'}
+                    </span>
+                ),
             })),
             {
                 title: 'Average',
@@ -101,7 +98,10 @@ const ExamMarkContainer = ({ classItem, exam }) => {
                     avatar: student.name?.charAt(0) || 'S',
                 },
                 ...classSubjects.reduce((acc, subject) => {
-                    const mark = student.exam_marks?.find((mark) => mark.subject_id === subject.id && mark.exam_id === exam.id);
+                    const mark = student?.exam_marks?.find((mark) => {
+                        return mark.subject_id === subject.id && mark.exam_id === exam?.id;
+                    });
+                    console.log('🚀 ~ ...classSubjects.reduce ~ mark:', mark);
                     acc[`subject_${subject?.id}`] = { marks_obtained: mark?.marks_obtained || null, grade: mark?.grade || null };
                     return acc;
                 }, {}),
