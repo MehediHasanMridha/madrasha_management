@@ -97,7 +97,7 @@ const ExamMarkContainer = ({ classItem, exam }) => {
             // Calculate subject marks
             const subjectMarks = {};
             classSubjects.forEach((subject) => {
-                const mark = examMarks.find((mark) => mark.subject_id === subject.id);
+                const mark = examMarks.find((mark) => Number(mark.subject_id) === Number(subject.id));
                 subjectMarks[`subject_${subject.id}`] = {
                     marks_obtained: mark?.marks_obtained || null,
                     grade: mark?.grade || null,
