@@ -20,9 +20,7 @@ const ExamMarkContainer = ({ classItem, exam }) => {
     };
 
     const classStudents = getStudentsForClass(classItem.class.id);
-    console.log('🚀 ~ ExamMarkContainer ~ classStudents:', classStudents);
     const classSubjects = getSubjectsForClass(classItem.class.id);
-    console.log('🚀 ~ ExamMarkContainer ~ classSubjects:', classSubjects);
 
     // Prepare columns for TableUI
     const tableColumns = useMemo(() => {
@@ -57,12 +55,15 @@ const ExamMarkContainer = ({ classItem, exam }) => {
                 dataIndex: `subject_${subject.id}`,
                 key: `subject_${subject.id}`,
                 align: 'center',
-                render: ({ marks_obtained, grade }) => (
-                    <span className="text-sm text-[#4A4A4A]">
-                        {marks_obtained}
-                        {grade ? ` - (${grade})` : '--'}
-                    </span>
-                ),
+                render: ({ marks_obtained, grade }) => {
+                    console.log('🚀 ~ ...classSubjects.map ~ marks_obtained:', marks_obtained);
+                    return (
+                        <span className="text-sm text-[#4A4A4A]">
+                            {marks_obtained}
+                            {grade ? ` - (${grade})` : '--'}
+                        </span>
+                    );
+                },
             })),
             {
                 title: 'Average',
