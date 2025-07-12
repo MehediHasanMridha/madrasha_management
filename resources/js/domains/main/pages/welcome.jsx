@@ -147,7 +147,11 @@ const Welcome = () => {
                                     key={index}
                                     className={`flex h-auto min-h-[200px] w-full flex-col items-center gap-4 rounded-lg bg-${pillar.color}-50 p-4 sm:min-h-[220px] sm:p-6 lg:h-53 lg:w-100 lg:gap-6`}
                                 >
-                                    <img src={iconMap[pillar.icon]} alt={pillar.title} className="h-10 w-10 object-contain sm:h-12 sm:w-12" />
+                                    <img
+                                        src={iconMap[pillar?.icon] || pillar?.icon}
+                                        alt={pillar.title}
+                                        className="h-10 w-10 object-contain sm:h-12 sm:w-12"
+                                    />
                                     <div className="flex flex-col items-center gap-2 text-center">
                                         <h3 className="font-poppins text-lg font-medium text-gray-900 sm:text-xl lg:text-2xl">{pillar.title}</h3>
                                         <p className="font-poppins text-sm text-gray-600 sm:text-base">{pillar.description}</p>
@@ -163,7 +167,11 @@ const Welcome = () => {
                                     key={index}
                                     className={`flex h-auto min-h-[200px] w-full flex-col items-center gap-4 rounded-lg bg-${pillar.color}-50 p-4 sm:min-h-[220px] sm:p-6 lg:h-53 lg:w-100 lg:gap-6`}
                                 >
-                                    <img src={iconMap[pillar.icon]} alt={pillar.title} className="h-10 w-10 object-contain sm:h-12 sm:w-12" />
+                                    <img
+                                        src={iconMap[pillar?.icon] || pillar?.icon}
+                                        alt={pillar.title}
+                                        className="h-10 w-10 object-contain sm:h-12 sm:w-12"
+                                    />
                                     <div className="flex flex-col items-center gap-2 text-center">
                                         <h3 className="font-poppins text-lg font-medium text-gray-900 sm:text-xl lg:text-2xl">{pillar.title}</h3>
                                         <p className="font-poppins text-sm text-gray-600 sm:text-base">{pillar.description}</p>
