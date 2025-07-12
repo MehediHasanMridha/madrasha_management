@@ -59,8 +59,8 @@ const ExamMarkContainer = ({ classItem, exam }) => {
                     console.log('🚀 ~ ...classSubjects.map ~ marks_obtained:', marks_obtained);
                     return (
                         <span className="text-sm text-[#4A4A4A]">
-                            {marks_obtained}
-                            {grade ? ` - (${grade})` : '--'}
+                            {marks_obtained ? marks_obtained : '-'}
+                            {grade ? `(${grade})` : '-'}
                         </span>
                     );
                 },
@@ -102,7 +102,7 @@ const ExamMarkContainer = ({ classItem, exam }) => {
                 },
                 ...classSubjects.reduce((acc, subject) => {
                     const mark = student.exam_marks?.find((mark) => mark.subject_id === subject.id && mark.exam_id === exam.id);
-                    acc[`subject_${subject.id}`] = { marks_obtained: mark?.marks_obtained, grade: mark?.grade } || '--';
+                    acc[`subject_${subject?.id}`] = { marks_obtained: mark?.marks_obtained || null, grade: mark?.grade || null };
                     return acc;
                 }, {}),
                 average: (() => {
