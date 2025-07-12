@@ -111,11 +111,11 @@ const Welcome = () => {
                         ) : (
                             <div style={{ height: spacingValue }} />
                         )}
-                        {content.title && (
+                        {/* {content.title && (
                             <div className="py-2 text-center">
                                 <span className="text-sm text-gray-400">{content.title}</span>
                             </div>
-                        )}
+                        )} */}
                     </div>
                 );
 
