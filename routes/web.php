@@ -136,6 +136,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Welcome Page Settings
         Route::prefix('welcome-page')->group(function () {
             Route::get('/', [WelcomePageController::class, 'index'])->name('settings.welcome-page.index');
+
             Route::post('/', [WelcomePageController::class, 'store'])->name('settings.welcome-page.store');
             Route::put('{welcomePageContent}', [WelcomePageController::class, 'update'])->name('settings.welcome-page.update');
             Route::post('update-order', [WelcomePageController::class, 'updateOrder'])->name('settings.welcome-page.update-order');
