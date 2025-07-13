@@ -76,11 +76,11 @@ const FinalModalStepComponent = ({ data, fee, selectedRows, handleClose, loading
                     <div className="text-right text-sm print:text-[10px]">
                         <div className="prtint:w-[100px] flex w-fit items-center justify-between gap-2">
                             <FaPhone className="h-[8px] w-[8px]" />
-                            <span>০১৭৬৬-৯২৫২৬২</span>
+                            <span>০১৭৫৩-৮৩৮৩৯০</span>
                         </div>
                         <div className="prtint:w-[100px] flex w-fit items-center justify-between gap-2">
                             <FaPhone className="h-[8px] w-[8px]" />
-                            <span>০১৭১৭-০৫২৭৯৩</span>
+                            <span>০১৭৮৫-৬৬০০৫৭</span>
                         </div>
                     </div>
                 </div>
