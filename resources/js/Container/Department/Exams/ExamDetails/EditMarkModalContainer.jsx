@@ -23,10 +23,10 @@ const EditMarkModalContainer = ({ isOpen, onClose, examData, classItem, students
                 subjects: subjects.map((subject) => ({
                     subject_id: subject.id,
                     marks_obtained:
-                        student.exam_marks?.find((mark) => mark.subject_id === subject.id && mark.exam_id === examData.id)?.marks_obtained || '',
+                        student.exam_marks?.find((mark) => mark.subject_id == subject.id && mark.exam_id == examData.id)?.marks_obtained || '',
                     total_marks: subject.exam_subjects?.[0]?.total_marks || 100,
                     pass_marks: subject.exam_subjects?.[0]?.pass_marks || 40,
-                    status: student.exam_marks?.find((mark) => mark.subject_id === subject.id && mark.exam_id === examData.id)?.status || 'present',
+                    status: student.exam_marks?.find((mark) => mark.subject_id == subject.id && mark.exam_id == examData.id)?.status || 'present',
                 })),
             })),
         };
