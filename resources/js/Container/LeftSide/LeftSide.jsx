@@ -1,4 +1,4 @@
-import Logo from '@/assets/images/logo.png';
+import ApplicationLogo from '@/Components/ApplicationLogo';
 import SideBarUI from '@/Components/UI/SideBarUI';
 import { cn } from '@/lib/utils';
 import { Link, usePage } from '@inertiajs/react';
@@ -6,7 +6,7 @@ import { Bell, Calculator, ChartNoAxesCombined, FilePenLine, PanelRight, School,
 import { useState } from 'react';
 
 const LeftSide = ({ drawerOpen, onDrawerClose, isMobile }) => {
-    const { departments } = usePage().props;
+    const { departments, institute } = usePage().props;
     const [collapsed, setCollapsed] = useState(false);
 
     const handleCollapsed = () => {
@@ -34,14 +34,16 @@ const LeftSide = ({ drawerOpen, onDrawerClose, isMobile }) => {
             isMobile={isMobile}
         >
             {/* Header with logo */}
-            <SideBarUI.Item collapsed={collapsed} className="h-[80px] hover:bg-[#F2F2F2]">
-                <SideBarUI.Icon>
-                    <img src={Logo} alt="logo" className="h-[33.16px] w-[32px]" />
-                </SideBarUI.Icon>
-                <SideBarUI.Text collapsed={collapsed} className="text-lg font-semibold">
-                    Madrasatul Hera
-                </SideBarUI.Text>
-            </SideBarUI.Item>
+            <Link href={route('dashboard')} className="w-full cursor-pointer" as="button">
+                <SideBarUI.Item collapsed={collapsed} className="h-[80px] hover:bg-[#F2F2F2]">
+                    <SideBarUI.Icon>
+                        <ApplicationLogo className="h-[33.16px] w-[32px]" />
+                    </SideBarUI.Icon>
+                    <SideBarUI.Text collapsed={collapsed} className="text-lg font-semibold">
+                        {institute?.name || 'Madrasatul Hera'}
+                    </SideBarUI.Text>
+                </SideBarUI.Item>
+            </Link>
 
             {/* Collapse toggle button - only show on desktop */}
             {!isMobile && (

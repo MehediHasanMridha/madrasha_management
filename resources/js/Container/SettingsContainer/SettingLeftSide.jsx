@@ -32,6 +32,21 @@ const SettingLeftSide = () => {
                 </SideBarUI.Item>
             </Link>
             <Link
+                href={'/settings/welcome-page'}
+                prefetch
+                as="button"
+                className={cn('w-[300px] cursor-pointer items-center text-start text-[16px] font-medium', {
+                    'bg-[#F2F2F2]': route().current('settings.welcome-page.*'),
+                })}
+            >
+                <SideBarUI.Item>
+                    <SideBarUI.Text>
+                        Welcome Page
+                        <br /> <span className="font-normal text-[#AFAFAF]">Customize welcome page content</span>
+                    </SideBarUI.Text>
+                </SideBarUI.Item>
+            </Link>
+            <Link
                 href={route('department.index')}
                 prefetch
                 as="button"

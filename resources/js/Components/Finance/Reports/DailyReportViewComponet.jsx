@@ -1,9 +1,10 @@
-import Logo from '@/assets/images/logo.png';
+import ApplicationLogo from '@/Components/ApplicationLogo';
 import Confirmpop from '@/Components/UI/Confirmpop';
 import LoadingUI from '@/Components/UI/LoadingUI';
 import ModalUI from '@/Components/UI/ModalUI';
 import StaticBtn from '@/Components/UI/StaticBtn';
 import { cn } from '@/lib/utils';
+import { usePage } from '@inertiajs/react';
 import { forwardRef } from 'react';
 
 const DailyReportViewComponent = forwardRef(
@@ -21,6 +22,7 @@ const DailyReportViewComponent = forwardRef(
         setConfirm,
         confirm,
     }) => {
+        const { institute } = usePage().props;
         return (
             <ModalUI
                 isModalOpen={reportViewModal}
@@ -37,10 +39,10 @@ const DailyReportViewComponent = forwardRef(
                             {/* Header */}
                             <div className="mb-4 flex items-center justify-between pb-4">
                                 <div className="flex items-center gap-4">
-                                    <img src={Logo} alt="School Logo" className="h-12 print:h-[37px]" />
+                                    <ApplicationLogo alt="School Logo" className="h-12 print:h-[37px]" />
                                     <div>
-                                        <h1 className="text-lg font-bold print:text-[20px]">মাদরাসাতুল হেরা টাঙ্গাইল</h1>
-                                        <p className="text-sm text-black print:text-[12px]">মনোয়ারা রশিদ ভিলা, রহমান ভবন, কোদালিয়া, টাঙ্গাইল</p>
+                                        <h1 className="text-lg font-bold print:text-[20px]">{institute?.name_bangla || 'এখানে মাদরাসার নায়া'}</h1>
+                                        <p className="text-sm text-black print:text-[12px]">{institute?.address || 'এখানে মাদরাসার ঠিকানা'}</p>
                                     </div>
                                 </div>
                                 <div className="text-right text-sm print:text-[15px]">

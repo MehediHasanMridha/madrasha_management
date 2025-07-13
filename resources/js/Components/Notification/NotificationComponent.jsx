@@ -1,9 +1,8 @@
 import Field from '@/Components/UI/Field';
 import FieldSet from '@/Components/UI/FieldSet';
 import StaticBtn from '@/Components/UI/StaticBtn';
-import { cn } from '@/lib/utils';
 import { Bell, Send } from 'lucide-react';
-import { IoMdNotifications } from 'react-icons/io';
+import NotificationTabBarComponent from './NotificationTabBarComponent';
 
 const NotificationComponent = ({
     formData,
@@ -19,18 +18,7 @@ const NotificationComponent = ({
 }) => {
     return (
         <>
-            <div className="mt-[24px] flex w-full justify-between rounded-[8px] bg-white p-[24px]">
-                <div className="flex space-x-[12px]">
-                    <span
-                        className={cn(
-                            'flex w-fit cursor-pointer items-center space-x-[8px] border-b-[1px] border-[#4891FF] px-[8px] py-[6px] text-[#4891FF]',
-                        )}
-                    >
-                        <IoMdNotifications className="inline-flex" size={24} />
-                        <span className="text-[16px]">Send Notification</span>
-                    </span>
-                </div>
-            </div>
+            <NotificationTabBarComponent tab="notification" />
 
             <div className="mt-[8px] flex w-full flex-col space-y-5 rounded-[8px] bg-white p-[24px]">
                 <FieldSet className="lg:grid-cols-1">

@@ -7,7 +7,7 @@ use Intervention\Image\Laravel\Facades\Image;
 
 //image processing & uploading function
 if (! function_exists('uploadImage')) {
-    function uploadImage($modelAttribute, $image, $path, $width = 300, $height = 300, $quality = 90, $type = 'webp')
+    function uploadImage($modelAttribute, $image, $path, $name = null, $width = 300, $height = 300, $quality = 90, $type = 'webp')
     {
         if ($modelAttribute && file_exists(public_path($path . $modelAttribute))) {
             unlink(public_path($path . $modelAttribute));
@@ -26,6 +26,9 @@ if (! function_exists('uploadImage')) {
         if ($type == 'png') {
             $filename = time() . '.' . 'png';
             $imageProcessed->toPng();
+        }
+        if ($name) {
+            $filename = $name . '.' . $type;
         }
 
         $imageUrl = public_path($path . $filename);
@@ -67,18 +70,55 @@ if (! function_exists('generateUniqueId')) {
     }
 }
 
-// get student fee
+// get student fee - optimized version
 if (! function_exists('getStudentFee')) {
-    function getStudentFee($academicInfo = null, $feeSlug = null)
+    function getStudentFee($academicInfo = null, $feeSlug = null, $feeTypes = null, $classes = null)
     {
+        if (! $academicInfo || ! $feeSlug) {
+            return 0;
+        }
 
-        if ($academicInfo && $feeSlug) {
-            $name = $feeSlug === 'academic' ? 'Academic Fee' : 'Boarding Fee';
-            if ($feeSlug === 'academic' && $academicInfo->academic_fee) {
-                return intval($academicInfo->academic_fee);
-            } elseif ($feeSlug === 'boarding' && $academicInfo->boarding_fee) {
-                return intval($academicInfo->boarding_fee);
+        $name = $feeSlug === 'academic' ? 'Academic Fee' : 'Boarding Fee';
+
+        if ($feeSlug === 'academic' && $academicInfo->academic_fee) {
+            return intval($academicInfo->academic_fee);
+        } elseif ($feeSlug === 'boarding' && $academicInfo->boarding_fee) {
+            return intval($academicInfo->boarding_fee);
+        }
+
+        // If optimized collections are provided, use them
+        if ($feeTypes && $classes) {
+            // Get class from pre-loaded collection
+            $class = $classes->get($academicInfo->class_id);
+            if (! $class) {
+                return 0;
             }
+
+            $slug = Str::slug($name) . '-' . $class->slug;
+            $key  = $academicInfo->class_id . '-' . $slug;
+
+            // Check if fee type exists in pre-loaded collection
+            $feeType = $feeTypes->get($key);
+
+            if (! $feeType) {
+                // Create new fee type if not exists
+                $feeType = FeeType::firstOrCreate(
+                    [
+                        'class_id' => $academicInfo->class_id,
+                        'slug'     => $slug,
+                    ],
+                    [
+                        'name'          => $name,
+                        'amount'        => 0,
+                        'department_id' => $academicInfo->department_id,
+                    ]
+                );
+
+                // Add to collection for future use
+                $feeTypes->put($key, $feeType);
+            }
+        } else {
+            // Fallback to original logic for backward compatibility
             $feeType = FeeType::firstOrCreate(
                 [
                     'class_id' => $academicInfo->class_id,
@@ -90,13 +130,13 @@ if (! function_exists('getStudentFee')) {
                     'department_id' => $academicInfo->department_id,
                 ]
             );
-            if ($feeType->amount === null) {
-                $feeType->amount = 0;
-                $feeType->save();
-            }
-            return intval($feeType->amount);
         }
 
-    }
+        if ($feeType->amount === null) {
+            $feeType->amount = 0;
+            $feeType->save();
+        }
 
+        return intval($feeType->amount);
+    }
 }

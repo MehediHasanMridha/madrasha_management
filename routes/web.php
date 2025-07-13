@@ -12,11 +12,14 @@ use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\VoucherTypeController;
+use App\Http\Controllers\WelcomeController;
+use App\Http\Controllers\WelcomePageController;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::redirect('/', '/login');
+// Route::redirect('/', '/login');
+Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
 
 Route::middleware(['auth', 'verified'])->group(function () {
 
@@ -130,8 +133,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
             'destroy' => 'settings.voucher-types.destroy',
         ]);
 
+        // Welcome Page Settings
+        Route::prefix('welcome-page')->group(function () {
+            Route::get('/', [WelcomePageController::class, 'index'])->name('settings.welcome_page_index');
+            Route::post('/', [WelcomePageController::class, 'store'])->name('settings.welcome-page.store');
+            Route::put('{welcomePageContent}', [WelcomePageController::class, 'update'])->name('settings.welcome-page.update');
+            Route::post('update-order', [WelcomePageController::class, 'updateOrder'])->name('settings.welcome-page.update-order');
+            Route::delete('{welcomePageContent}', [WelcomePageController::class, 'destroy'])->name('settings.welcome-page.destroy');
+        });
+
         // Branding Settings
         Route::get('branding', [SettingsController::class, 'branding'])->name('settings.branding.index');
+        Route::post('branding', [SettingsController::class, 'updateBranding'])->name('settings.branding.update');
 
     });
 
@@ -176,6 +189,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/', [NotificationController::class, 'index'])->name('notifications.index');
         Route::post('/store-token', [\App\Http\Controllers\NotificationController::class, 'storeToken'])->name('notifications.store-token');
         Route::post('/send-notification', [NotificationController::class, 'sendNotification'])->name('notifications.send-notification');
+        Route::get('/sms-section', [NotificationController::class, 'smsSection'])->name('notifications.sms-section');
     });
 
 });

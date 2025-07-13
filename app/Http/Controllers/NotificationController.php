@@ -96,4 +96,9 @@ class NotificationController extends Controller
             return redirect()->back()->with('error', 'Failed to send notifications: ' . $e->getMessage());
         }
     }
+
+    public function smsSection()
+    {
+        return Inertia::render('admin::notification/sms-section');
+    }
 }

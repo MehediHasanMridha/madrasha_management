@@ -284,7 +284,7 @@ class DepartmentController extends Controller
 
             // Get exams for this department with related data
             $examsQuery = $department->exams()
-                ->with(['classes', 'examSubjects.subject', 'creator']);
+                ->with(['classes', 'examSubjects.subject', 'creator', 'feeType']);
 
             // Apply year filter if provided
             $examsQuery->byYear($year);
