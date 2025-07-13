@@ -54,7 +54,9 @@ class DownloadDueList
                 'unique_id'  => $user->unique_id,
                 'class'      => $user->academics->class->name ?? null,
                 'department' => $user->academics->department->name ?? null,
-                'due_amount' => $user->incomeLogs->sum('studentDue.due_amount') ?? 0,
+                'due_amount' => $user->incomeLogs->sum('studentDue.due_amount') > 0
+                ? $user->incomeLogs->sum('studentDue.due_amount')
+                : getStudentFee($user->academics, 'academic') + getStudentFee($user->academics, 'boarding'),
             ];
 
         });
