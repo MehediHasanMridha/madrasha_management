@@ -45,20 +45,21 @@ class DueList
                     });
             })
             ->paginate(request()->input('per_page', 10), ['*'], 'page', request()->input('page', 1))
-            ->through(function ($item) {
-                return [
-                    'id'         => $item->id,
-                    'name'       => $item->name,
-                    'phone'      => $item->phone,
-                    'gender'     => $item->gender,
-                    'image'      => $item->img,
-                    'unique_id'  => $item->unique_id,
-                    'class'      => $item->academics->class->name ?? null,
-                    'department' => $item->academics->department->name ?? null,
-                    'due_amount' => $item->incomeLogs->sum('studentDue.due_amount') ?? 0,
-                ];
-            })->withQueryString();
+            ->through(fn($item) => [
+                'id'         => $item->id,
+                'name'       => $item->name,
+                'phone'      => $item->phone,
+                'gender'     => $item->gender,
+                'image'      => $item->img,
+                'unique_id'  => $item->unique_id,
+                'class'      => $item->academics->class->name ?? null,
+                'department' => $item->academics->department->name ?? null,
+                // get the total due amount from incomeLogs other wise show monthly fee
+                'due_amount' => $item->incomeLogs->sum('studentDue.due_amount') > 0 ? $item->incomeLogs->sum('studentDue.due_amount') : getStudentFee($item->academics, 'academic') +
+                getStudentFee($item->academics, 'boarding'),
+            ])->withQueryString();
         // Build base query with eager loading
+
         return $usersWithNoIncomeLogOrDue;
     }
 }
