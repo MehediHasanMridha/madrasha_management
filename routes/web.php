@@ -190,6 +190,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/store-token', [\App\Http\Controllers\NotificationController::class, 'storeToken'])->name('notifications.store-token');
         Route::post('/send-notification', [NotificationController::class, 'sendNotification'])->name('notifications.send-notification');
         Route::get('/sms-section', [NotificationController::class, 'smsSection'])->name('notifications.sms-section');
+        Route::post('/send-sms', [NotificationController::class, 'sendSms'])->name('notifications.send-sms');
     });
 
 });

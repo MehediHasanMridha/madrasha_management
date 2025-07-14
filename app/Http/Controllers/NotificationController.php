@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Models\Department;
 use App\Models\NotificationToken;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -99,6 +100,26 @@ class NotificationController extends Controller
 
     public function smsSection()
     {
-        return Inertia::render('admin::notification/sms-section');
+        $department = Department::with('classes')->get();
+        return Inertia::render('admin::notification/sms-section',
+            [
+                'departments' => $department,
+            ]
+        );
+    }
+
+    public function sendSms(Request $request)
+    {
+        // Validate the request
+        $request->validate([
+            'sms_message'   => 'required|string|max:160',
+            'all_students'  => 'boolean',
+            'department_id' => 'nullable|exists:departments,id',
+        ]);
+
+        // Logic to send SMS goes here
+        // This is a placeholder for actual SMS sending logic
+
+        return redirect()->back()->with('success', 'SMS sent successfully.');
     }
 }

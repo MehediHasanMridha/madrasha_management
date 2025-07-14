@@ -2,11 +2,11 @@ import SMSContainer from '@/Container/Notification/SMSContainer';
 import AuthenticatedLayout from '@/layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 
-const SMS = () => {
+const SMS = ({ departments }) => {
     return (
         <AuthenticatedLayout>
             <Head title="SMS Notification" />
-            <SMSContainer />
+            <SMSContainer departments={departments} />
         </AuthenticatedLayout>
     );
 };

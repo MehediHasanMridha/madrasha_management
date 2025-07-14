@@ -1,11 +1,11 @@
 import NotificationTabBarComponent from '@/Components/Notification/NotificationTabBarComponent';
 import SMSComponent from '@/Components/Notification/SMSComponent';
 
-const SMSContainer = () => {
+const SMSContainer = ({ departments }) => {
     return (
         <>
             <NotificationTabBarComponent tab="sms" />
-            <SMSComponent />
+            <SMSComponent departments={departments} />
         </>
     );
 };
