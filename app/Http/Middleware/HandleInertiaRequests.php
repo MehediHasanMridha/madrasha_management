@@ -47,10 +47,12 @@ class HandleInertiaRequests extends Middleware
                 'user' => $request->user(),
             ],
             'flash' => [
-                'success' => Session::get('success'),
-                'error'   => Session::get('error'),
-                'message' => Session::get('message'),
-                'data'    => Session::get('data'),
+                'success'       => Session::get('success'),
+                'error'         => Session::get('error'),
+                'message'       => Session::get('message'),
+                'data'          => Session::get('data'),
+                'queue_success' => Session::get('queue_success'),
+                'queue_error'   => Session::get('queue_error'),
             ],
         ];
     }

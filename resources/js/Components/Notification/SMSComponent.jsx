@@ -1,12 +1,14 @@
 import { router } from '@inertiajs/react';
+import { notification } from 'antd';
 import { Controller, useForm } from 'react-hook-form';
 import { IoAdd, IoClose } from 'react-icons/io5';
 import Field from '../UI/Field';
 import StaticBtn from '../UI/StaticBtn';
 import ToggleUI from '../UI/ToggleUI';
 
-const SMSComponent = ({ departments }) => {
+const SMSComponent = ({ departments, sms_balance }) => {
     const {
+        register,
         control,
         handleSubmit,
         watch,
@@ -72,11 +74,21 @@ const SMSComponent = ({ departments }) => {
 
     const onSubmit = (data) => {
         router.post(route('notifications.send-sms'), data, {
-            onSuccess: () => {
-                // Optionally reset form or show success message
-                // setValue('sms_message', '');
-                // setValue('selected_student_ids', []);
-                // setValue('department_selections', []);
+            onSuccess: (response) => {
+                if (response.props.flash.success) {
+                    notification.success({
+                        message: 'Success',
+                        description: response.props.flash.success,
+                        placement: 'bottomRight',
+                    });
+                }
+                if (response.props.flash.error) {
+                    notification.error({
+                        message: 'Error',
+                        description: response.props.flash.error,
+                        placement: 'bottomRight',
+                    });
+                }
             },
             onError: (error) => {
                 console.error('Error sending SMS:', error);
@@ -100,11 +112,11 @@ const SMSComponent = ({ departments }) => {
         <div className="mt-6 space-y-3">
             <div className="flex space-x-10 rounded-lg bg-white p-10">
                 <div className="">
-                    <h2 className="text-2xl font-semibold text-gray-800">127 BDT</h2>
+                    <h2 className="text-2xl font-semibold text-gray-800">{sms_balance} BDT</h2>
                     <p className="text-sm text-gray-500">SMS Balance</p>
                 </div>
                 <div className="">
-                    <h2 className="text-2xl font-semibold text-gray-800">0.50 BDT</h2>
+                    <h2 className="text-2xl font-semibold text-gray-800">0.45 BDT</h2>
                     <p className="text-sm text-gray-500">Per page SMS rate (20 character = 1 SMS)</p>
                 </div>
             </div>
@@ -234,6 +246,20 @@ const SMSComponent = ({ departments }) => {
                                 <IoAdd className="h-4 w-4 text-[#0267FF]" />
                                 Add student ID
                             </button>
+                        </div>
+                    </div>
+
+                    {/* Extra Numbers */}
+                    <div className="rounded-xl bg-[#F6F6F6] p-4">
+                        <span className="text-base text-[#131313]">Extra numbers</span>
+                        <div className="items-center gap-2">
+                            <textarea
+                                className="mt-2 w-full rounded-lg border border-[#AFAFAF] bg-white p-2 focus:outline-0"
+                                name="extra_numbers"
+                                id=""
+                                {...register('extra_numbers')}
+                                placeholder='Enter extra numbers separated by ","'
+                            ></textarea>
                         </div>
                     </div>
                 </div>
