@@ -7,7 +7,6 @@ use App\Models\NotificationToken;
 use App\Models\SMSBalance;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use YieldStudio\LaravelExpoNotifier\Contracts\ExpoNotificationsServiceInterface;
 use YieldStudio\LaravelExpoNotifier\Dto\ExpoMessage;
@@ -151,33 +150,4 @@ class NotificationController extends Controller
         return redirect()->back()->with('success', "SMS prepared and queued successfully");
     }
 
-    /**
-     * Queue SMS for background processing
-     *
-     * @param array $phoneNumbers
-     * @param string $message
-     * @return bool
-     */
-    private function queueSmsForSending($phoneNumbers, $message)
-    {
-        try {
-            // Here you would implement your SMS queue logic
-            // For example, dispatching jobs to a queue
-
-            foreach ($phoneNumbers as $phoneNumber) {
-                // Dispatch SMS job to queue
-                // \App\Jobs\SendSMSJob::dispatch($phoneNumber, $message);
-
-                Log::info('SMS queued', [
-                    'phone'          => $phoneNumber,
-                    'message_length' => strlen($message),
-                ]);
-            }
-
-            return true;
-        } catch (\Exception $e) {
-            Log::error('Failed to queue SMS: ' . $e->getMessage());
-            return false;
-        }
-    }
 }
