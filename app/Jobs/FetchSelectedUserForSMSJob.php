@@ -5,7 +5,6 @@ use App\Models\SMSBalance;
 use App\Models\User;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Session;
 
 class FetchSelectedUserForSMSJob implements ShouldQueue
@@ -171,7 +170,7 @@ class FetchSelectedUserForSMSJob implements ShouldQueue
                 $smsBalance->balanceDecrement($totalCost);
                 Session::put('queue_success', 'SMS sent successfully to ' . $validPhoneNumbers->count() . ' recipients.');
             } else {
-                Session::put('queue_error', 'Failed to send SMS. Please try again later.');
+                Session::put('queue_error', 'Failed to send SMS. please set IP address to Whitelist in your SMS gateway settings.');
             }
         }
 
@@ -216,14 +215,22 @@ class FetchSelectedUserForSMSJob implements ShouldQueue
         $senderid = "8809617622335";
         $number   = $validPhoneNumbers;
 
-        $response = Http::post($url, [
+        $data = [
             "api_key"  => $api_key,
             "senderid" => $senderid,
             "number"   => $number,
             "message"  => $message,
-        ]);
+        ];
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        $response = curl_exec($ch);
+        curl_close($ch);
+        return $response;
 
-        return $response->body();
     }
 
 }
