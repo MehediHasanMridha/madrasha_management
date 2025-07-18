@@ -5,6 +5,7 @@ use App\Models\SMSBalance;
 use App\Models\User;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Session;
 
 class FetchSelectedUserForSMSJob implements ShouldQueue
@@ -165,7 +166,8 @@ class FetchSelectedUserForSMSJob implements ShouldQueue
             return;
         } else {
             $res = $this->sms_send($validPhoneNumbers, $this->smsMessage);
-            if ($res) {
+            $res = json_decode($res, true);
+            if ($res['success_message']) {
                 $smsBalance->balanceDecrement($totalCost);
                 Session::put('queue_success', 'SMS sent successfully to ' . $validPhoneNumbers->count() . ' recipients.');
             } else {
@@ -212,24 +214,16 @@ class FetchSelectedUserForSMSJob implements ShouldQueue
         $url      = "http://bulksmsbd.net/api/smsapi";
         $api_key  = "WqEMXtKIyUzdOiLrQyGm";
         $senderid = "8809617622335";
-        // $number   = implode(',', $validPhoneNumbers); // Join phone numbers with comma
-        $number = $validPhoneNumbers;
+        $number   = $validPhoneNumbers;
 
-        $data = [
+        $response = Http::post($url, [
             "api_key"  => $api_key,
             "senderid" => $senderid,
             "number"   => $number,
             "message"  => $message,
-        ];
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        $response = curl_exec($ch);
-        curl_close($ch);
-        return $response;
+        ]);
+
+        return $response->body();
     }
 
 }
