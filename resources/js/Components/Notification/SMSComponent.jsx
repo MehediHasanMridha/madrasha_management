@@ -117,7 +117,7 @@ const SMSComponent = ({ departments, sms_balance }) => {
                 </div>
                 <div className="">
                     <h2 className="text-2xl font-semibold text-gray-800">0.45 BDT</h2>
-                    <p className="text-sm text-gray-500">Per page SMS rate (20 character = 1 SMS)</p>
+                    <p className="text-sm text-gray-500">Per page SMS rate (140 character = 1 SMS)</p>
                 </div>
             </div>
 
