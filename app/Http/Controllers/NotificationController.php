@@ -1,7 +1,10 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Jobs\FetchSelectedUserForSMSJob;
+use App\Models\Department;
 use App\Models\NotificationToken;
+use App\Models\SMSBalance;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -99,6 +102,52 @@ class NotificationController extends Controller
 
     public function smsSection()
     {
-        return Inertia::render('admin::notification/sms-section');
+        $department = Department::with('classes')->get();
+        $smsBalance = SMSBalance::first();
+
+        return Inertia::render('admin::notification/sms-section',
+            [
+                'departments' => $department,
+                'sms_balance' => $smsBalance->balance ?? 0, // Ensure balance is set
+            ]
+        );
     }
+
+    public function sendSms(Request $request)
+    {
+        // Validate the request
+        $request->validate([
+            'sms_message'           => 'required|string|max:160',
+            'all_students'          => 'boolean',
+            'all_staff'             => 'boolean',
+            'due_students'          => 'boolean',
+            'selected_departments'  => 'boolean',
+            'department_selections' => 'array',
+            'selected_student_ids'  => 'array',
+            'extra_numbers'         => 'nullable|string',
+        ]);
+
+        $smsMessage           = $request->input('sms_message');
+        $allStudents          = $request->input('all_students', false);
+        $allStaff             = $request->input('all_staff', false);
+        $allDueStudents       = $request->input('due_students', false);
+        $selectedDepartments  = $request->input('selected_departments', false);
+        $departmentSelections = $request->input('department_selections', []);
+        $selectedStudentIds   = $request->input('selected_student_ids', []);
+        $extraNumbers         = $request->input('extra_numbers', '');
+
+        FetchSelectedUserForSMSJob::dispatch(
+            $allStudents,
+            $allStaff,
+            $allDueStudents,
+            $selectedDepartments,
+            $departmentSelections,
+            $selectedStudentIds,
+            $extraNumbers,
+            $smsMessage
+        );
+
+        return redirect()->back()->with('success', "SMS prepared and queued successfully");
+    }
+
 }

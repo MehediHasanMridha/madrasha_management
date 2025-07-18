@@ -1,4 +1,4 @@
-name: Deploy to main server
+name: Deploy to Madrasatul Hera server
 
 on:
     push:
@@ -45,3 +45,14 @@ jobs:
                       **/.git*/**
                       **/node_modules/**
                   # **/vendor/**
+                  # send notification to telegram
+            - name: Send notification to Telegram
+              uses: appleboy/telegram-action@master
+              with:
+                  to: ${{ secrets.TELEGRAM_TO }}
+                  token: ${{ secrets.TELEGRAM_TOKEN }}
+                  message: |
+                      ✅ **Deployment Successful**
+                      - Branch: `Madrasatul Hera`
+                      - Server: `madrasatulhera.com`
+                      - Commit: `${{ github.sha }}`

@@ -140,3 +140,28 @@ if (! function_exists('getStudentFee')) {
         return intval($feeType->amount);
     }
 }
+
+// validate and format Bangladeshi phone number
+if (! function_exists('validateAndFormatPhoneNumber')) {
+    function validateAndFormatPhoneNumber($phoneNumber)
+    {
+        // Remove all non-digit characters
+        $cleaned = preg_replace('/[^0-9]/', '', $phoneNumber);
+
+        // Check if it's a valid Bangladeshi mobile number
+        if (preg_match('/^(?:\+88|88)?01[3-9]\d{8}$/', $phoneNumber) ||
+            preg_match('/^01[3-9]\d{8}$/', $cleaned)) {
+
+            // Format to standard +88 prefix
+            if (strlen($cleaned) === 11 && substr($cleaned, 0, 2) === '01') {
+                return '+88' . $cleaned;
+            } elseif (strlen($cleaned) === 13 && substr($cleaned, 0, 3) === '880') {
+                return '+' . $cleaned;
+            } elseif (strlen($cleaned) === 14 && substr($cleaned, 0, 4) === '8801') {
+                return '+' . $cleaned;
+            }
+        }
+
+        return null;
+    }
+}

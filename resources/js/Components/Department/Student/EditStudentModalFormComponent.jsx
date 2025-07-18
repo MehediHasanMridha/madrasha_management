@@ -252,7 +252,7 @@ const EditStudentModalFormComponent = ({
                             type="text"
                             className="rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
                             placeholder="Enter Boarding Fee"
-                            {...register('boarding_fee', { required: 'Boarding Fee is required' })}
+                            {...register('boarding_fee')}
                         />
                     </Field>
                     <Field label={'Academic Fee'} error={errors.academic_fee}>
@@ -260,7 +260,7 @@ const EditStudentModalFormComponent = ({
                             type="text"
                             className="rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
                             placeholder="Enter Academic Fee"
-                            {...register('academic_fee', { required: 'Academic Fee is required' })}
+                            {...register('academic_fee')}
                         />
                     </Field>
                     <Field label={'Reference (Optional)'}>
