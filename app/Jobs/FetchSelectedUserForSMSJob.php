@@ -165,11 +165,12 @@ class FetchSelectedUserForSMSJob implements ShouldQueue
             return;
         } else {
             $res = $this->sms_send($validPhoneNumbers, $this->smsMessage);
-            if ($res) {
+            $res = json_decode($res, true);
+            if ($res['success_message']) {
                 $smsBalance->balanceDecrement($totalCost);
                 Session::put('queue_success', 'SMS sent successfully to ' . $validPhoneNumbers->count() . ' recipients.');
             } else {
-                Session::put('queue_error', 'Failed to send SMS. Please try again later.');
+                Session::put('queue_error', 'Failed to send SMS. please set IP address to Whitelist in your SMS gateway settings.');
             }
         }
 
@@ -212,8 +213,7 @@ class FetchSelectedUserForSMSJob implements ShouldQueue
         $url      = "http://bulksmsbd.net/api/smsapi";
         $api_key  = "WqEMXtKIyUzdOiLrQyGm";
         $senderid = "8809617622335";
-        // $number   = implode(',', $validPhoneNumbers); // Join phone numbers with comma
-        $number = $validPhoneNumbers;
+        $number   = $validPhoneNumbers;
 
         $data = [
             "api_key"  => $api_key,
@@ -230,6 +230,7 @@ class FetchSelectedUserForSMSJob implements ShouldQueue
         $response = curl_exec($ch);
         curl_close($ch);
         return $response;
+
     }
 
 }
