@@ -30,6 +30,11 @@ const SMSComponent = ({ departments, sms_balance }) => {
     const selected_departments = watch('selected_departments');
     const department_selections = watch('department_selections') || [];
     const selected_student_ids = watch('selected_student_ids') || [];
+    const sms_message = watch('sms_message') || '';
+
+    // Calculate SMS count based on character length
+    const characterCount = sms_message.length;
+    const smsCount = Math.ceil(characterCount / 140) || 1;
 
     const handleDepartmentToggle = (departmentId) => {
         const currentSelections = getValues('department_selections') || [];
@@ -128,12 +133,20 @@ const SMSComponent = ({ departments, sms_balance }) => {
                         control={control}
                         rules={{ required: 'SMS message is required' }}
                         render={({ field }) => (
-                            <textarea
-                                {...field}
-                                className="w-full rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
-                                rows={6}
-                                placeholder="Enter your SMS message here.........."
-                            />
+                            <div className="relative">
+                                <textarea
+                                    {...field}
+                                    className="w-full rounded-[8px] border-[1px] border-[#AFAFAF] px-[16px] py-[12px] focus:outline-0"
+                                    rows={6}
+                                    placeholder="Enter your SMS message here.........."
+                                />
+                                <div className="mt-2 flex justify-between text-sm text-gray-600">
+                                    <span>
+                                        {characterCount} characters | {smsCount} SMS {smsCount > 1 ? 'messages' : 'message'}
+                                    </span>
+                                    <span className="text-blue-600">Cost: {(smsCount * 0.45).toFixed(2)} BDT</span>
+                                </div>
+                            </div>
                         )}
                     />
                     <StaticBtn className="my-2" onClick={handleSubmit(onSubmit)}>
