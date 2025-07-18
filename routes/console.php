@@ -11,3 +11,6 @@ Artisan::command('inspire', function () {
 Schedule::call(function () {
     Artisan::call("backup:run");
 })->daily();
+Schedule::call(function () {
+    Artisan::call("queue:work --stop-when-empty");
+})->everySecond();
