@@ -481,7 +481,7 @@ class DepartmentController extends Controller
     public function exams_details($exam_slug, $department_slug)
     {
         $exam = Exam::where('slug', $exam_slug)
-            ->with(['feeType', 'classes.academics.student.incomeLogs.feeType', 'classes.subjects'])
+            ->with(['feeType', 'classes.academics.student.incomeLogs.feeType', 'classes.subjects', 'classes.academics.student.guardians'])
             ->whereHas('department', fn($q) => $q->where('slug', $department_slug))
             ->firstOrFail();
 
@@ -515,11 +515,38 @@ class DepartmentController extends Controller
             ];
         });
 
+        $studentStatus = collect();
+        $exam->classes->each(function ($class) use ($exam, &$studentStatus, ) {
+            $class->academics->each(function ($academic) use ($class, $exam, &$studentStatus, ) {
+                $studentData = [
+                    'id'          => $academic->student->id,
+                    'name'        => $academic->student->name,
+                    'email'       => $academic->student->email,
+                    'phone'       => $academic->student->phone,
+                    'unique_id'   => $academic->student->unique_id,
+                    'class_id'    => $class->id,
+                    'father_name' => $academic->student->guardians->father_name ?? 'N/A',
+                ];
+
+                $hasPaid = $exam->feeType && $academic->student->incomeLogs
+                    ->where('fee_type_id', $exam->feeType->id)
+                    ->isNotEmpty();
+
+                if ($hasPaid) {
+                    $studentStatus->push(array_merge($studentData, ['status' => 'paid']));
+                } else {
+                    $studentStatus->push(array_merge($studentData, ['status' => 'due']));
+                }
+            });
+        });
+
+        $studentStatus = $studentStatus->unique('id')->values();
+
         return Inertia::render('admin::department/exam/exams_details', [
-            'exam'       => $exam,
-            'department' => $exam->department,
-            'classes'    => $data,
-            'subjects'   => Inertia::defer(fn() => $exam->classes->flatMap(function ($class) use ($exam) {
+            'exam'                  => $exam,
+            'department'            => $exam->department,
+            'classes'               => $data,
+            'subjects'              => Inertia::defer(fn() => $exam->classes->flatMap(function ($class) use ($exam) {
                 return $class->subjects->load('examSubjects')->filter(function ($subject) use ($exam) {
                     return $subject->examSubjects;
                 })->map(function ($subject) use ($class, $exam) {
@@ -533,7 +560,7 @@ class DepartmentController extends Controller
                     ];
                 });
             })->unique('id')->values()),
-            'students'   => Inertia::defer(fn() => $exam->classes->flatMap(function ($class) use ($exam) {
+            'students'              => Inertia::defer(fn() => $exam->classes->flatMap(function ($class) use ($exam) {
                 return $class->academics->load(['student.examMarks' => function ($query) use ($exam) {
                     $query->where('exam_id', $exam->id);
                 }])->map(function ($academic) use ($class) {
@@ -548,6 +575,7 @@ class DepartmentController extends Controller
                     ];
                 });
             })->unique('id')->values()),
+            'examFeeStudentsStatus' => Inertia::defer(fn() => $studentStatus),
         ]);
     }
 
