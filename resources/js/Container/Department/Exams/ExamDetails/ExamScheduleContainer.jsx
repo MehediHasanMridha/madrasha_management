@@ -1,11 +1,14 @@
 import StaticBtn from '@/Components/UI/StaticBtn';
+import { cn } from '@/lib/utils';
 import { usePage } from '@inertiajs/react';
 import { Download, Edit } from 'lucide-react';
 import { useState } from 'react';
 import EditScheduleModalContainer from './EditScheduleModalContainer';
+import ExamScheduleDownloadContainer from './ExamScheduleDownloadContainer';
 
 const ExamScheduleContainer = ({ classItem, exam }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isDownload, setIsDownload] = useState(false);
     const { subjects } = usePage().props;
     const getExamSubjectsForClass = (classId) => {
         if (!subjects) return [];
@@ -53,7 +56,16 @@ const ExamScheduleContainer = ({ classItem, exam }) => {
                 <div className="mb-2 flex items-center justify-center gap-2.5">
                     <span className="flex-1 text-sm text-[#4A4A4A]">Schedule</span>
                     <div className="flex gap-2">
-                        <StaticBtn className="flex w-fit items-center gap-2 rounded border-0 bg-transparent px-3 py-2 text-sm text-[#0267FF] transition-colors hover:bg-blue-50">
+                        <StaticBtn
+                            className={cn(
+                                'flex w-fit items-center gap-2 rounded border-0 bg-transparent px-3 py-2 text-sm text-[#0267FF] transition-colors hover:bg-blue-50',
+                                {
+                                    'pointer-events-none opacity-50': isDownload,
+                                },
+                            )}
+                            onClick={() => setIsDownload(true)}
+                            disabled={isDownload}
+                        >
                             <Download size={16} />
                             Download Schedule
                         </StaticBtn>
@@ -91,6 +103,8 @@ const ExamScheduleContainer = ({ classItem, exam }) => {
                 classId={classItem.class.id}
                 subjects={subjects}
             />
+            {/* Download Schedule Modal */}
+            <ExamScheduleDownloadContainer examSubjects={classExamSubjects} exam={exam} isDownload={isDownload} setIsDownload={setIsDownload} />
         </>
     );
 };
