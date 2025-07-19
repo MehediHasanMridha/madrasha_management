@@ -5,29 +5,31 @@ import FinanceTabBarComponent from '../FinanceTabBarComponent';
 
 const SummaryComponent = ({ data, getData, remainingAmount }) => {
     return (
-        <div className="space-y-4 py-6">
+        <div className="space-y-4 px-4 py-4 sm:px-0 sm:py-6">
             <FinanceTabBarComponent tab="summary" />
-            <div className="flex justify-between rounded-lg bg-white p-6">
-                <span className="text-lg font-medium text-gray-700">Remaining amount in this month : {remainingAmount.toLocaleString()} BDT</span>
+            <div className="flex flex-col space-y-4 rounded-lg bg-white p-4 sm:flex-row sm:justify-between sm:space-y-0 sm:p-6">
+                <span className="text-base font-medium text-gray-700 sm:text-lg">
+                    Remaining amount in this month : {remainingAmount.toLocaleString()} BDT
+                </span>
                 <MonthYearContainer getData={getData} />
             </div>
-            <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="mb-6 grid grid-cols-1 gap-4 xl:grid-cols-2">
                 {/* Earnings Card */}
-                <Card className="rounded-lg border-none bg-white p-6 shadow-none">
-                    <CardTitle>Total Earnings</CardTitle>
+                <Card className="rounded-lg border-none bg-white p-4 shadow-none sm:p-6">
+                    <CardTitle className="text-lg sm:text-xl">Total Earnings</CardTitle>
                     {data?.earnings?.length !== 0 ? (
                         <PieChartContainer data={data?.earnings} />
                     ) : (
-                        <div className="text-center text-lg">This month has no earning</div>
+                        <div className="text-center text-base sm:text-lg">This month has no earning</div>
                     )}
                 </Card>
                 {/* Expenses Card */}
-                <Card className="rounded-lg border-none bg-white p-6 shadow-none">
-                    <CardTitle>Total Expenses</CardTitle>
+                <Card className="rounded-lg border-none bg-white p-4 shadow-none sm:p-6">
+                    <CardTitle className="text-lg sm:text-xl">Total Expenses</CardTitle>
                     {data?.expenses?.length !== 0 ? (
                         <PieChartContainer data={data?.expenses} />
                     ) : (
-                        <div className="text-center text-lg">This month has no expense</div>
+                        <div className="text-center text-base sm:text-lg">This month has no expense</div>
                     )}
                 </Card>
             </div>
