@@ -3,6 +3,7 @@ import { PlaceholderList } from '@/Components/UI/PlaceholderUI';
 import { WhenVisible } from '@inertiajs/react';
 import { ArrowBigDown } from 'lucide-react';
 import { useState } from 'react';
+import ExamDueListTableContainer from './ExamDueListTableContainer';
 import ExamMarkContainer from './ExamMarkContainer';
 import ExamScheduleContainer from './ExamScheduleContainer';
 
@@ -29,6 +30,10 @@ const ExamClassScheduleAndMarkContainer = ({ exam, department, classes }) => {
                     {/* Mark Sheet Section */}
                     <WhenVisible data={'students'} fallback={<PlaceholderList items={5} showAvatar={true} className="mt-4" />}>
                         <ExamMarkContainer classItem={classItem} exam={exam} />
+                    </WhenVisible>
+                    {/* Exam Due Students Section */}
+                    <WhenVisible data={'examFeeStudentsStatus'} fallback={<PlaceholderList items={5} showAvatar={true} className="mt-4" />}>
+                        <ExamDueListTableContainer classItem={classItem} exam={exam} />
                     </WhenVisible>
                 </div>
             ),
