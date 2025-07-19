@@ -2,12 +2,14 @@ import TableUI from '@/Components/UI/TableUI';
 import { router } from '@inertiajs/react';
 
 const DueTableListContainer = ({ data }) => {
+    console.log('🚀 ~ DueTableListContainer ~ data:', data);
     const dataSource =
         data?.data?.map((item) => ({
             key: item.id,
             name: item.name,
             phone: item.phone,
             gender: item.gender,
+            fatherName: item.father_name,
             due: item.due_amount,
             studentID: item.unique_id,
             class: item.class,
@@ -21,29 +23,24 @@ const DueTableListContainer = ({ data }) => {
             key: 'name',
         },
         {
-            title: 'Phone',
-            dataIndex: 'phone',
-            key: 'phone',
-        },
-        {
-            title: 'Due',
-            dataIndex: 'due',
-            key: 'due',
-        },
-        {
             title: 'Student ID',
             dataIndex: 'studentID',
             key: 'studentID',
         },
         {
-            title: 'Class',
-            dataIndex: 'class',
-            key: 'class',
+            title: 'Phone',
+            dataIndex: 'phone',
+            key: 'phone',
         },
         {
-            title: 'Department',
-            dataIndex: 'department',
-            key: 'department',
+            title: 'Father Name',
+            dataIndex: 'fatherName',
+            key: 'fatherName',
+        },
+        {
+            title: 'Due',
+            dataIndex: 'due',
+            key: 'due',
         },
     ];
 

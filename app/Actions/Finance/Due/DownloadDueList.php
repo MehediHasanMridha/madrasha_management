@@ -12,7 +12,7 @@ class DownloadDueList
 
         // get date format 2025-01 of current year&month
         // Get all student users who do NOT have an incomeLog for the current month
-        $usersWithNoIncomeLogOrDue = User::with(['academics.class', 'academics.department', 'incomeLogs.studentDue'])
+        $usersWithNoIncomeLogOrDue = User::with(['academics.class', 'academics.department', 'incomeLogs.studentDue', 'guardians'])
             ->whereHas('roles', fn($q) => $q->where('name', 'student'))
             ->when($gender, function ($query, $gender) {
                 $query->where('gender', $gender);
@@ -46,15 +46,16 @@ class DownloadDueList
             })
             ->get()->map(function ($user) {
             return [
-                'id'         => $user->id,
-                'name'       => $user->name,
-                'phone'      => $user->phone,
-                'gender'     => $user->gender,
-                'image'      => $user->img,
-                'unique_id'  => $user->unique_id,
-                'class'      => $user->academics->class->name ?? null,
-                'department' => $user->academics->department->name ?? null,
-                'due_amount' => $user->incomeLogs->sum('studentDue.due_amount') > 0
+                'id'          => $user->id,
+                'name'        => $user->name,
+                'phone'       => $user->phone,
+                'gender'      => $user->gender,
+                'image'       => $user->img,
+                'unique_id'   => $user->unique_id,
+                'father_name' => $user->guardians->father_name ?? null,
+                'class'       => $user->academics->class->name ?? null,
+                'department'  => $user->academics->department->name ?? null,
+                'due_amount'  => $user->incomeLogs->sum('studentDue.due_amount') > 0
                 ? $user->incomeLogs->sum('studentDue.due_amount')
                 : getStudentFee($user->academics, 'academic') + getStudentFee($user->academics, 'boarding'),
             ];
