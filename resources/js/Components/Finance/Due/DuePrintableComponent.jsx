@@ -40,8 +40,8 @@ const DuePrintableComponent = React.forwardRef(({ selectedFilters, data }, ref) 
                                 <td className="px-4 py-2">SL</td>
                                 <td className="border border-gray-300 px-4 py-2">Student Name</td>
                                 <td className="border border-gray-300 px-4 py-2">Roll No</td>
-                                <td className="border border-gray-300 px-4 py-2">Class</td>
-                                <td className="border border-gray-300 px-4 py-2">Department</td>
+                                <td className="border border-gray-300 px-4 py-2">Phone</td>
+                                <td className="border border-gray-300 px-4 py-2">Father Name</td>
                                 <td className="border border-gray-300 px-4 py-2">Due Amount</td>
                             </tr>
                         </thead>
@@ -52,9 +52,9 @@ const DuePrintableComponent = React.forwardRef(({ selectedFilters, data }, ref) 
                                         <td className="border border-gray-300 px-4 py-2">{index + 1}</td>
                                         <td className="border border-gray-300 px-2 py-2">{student.name}</td>
                                         <td className="w-[100px] border border-gray-300 px-2 py-2">{student.unique_id}</td>
-                                        <td className="border border-gray-300 px-2 py-2">{student.class}</td>
-                                        <td className="border border-gray-300 px-4 py-2">{student.department}</td>
-                                        <td className="border border-gray-300 px-4 py-2">৳{student.due_amount}</td>
+                                        <td className="border border-gray-300 px-2 py-2">{student.phone}</td>
+                                        <td className="border border-gray-300 px-4 py-2">{student.father_name}</td>
+                                        <td className="border border-gray-300 px-4 py-2">৳{Number(student.due_amount).toLocaleString('bn-BD')}</td>
                                     </tr>
                                 ))
                             ) : (
