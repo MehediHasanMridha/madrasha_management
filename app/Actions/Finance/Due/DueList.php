@@ -12,7 +12,7 @@ class DueList
 
         // get date format 2025-01 of current year&month
         // Get all student users who do NOT have an incomeLog for the current month
-        $usersWithNoIncomeLogOrDue = User::with(['academics.class', 'academics.department', 'incomeLogs.studentDue'])
+        $usersWithNoIncomeLogOrDue = User::with(['academics.class', 'academics.department', 'incomeLogs.studentDue', 'guardians'])
             ->whereHas('roles', fn($q) => $q->where('name', 'student'))
             ->when($gender, function ($query, $gender) {
                 $query->where('gender', $gender);
@@ -46,16 +46,17 @@ class DueList
             })
             ->paginate(request()->input('per_page', 10), ['*'], 'page', request()->input('page', 1))
             ->through(fn($item) => [
-                'id'         => $item->id,
-                'name'       => $item->name,
-                'phone'      => $item->phone,
-                'gender'     => $item->gender,
-                'image'      => $item->img,
-                'unique_id'  => $item->unique_id,
-                'class'      => $item->academics->class->name ?? null,
-                'department' => $item->academics->department->name ?? null,
+                'id'          => $item->id,
+                'name'        => $item->name,
+                'phone'       => $item->phone,
+                'gender'      => $item->gender,
+                'image'       => $item->img,
+                'unique_id'   => $item->unique_id,
+                'father_name' => $item->guardians->father_name ?? null,
+                'class'       => $item->academics->class->name ?? null,
+                'department'  => $item->academics->department->name ?? null,
                 // get the total due amount from incomeLogs other wise show monthly fee
-                'due_amount' => $item->incomeLogs->sum('studentDue.due_amount') > 0 ? $item->incomeLogs->sum('studentDue.due_amount') : getStudentFee($item->academics, 'academic') +
+                'due_amount'  => $item->incomeLogs->sum('studentDue.due_amount') > 0 ? $item->incomeLogs->sum('studentDue.due_amount') : getStudentFee($item->academics, 'academic') +
                 getStudentFee($item->academics, 'boarding'),
             ])->withQueryString();
         // Build base query with eager loading
