@@ -33,10 +33,15 @@ class PasswordController extends Controller
             'password'         => ['required', Password::defaults(), 'confirmed'],
         ]);
 
+        // Verify current password
+        if (! Hash::check($request->current_password, $request->user()->password)) {
+            return redirect()->back()->withErrors(['current_password' => 'Current password is incorrect.']);
+        }
+
         $request->user()->update([
             'password' => Hash::make($validated['password']),
         ]);
 
-        return back();
+        return redirect()->back()->with('success', 'Password updated successfully.');
     }
 }
