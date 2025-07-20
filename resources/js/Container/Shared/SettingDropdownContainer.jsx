@@ -6,11 +6,7 @@ import { Book, Joystick, MessageSquareWarning, Settings, ShieldAlert, TriangleAl
 
 const items = [
     {
-        label: (
-            <span className="flex items-center justify-between">
-                <span>Edit profile</span> <TagUI>Upcoming</TagUI>
-            </span>
-        ),
+        label: <Link href={route('profile.edit')}>Edit profile</Link>,
         key: '1',
         icon: <EditIcon />,
     },
