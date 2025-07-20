@@ -165,7 +165,9 @@ class FetchSelectedUserForSMSJob implements ShouldQueue
             return;
         } else {
             $res = $this->sms_send($validPhoneNumbers, $this->smsMessage);
+            echo $res;
             $res = json_decode($res, true);
+            echo $validPhoneNumbers->count();
             if ($res['success_message']) {
                 $smsBalance->balanceDecrement($totalCost);
                 Session::put('queue_success', 'SMS sent successfully to ' . $validPhoneNumbers->count() . ' recipients.');
@@ -185,7 +187,6 @@ class FetchSelectedUserForSMSJob implements ShouldQueue
     private function extractPhoneNumbers($users)
     {
         $phoneNumbers = collect();
-
         foreach ($users as $user) {
             // Get user's own phone number
             if ($user->phone) {
@@ -193,7 +194,7 @@ class FetchSelectedUserForSMSJob implements ShouldQueue
             }
 
             // Get guardian phone numbers
-            if ($user->guardians && $user->guardians->numbers) {
+            if ($user->hasRole('student') && $user->guardians && $user->guardians->numbers) {
                 $guardianNumbers = json_decode($user->guardians->numbers, true);
                 if (is_array($guardianNumbers)) {
                     foreach ($guardianNumbers as $number) {
