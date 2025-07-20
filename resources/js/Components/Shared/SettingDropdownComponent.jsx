@@ -28,7 +28,7 @@ const SettingDropdownComponent = ({ items, user }) => {
                     return (
                         <div className="w-[300px] rounded-[8px] border border-[#E5E7EB] bg-white shadow-lg sm:w-[400px]">
                             <div className="flex items-center border-b border-[#E5E7EB] px-3 py-[10px] sm:px-[16px]">
-                                <AvatarUI shape="square" size={40} src={getAvatarImage(user.image, 'staff_images', user.name)} />
+                                <AvatarUI shape="square" size={40} src={getAvatarImage(user.img, 'staff_images', user.name)} />
                                 <div className="ml-3 min-w-0 flex-1">
                                     <p className="truncate text-sm font-semibold sm:text-[16px]">{user.name}</p>
                                     <p className="truncate text-xs text-[#6B7280] sm:text-[14px]">{user.email}</p>
@@ -65,7 +65,7 @@ const SettingDropdownComponent = ({ items, user }) => {
                     );
                 }}
             >
-                <AvatarUI shape="square" size={40} src={getAvatarImage(user.image, 'staff_images', user.name)} />
+                <AvatarUI shape="square" size={40} src={getAvatarImage(user.img, 'staff_images', user.name)} />
             </DropdownUI>
         </div>
     );
