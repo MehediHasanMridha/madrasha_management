@@ -52,6 +52,19 @@ const PieChartContainer = ({ data }) => {
                     }),
                 ],
             }}
+            // annotations={[
+            //     {
+            //         type: 'text',
+            //         style: {
+            //             text: data?.length > 0 ? `${data.reduce((acc, item) => acc + Number(item.amount), 0).toLocaleString('bn')} Tk` : 'No Data',
+            //             x: '50%',
+            //             y: '50%',
+            //             textAlign: 'center',
+            //             fontSize: 40,
+            //             fontStyle: 'bold',
+            //         },
+            //     },
+            // ]}
         />
     );
 };
