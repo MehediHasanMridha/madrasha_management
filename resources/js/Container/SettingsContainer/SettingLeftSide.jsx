@@ -14,8 +14,8 @@ const SettingLeftSide = () => {
             </span>
             <div className="my-2 flex items-center space-x-[12px] pl-[24px]">
                 <SideBarUI.Text className="text-[#AFAFAF]">Academics</SideBarUI.Text>
-                <hr className="h-[0.5px] w-full bg-[#AFAFAF]" />
             </div>
+            <SideBarUI.Divider />
             <Link
                 href={route('settings.branding.index')}
                 prefetch
@@ -32,7 +32,7 @@ const SettingLeftSide = () => {
                 </SideBarUI.Item>
             </Link>
             <Link
-                href={'/settings/welcome-page'}
+                href={route('settings.welcome-page.index')}
                 prefetch
                 as="button"
                 className={cn('w-[300px] cursor-pointer items-center text-start text-[16px] font-medium', {
@@ -71,6 +71,20 @@ const SettingLeftSide = () => {
                 <SideBarUI.Item>
                     <SideBarUI.Text>
                         Voucher Types <br /> <span className="font-normal text-[#AFAFAF]">Manage voucher types</span>
+                    </SideBarUI.Text>
+                </SideBarUI.Item>
+            </Link>
+            <Link
+                href={route('settings.operator.index')}
+                prefetch
+                as="button"
+                className={cn('w-[300px] cursor-pointer items-center text-start text-[16px] font-medium', {
+                    'bg-[#F2F2F2]': route().current('settings.operator.*'),
+                })}
+            >
+                <SideBarUI.Item>
+                    <SideBarUI.Text>
+                        Manage Operator <br /> <span className="font-normal text-[#AFAFAF]">Manage operator accounts</span>
                     </SideBarUI.Text>
                 </SideBarUI.Item>
             </Link>
