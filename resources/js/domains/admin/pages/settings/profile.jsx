@@ -106,8 +106,8 @@ export default function Profile({ mustVerifyEmail, status }) {
             <div className="space-y-6">
                 <BreadcrumbUI items={breadcrumbs} />
 
-                <div className="mx-auto max-w-4xl">
-                    <div className="rounded-lg bg-white p-6 shadow-sm">
+                <div className="mx-auto w-full">
+                    <div className="rounded-lg bg-white p-6">
                         <h1 className="mb-6 text-2xl font-bold text-gray-900">Profile Settings</h1>
 
                         <form onSubmit={handleSubmit} className="space-y-6">
@@ -194,7 +194,7 @@ export default function Profile({ mustVerifyEmail, status }) {
                     </div>
 
                     {/* Change Password Section */}
-                    <div className="mt-6 rounded-lg bg-white p-6 shadow-sm">
+                    <div className="mt-6 rounded-lg bg-white p-6">
                         <h2 className="mb-6 text-xl font-bold text-gray-900">Change Password</h2>
 
                         <form onSubmit={handlePasswordUpdate} className="space-y-4">
