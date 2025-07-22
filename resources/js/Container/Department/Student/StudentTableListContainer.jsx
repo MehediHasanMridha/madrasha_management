@@ -3,7 +3,7 @@ import TableUI from '@/Components/UI/TableUI';
 import Icons from '@/icons';
 import { getAvatarImage } from '@/lib/avatarImageUrlUtils';
 import { useBoundStore } from '@/stores';
-import { Link, router } from '@inertiajs/react';
+import { Link, router, usePage } from '@inertiajs/react';
 import { Avatar } from 'antd';
 import { useState } from 'react';
 import { FaFilter } from 'react-icons/fa6';
@@ -15,6 +15,7 @@ const StudentTableListContainer = ({ department, data, setIsLoading, isLoading }
         open: false,
     });
     const [confirmLoading, setConfirmLoading] = useState(false);
+    const { auth } = usePage().props;
 
     const handleConfirm = (id) => {
         setOpen({
@@ -104,26 +105,30 @@ const StudentTableListContainer = ({ department, data, setIsLoading, isLoading }
                     <Link as="button" href={route('department.student_details', { department_slug: department.slug, student_id: record.unique_id })}>
                         <Icons name="eye" className="text-fuchsia-600 hover:text-fuchsia-900" />
                     </Link>
-                    <Icons
-                        name="edit"
-                        onClick={() => {
-                            setModal({ edit: true });
-                            setPassData(record);
-                        }}
-                    />
-                    <Confirmpop
-                        key={record.id}
-                        open={open.id === record.id && open.open}
-                        handleOk={() => handleOk(record.id)}
-                        handleCancel={handleCancel}
-                        title="Are you sure You want to delete?"
-                        loading={confirmLoading}
-                        description="This action will delete the student."
-                        okText="Delete"
-                        cancelText="Cancel"
-                    >
-                        <Icons name="delete" onClick={() => handleConfirm(record.id)} />
-                    </Confirmpop>
+                    {auth.permissions.viewAny && (
+                        <Icons
+                            name="edit"
+                            onClick={() => {
+                                setModal({ edit: true });
+                                setPassData(record);
+                            }}
+                        />
+                    )}
+                    {auth.permissions.viewAny && (
+                        <Confirmpop
+                            key={record.id}
+                            open={open.id === record.id && open.open}
+                            handleOk={() => handleOk(record.id)}
+                            handleCancel={handleCancel}
+                            title="Are you sure You want to delete?"
+                            loading={confirmLoading}
+                            description="This action will delete the student."
+                            okText="Delete"
+                            cancelText="Cancel"
+                        >
+                            <Icons name="delete" onClick={() => handleConfirm(record.id)} />
+                        </Confirmpop>
+                    )}
                 </div>
             ),
         },

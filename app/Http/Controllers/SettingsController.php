@@ -6,6 +6,7 @@ use App\Models\Setting;
 use App\Models\User;
 use App\Services\FaviconService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
 use Spatie\Permission\Models\Role;
@@ -76,6 +77,10 @@ class SettingsController extends Controller
 
     public function operator()
     {
+        if (Auth::user()->cannot('view', User::class)) {
+            abort(404);
+        }
+
         // Fetch all users with the 'editor' role
         $operators = User::whereHas('roles', function ($query) {
             $query->where('name', 'editor');

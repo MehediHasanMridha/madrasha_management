@@ -2,6 +2,7 @@ import Confirmpop from '@/Components/UI/Confirmpop';
 import ModalUI from '@/Components/UI/ModalUI';
 import StaticBtn from '@/Components/UI/StaticBtn';
 import VoucherBorder from '@/assets/images/VoucherBorderBlue.png';
+import { usePage } from '@inertiajs/react';
 import { Trash2, X } from 'lucide-react';
 
 const VoucherModalComponent = ({
@@ -16,6 +17,7 @@ const VoucherModalComponent = ({
     HandleDelete,
     ...props
 }) => {
+    const { auth } = usePage().props;
     return (
         <ModalUI
             isModalOpen={isModalOpen}
@@ -38,31 +40,33 @@ const VoucherModalComponent = ({
                     <StaticBtn className="w-fit rounded-full bg-red-600 p-2 hover:bg-red-700" onClick={handleCancel}>
                         <X strokeWidth={1.5} size={24} className="text-white" />
                     </StaticBtn>
-                    <StaticBtn className="w-fit rounded-full bg-white p-2 shadow-md hover:bg-gray-100">
-                        <Confirmpop
-                            open={open}
-                            handleOk={() => {
-                                HandleDelete(data);
-                                setOpen(false);
-                            }}
-                            handleCancel={handlePOPCancel}
-                            title="Are you sure You want to Delete this voucher?"
-                            icon={<Trash2 size={24} strokeWidth={1.5} className="text-red-500" />}
-                            loading={confirmLoading}
-                            description="This action will unassign the teacher."
-                            okText="Delete"
-                            cancelText="Cancel"
-                        >
-                            <Trash2
-                                size={24}
-                                strokeWidth={1.5}
-                                className="text-red-500"
-                                onClick={() => {
-                                    setOpen(true);
+                    {auth.permissions.viewAny && (
+                        <StaticBtn className="w-fit rounded-full bg-white p-2 shadow-md hover:bg-gray-100">
+                            <Confirmpop
+                                open={open}
+                                handleOk={() => {
+                                    HandleDelete(data);
+                                    setOpen(false);
                                 }}
-                            />
-                        </Confirmpop>
-                    </StaticBtn>
+                                handleCancel={handlePOPCancel}
+                                title="Are you sure You want to Delete this voucher?"
+                                icon={<Trash2 size={24} strokeWidth={1.5} className="text-red-500" />}
+                                loading={confirmLoading}
+                                description="This action will unassign the teacher."
+                                okText="Delete"
+                                cancelText="Cancel"
+                            >
+                                <Trash2
+                                    size={24}
+                                    strokeWidth={1.5}
+                                    className="text-red-500"
+                                    onClick={() => {
+                                        setOpen(true);
+                                    }}
+                                />
+                            </Confirmpop>
+                        </StaticBtn>
+                    )}
                 </div>
 
                 {/* Header with wavy bottom */}
