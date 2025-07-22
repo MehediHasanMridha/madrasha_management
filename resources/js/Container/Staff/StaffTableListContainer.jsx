@@ -3,7 +3,7 @@ import TableUI from '@/Components/UI/TableUI';
 import Icons from '@/icons';
 import { getAvatarImage } from '@/lib/avatarImageUrlUtils';
 import { useBoundStore } from '@/stores';
-import { router } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
 import { Avatar } from 'antd';
 import { useState } from 'react';
 
@@ -14,6 +14,7 @@ const StaffTableListContainer = ({ data, setIsLoading, isLoading }) => {
         open: false,
     });
     const [confirmLoading, setConfirmLoading] = useState(false);
+    const { auth } = usePage().props;
 
     const handleConfirm = (id) => {
         setOpen({
@@ -76,36 +77,40 @@ const StaffTableListContainer = ({ data, setIsLoading, isLoading }) => {
             dataIndex: 'unique_id',
             key: 'unique_id',
         },
-        {
-            title: 'Action',
-            dataIndex: 'action',
-            key: 'action',
-            align: 'center',
-            render: (text, record) => (
-                <div className="flex justify-center gap-2">
-                    <Icons
-                        name="edit"
-                        onClick={() => {
-                            setModal({ edit: true });
-                            setPassData(record);
-                        }}
-                    />
-                    <Confirmpop
-                        key={record.id}
-                        open={open.id === record.id && open.open}
-                        handleOk={() => handleOk(record.id)}
-                        handleCancel={handleCancel}
-                        title="Are you sure You want to delete?"
-                        loading={confirmLoading}
-                        description="This action will delete the staff member."
-                        okText="Delete"
-                        cancelText="Cancel"
-                    >
-                        <Icons name="delete" onClick={() => handleConfirm(record.id)} />
-                    </Confirmpop>
-                </div>
-            ),
-        },
+        ...(auth.permissions.viewAny
+            ? [
+                  {
+                      title: 'Action',
+                      dataIndex: 'action',
+                      key: 'action',
+                      align: 'center',
+                      render: (text, record) => (
+                          <div className="flex justify-center gap-2">
+                              <Icons
+                                  name="edit"
+                                  onClick={() => {
+                                      setModal({ edit: true });
+                                      setPassData(record);
+                                  }}
+                              />
+                              <Confirmpop
+                                  key={record.id}
+                                  open={open.id === record.id && open.open}
+                                  handleOk={() => handleOk(record.id)}
+                                  handleCancel={handleCancel}
+                                  title="Are you sure You want to delete?"
+                                  loading={confirmLoading}
+                                  description="This action will delete the staff member."
+                                  okText="Delete"
+                                  cancelText="Cancel"
+                              >
+                                  <Icons name="delete" onClick={() => handleConfirm(record.id)} />
+                              </Confirmpop>
+                          </div>
+                      ),
+                  },
+              ]
+            : []),
     ];
 
     return (

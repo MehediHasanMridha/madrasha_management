@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Middleware;
 
+use App\Models\User;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
@@ -44,7 +45,10 @@ class HandleInertiaRequests extends Middleware
             'mode'  => env('IS_DEV_SERVER', false) ? 'development' : 'production',
             'quote' => ['message' => trim($message), 'author' => trim($author)],
             'auth'  => [
-                'user' => $request->user(),
+                'user'        => $request->user(),
+                'permissions' => [
+                    'viewAny' => $request->user()?->can('viewAny', User::class),
+                ],
             ],
             'flash' => [
                 'success'       => Session::get('success'),

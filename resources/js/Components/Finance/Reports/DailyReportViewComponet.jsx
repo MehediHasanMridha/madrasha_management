@@ -22,7 +22,7 @@ const DailyReportViewComponent = forwardRef(
         setConfirm,
         confirm,
     }) => {
-        const { institute } = usePage().props;
+        const { institute, auth } = usePage().props;
         return (
             <ModalUI
                 isModalOpen={reportViewModal}
@@ -196,33 +196,35 @@ const DailyReportViewComponent = forwardRef(
                             </div>
                         </div>
                         <div className="mt-4 flex justify-between">
-                            <Confirmpop
-                                title="Approve"
-                                description="Are you sure you want to approve this daily report?"
-                                open={confirm}
-                                handleOk={() => {
-                                    handleApprove(day);
-                                    setConfirm(false);
-                                }}
-                                handleCancel={() => setConfirm(false)}
-                            >
-                                <StaticBtn
-                                    className={cn(
-                                        'mr-2 rounded bg-green-500 text-white hover:bg-green-600',
-                                        is_approved ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
-                                    )}
-                                    onClick={() => {
-                                        if (is_approved) {
-                                            return;
-                                        }
-                                        setConfirm(true);
+                            {auth.permissions.viewAny && (
+                                <Confirmpop
+                                    title="Approve"
+                                    description="Are you sure you want to approve this daily report?"
+                                    open={confirm}
+                                    handleOk={() => {
+                                        handleApprove(day);
+                                        setConfirm(false);
                                     }}
-                                    disabled={is_approved}
+                                    handleCancel={() => setConfirm(false)}
                                 >
-                                    Approve
-                                </StaticBtn>
-                            </Confirmpop>
-                            <div className="flex gap-2">
+                                    <StaticBtn
+                                        className={cn(
+                                            'mr-2 rounded bg-green-500 text-white hover:bg-green-600',
+                                            is_approved ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
+                                        )}
+                                        onClick={() => {
+                                            if (is_approved) {
+                                                return;
+                                            }
+                                            setConfirm(true);
+                                        }}
+                                        disabled={is_approved}
+                                    >
+                                        Approve
+                                    </StaticBtn>
+                                </Confirmpop>
+                            )}
+                            <div className="ml-auto flex gap-2">
                                 <StaticBtn
                                     className="rounded bg-blue-500 text-white hover:bg-blue-600"
                                     onClick={() => {
