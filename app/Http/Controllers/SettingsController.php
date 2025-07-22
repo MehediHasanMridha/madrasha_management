@@ -167,7 +167,11 @@ class SettingsController extends Controller
             return redirect()->back()->with('success', 'Operator updated successfully!');
 
         } catch (\Exception $e) {
-            return redirect()->back()->withErrors(['error' => 'Failed to update operator: ' . $e->getMessage()]);
+            if ($e->getCode() === '23000') {
+                return back()->with(['error' => 'Phone number or email already exists'])->withInput();
+            }
+            return back()->with(['error' => 'Failed to update profile. Please try again later.'])->withInput();
+
         }
     }
 

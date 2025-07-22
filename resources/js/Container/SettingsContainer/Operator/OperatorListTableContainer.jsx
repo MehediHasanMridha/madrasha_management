@@ -88,12 +88,6 @@ const OperatorListTableContainer = ({ operators }) => {
         phone: operator.phone,
     }));
 
-    const handleEditSuccess = () => {
-        setEditModalOpen(false);
-        setSelectedOperator(null);
-        // The page will automatically refresh due to Inertia's default behavior
-    };
-
     return (
         <div className="mt-6">
             <TableUI columns={columns} data={{ data }} />
@@ -106,7 +100,6 @@ const OperatorListTableContainer = ({ operators }) => {
                         setSelectedOperator(null);
                     }}
                     operator={selectedOperator}
-                    onSuccess={handleEditSuccess}
                 />
             )}
         </div>
