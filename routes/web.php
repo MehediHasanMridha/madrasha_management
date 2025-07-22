@@ -135,7 +135,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Welcome Page Settings
         Route::prefix('welcome-page')->group(function () {
-            Route::get('/', [WelcomePageController::class, 'index'])->name('settings.welcome_page_index');
+            Route::get('/', [WelcomePageController::class, 'index'])->name('settings.welcome-page.index');
             Route::post('/', [WelcomePageController::class, 'store'])->name('settings.welcome-page.store');
             Route::put('{welcomePageContent}', [WelcomePageController::class, 'update'])->name('settings.welcome-page.update');
             Route::post('update-order', [WelcomePageController::class, 'updateOrder'])->name('settings.welcome-page.update-order');
@@ -145,6 +145,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Branding Settings
         Route::get('branding', [SettingsController::class, 'branding'])->name('settings.branding.index');
         Route::post('branding', [SettingsController::class, 'updateBranding'])->name('settings.branding.update');
+
+        // operator
+        Route::get('operator', [SettingsController::class, 'operator'])->name('settings.operator.index');
+        Route::post('operator/add', [SettingsController::class, 'addOperator'])->name('settings.operator.add');
+        Route::delete('operator/{id}', [SettingsController::class, 'deleteOperator'])->name('settings.operator.delete');
+        Route::post('operator/{id}/update', [SettingsController::class, 'updateOperatorData'])->name('settings.operator.update');
 
     });
 
