@@ -1,9 +1,10 @@
 import SideBarUI from '@/Components/UI/SideBarUI';
 import Icons from '@/icons';
 import { cn } from '@/lib/utils';
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 
 const SettingLeftSide = () => {
+    const { auth } = usePage().props;
     return (
         <SideBarUI theme="light" width={300} collapsible={false} className={'sticky h-screen overflow-auto bg-white'}>
             <span className="flex w-[300px] items-center gap-x-[12px] px-[32px] py-[26.5px] text-[18px] font-medium">
@@ -74,20 +75,22 @@ const SettingLeftSide = () => {
                     </SideBarUI.Text>
                 </SideBarUI.Item>
             </Link>
-            <Link
-                href={route('settings.operator.index')}
-                prefetch
-                as="button"
-                className={cn('w-[300px] cursor-pointer items-center text-start text-[16px] font-medium', {
-                    'bg-[#F2F2F2]': route().current('settings.operator.*'),
-                })}
-            >
-                <SideBarUI.Item>
-                    <SideBarUI.Text>
-                        Manage Operator <br /> <span className="font-normal text-[#AFAFAF]">Manage operator accounts</span>
-                    </SideBarUI.Text>
-                </SideBarUI.Item>
-            </Link>
+            {auth.permissions.viewAny && (
+                <Link
+                    href={route('settings.operator.index')}
+                    prefetch
+                    as="button"
+                    className={cn('w-[300px] cursor-pointer items-center text-start text-[16px] font-medium', {
+                        'bg-[#F2F2F2]': route().current('settings.operator.*'),
+                    })}
+                >
+                    <SideBarUI.Item>
+                        <SideBarUI.Text>
+                            Manage Operator <br /> <span className="font-normal text-[#AFAFAF]">Manage operator accounts</span>
+                        </SideBarUI.Text>
+                    </SideBarUI.Item>
+                </Link>
+            )}
         </SideBarUI>
     );
 };
