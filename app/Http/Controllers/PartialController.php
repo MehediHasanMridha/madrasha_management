@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Department;
 use App\Models\Exam;
+use App\Models\User;
 
 class PartialController extends Controller
 {
@@ -68,5 +69,21 @@ class PartialController extends Controller
                 'message' => 'Failed to retrieve exam subjects: ' . $e->getMessage(),
             ], 500);
         }
+    }
+
+    public function getAllStaff()
+    {
+        $staff = User::whereHas('roles', function ($q) {
+            $q->where('name', 'staff');
+        })->whereDoesntHave('roles', function ($q) {
+            $q->where('name', 'editor');
+        })->get(); // Assuming you have a Staff model
+        if ($staff->isEmpty()) {
+            return response()->json(['error' => 'No staff found'], 404);
+        }
+        return response()->json([
+            'message' => 'Staff retrieved successfully',
+            'data'    => $staff,
+        ], 200);
     }
 }

@@ -24,7 +24,7 @@ const LoginComponent = ({ handleSubmit, togglePasswordVisibility, showPassword, 
                     <form onSubmit={handleSubmit} className="space-y-8 p-8">
                         {/* Form fields */}
                         <div className="space-y-6">
-                            <Field label={'Email'} labelClassName={'text-[#afafaf]'}>
+                            <Field label={'Email or phone number'} labelClassName={'text-[#afafaf]'}>
                                 <input
                                     type="text"
                                     onChange={(e) => setData('email', e.target.value)}

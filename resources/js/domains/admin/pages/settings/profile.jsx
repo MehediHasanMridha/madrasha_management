@@ -48,12 +48,21 @@ export default function Profile({ mustVerifyEmail, status }) {
         post(route('profile.update'), {
             forceFormData: true,
             preserveScroll: true,
-            onSuccess: () => {
-                notification.success({
-                    message: 'Profile Updated',
-                    description: 'Your profile has been updated successfully!',
-                    placement: 'bottomRight',
-                });
+            onSuccess: (res) => {
+                if (res.props.flash.success) {
+                    notification.success({
+                        message: 'Success',
+                        description: res.props.flash.success,
+                        placement: 'bottomRight',
+                    });
+                }
+                if (res.props.flash.error) {
+                    notification.error({
+                        message: 'Error',
+                        description: res.props.flash.error,
+                        placement: 'bottomRight',
+                    });
+                }
             },
             onError: (errors) => {
                 notification.error({
