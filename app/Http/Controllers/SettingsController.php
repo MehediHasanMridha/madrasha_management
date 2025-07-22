@@ -3,8 +3,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\BrandingRequest;
 use App\Models\Setting;
+use App\Models\User;
 use App\Services\FaviconService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
+use Spatie\Permission\Models\Role;
 
 class SettingsController extends Controller
 {
@@ -69,4 +73,130 @@ class SettingsController extends Controller
             return redirect()->back()->withErrors(['error' => 'Failed to update branding settings: ' . $e->getMessage()]);
         }
     }
+
+    public function operator()
+    {
+        // Fetch all users with the 'editor' role
+        $operators = User::whereHas('roles', function ($query) {
+            $query->where('name', 'editor');
+        })->get();
+        return Inertia::render('admin::settings/operator', [
+            'operators' => $operators,
+        ]);
+    }
+
+    public function addOperator(Request $request)
+    {
+        $request->validate([
+            'user_id'  => 'required|exists:users,id',
+            'password' => 'required|string|min:6',
+            'phone'    => 'nullable|string|max:20',
+            'email'    => 'nullable|email|max:255',
+        ]);
+
+        try {
+            $user = User::find($request->input('user_id'));
+
+            if (! $user) {
+                return redirect()->back()->withErrors(['user_id' => 'User not found.']);
+            }
+
+            if ($request->input('email')) {
+                $user->email = $request->input('email');
+            }
+
+            if ($request->input('phone')) {
+                $user->phone = $request->input('phone');
+            }
+
+            if ($request->input('password')) {
+                $user->password = Hash::make($request->input('password'));
+            }
+            $user->save();
+            // Find or create editor role
+            $role = Role::firstOrCreate(['name' => 'editor']);
+
+            // Assign role to user
+            $user->assignRole($role);
+
+            return redirect()->back()->with('success', 'User assigned as an operator successfully!');
+
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => 'Failed to assign operator: ' . $e->getMessage()]);
+        }
+
+    }
+
+    public function updateOperatorData(Request $request, $id)
+    {
+        $request->validate([
+            'name'     => 'required|string|max:255',
+            'email'    => 'nullable|email|max:255|unique:users,email,' . $id,
+            'phone'    => 'nullable|string|max:20',
+            'password' => 'nullable|string|min:6',
+        ]);
+
+        try {
+            $user = User::find($id);
+
+            if (! $user) {
+                return redirect()->back()->withErrors(['error' => 'User not found.']);
+            }
+
+            // Check if user has editor role
+            if (! $user->hasRole('editor')) {
+                return redirect()->back()->withErrors(['error' => 'User is not an operator.']);
+            }
+
+            $user->name = $request->input('name');
+
+            if ($request->input('email')) {
+                $user->email = $request->input('email');
+            }
+
+            if ($request->input('phone')) {
+                $user->phone = $request->input('phone');
+            }
+
+            if ($request->input('password')) {
+                $user->password = Hash::make($request->input('password'));
+            }
+
+            $user->save();
+
+            return redirect()->back()->with('success', 'Operator updated successfully!');
+
+        } catch (\Exception $e) {
+            if ($e->getCode() === '23000') {
+                return back()->with(['error' => 'Phone number or email already exists'])->withInput();
+            }
+            return back()->with(['error' => 'Failed to update profile. Please try again later.'])->withInput();
+
+        }
+    }
+
+    public function deleteOperator($id)
+    {
+        try {
+            $user = User::find($id);
+
+            if (! $user) {
+                return redirect()->back()->withErrors(['error' => 'User not found.']);
+            }
+
+            // Check if user has editor role
+            if (! $user->hasRole('editor')) {
+                return redirect()->back()->withErrors(['error' => 'User is not an operator.']);
+            }
+
+            // Remove editor role instead of deleting user
+            $user->removeRole('editor');
+
+            return redirect()->back()->with('success', 'Operator role removed successfully!');
+
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => 'Failed to remove operator: ' . $e->getMessage()]);
+        }
+    }
+
 }

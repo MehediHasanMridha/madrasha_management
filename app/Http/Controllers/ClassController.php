@@ -153,17 +153,25 @@ class ClassController extends Controller
             ];
 
             foreach ($feeTypes as $feeType) {
-                FeeType::updateOrCreate(
-                    [
-                        'class_id' => $class->id,
-                        'name'     => $feeType['name'],
-                    ],
-                    [
+
+                $existingFeeType = FeeType::where([
+                    ['class_id', '=', $class->id],
+                    ['name', '=', $feeType['name']],
+                ])->first();
+
+                if ($existingFeeType) {
+                    $existingFeeType->amount        = $feeType['amount'];
+                    $existingFeeType->department_id = $class->department_id;
+                    $existingFeeType->save();
+                } else {
+                    FeeType::create([
+                        'name'          => $feeType['name'],
                         'slug'          => $feeType['slug'],
                         'amount'        => $feeType['amount'],
+                        'class_id'      => $class->id,
                         'department_id' => $class->department_id,
-                    ]
-                );
+                    ]);
+                }
             }
 
             // Update subjects for the class
