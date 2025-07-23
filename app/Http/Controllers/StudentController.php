@@ -243,45 +243,41 @@ class StudentController extends Controller
     public function student_details($department_slug, $student_id)
     {
         $year       = request()->input('year') ?? date('Y');
+        $page       = request()->input('page', 1);
+        $per_page   = request()->input('per_page', 10);
         $department = Department::where('slug', $department_slug)->firstOrFail();
         // set format for student details
-        $student = User::with(['academics', 'address', 'guardians', 'studentDiscounts'])->where('unique_id', $student_id)->firstOrFail();
+        $student = User::with(['academics', 'address', 'guardians', 'studentTransactions'])->where('unique_id', $student_id)->firstOrFail();
         $student = [
-            'id'                  => $student->id,
-            'name'                => $student->name,
-            'unique_id'           => $student->unique_id,
-            'phone'               => $student->phone,
-            'gender'              => $student->gender,
-            'image'               => $student->img,
-            'status'              => $student->status ? 'active' : 'inactive',
-            'blood'               => $student->academics->blood ?? null,
-            'address'             => [
+            'id'                           => $student->id,
+            'name'                         => $student->name,
+            'unique_id'                    => $student->unique_id,
+            'phone'                        => $student->phone,
+            'gender'                       => $student->gender,
+            'image'                        => $student->img,
+            'status'                       => $student->status ? 'active' : 'inactive',
+            'blood'                        => $student->academics->blood ?? null,
+            'address'                      => [
                 'district' => $student->address->district ?? null,
                 'upazilla' => $student->address->upazilla ?? null,
                 'location' => $student->address->location ?? null,
             ],
-            'guardian'            => [
+            'guardian'                     => [
                 'father_name' => $student->guardians->father_name ?? null,
                 'mother_name' => $student->guardians->mother_name ?? null,
                 'phone'       => json_decode($student->guardians->numbers, true) ?? [],
             ],
-            'academic'            => [
+            'academic'                     => [
                 'class'            => $student->academics->class->name ?? null,
                 'boarding_fee'     => $student->academics->boarding_fee ?? getStudentFee($student->academics, 'boarding'),
                 'academic_fee'     => $student->academics->academic_fee ?? getStudentFee($student->academics, 'academic'),
                 'reference'        => $student->academics->reference ?? null,
                 'reference_number' => $student->academics->reference_number ?? null,
             ],
-            'discounts'           => $student->studentDiscounts->map(function ($discount) {
-                return [
-                    'id'              => $discount->id,
-                    'discount_amount' => intval($discount->amount),
-                    'month'           => date('F', strtotime($discount->date)), // 2025-04-30 convert to just April
-                ];
-            }),
-            'monthly_fee_history' => $student->incomeLogs()->where('payment_period', 'like', $year . '%')->whereHas('feeType', function ($query) {
+            'student_transactions_history' => $student->studentTransactions()->with('receiver')->whereYear('created_at', $year)->orderBy('created_at', 'desc')->paginate($per_page, ['*'], 'page', $page),
+            'monthly_fee_history'          => $student->incomeLogs()->where('payment_period', 'like', $year . '%')->whereHas('feeType', function ($query) {
                 $query->whereIn('name', ['Academic Fee', 'Boarding Fee', 'Admission Fee']);
-            })->with('receiver')->get()->map(function ($log) {
+            })->with(['receiver', 'feeType'])->get()->map(function ($log) {
                 return [
                     'id'             => $log->id,
                     'source_details' => $log->source_details,
@@ -290,7 +286,6 @@ class StudentController extends Controller
                     'month'          => date('F', strtotime($log->payment_period)),
                     'receiver'       => $log->receiver ? $log->receiver : null,
                     'created_at'     => $log->created_at->format('Y-m-d'),
-                    // ...$log->only(['created_at']),
                 ];
             })->groupBy('month')->map(function ($group, $month) {
                 return [

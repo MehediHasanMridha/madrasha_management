@@ -12,10 +12,17 @@ class Transaction extends Model
         'transaction_type',
         'note',
         'amount',
+        'receiver_id',
     ];
 
     public function user()
     {
         return $this->belongsTo(User::class);
     }
+
+    public function receiver()
+    {
+        return $this->hasOne(User::class, 'id', 'receiver_id');
+    }
+
 }
