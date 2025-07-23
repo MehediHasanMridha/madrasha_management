@@ -242,8 +242,6 @@ class FinanceController extends Controller
             DB::beginTransaction();
 
             if ($request->type == 'monthly_fee') {
-                // if fee_type is not in fee_types table then create it
-                MonthlyTransaction::run($request);
 
                 if ($request->discount) {
                     MonthlyDiscount::run($student, $request);
@@ -266,6 +264,8 @@ class FinanceController extends Controller
                 $year = $request->year;
 
                 AddMonthlyFee::run($request, $student, $academic_divider, $academic_division, $boarding_divider, $boarding_division, $year);
+
+                MonthlyTransaction::run($request, $student, $academic_divider, $academic_division, $boarding_divider, $boarding_division, $year);
 
                 DB::commit();
                 return redirect()->back()->with('success', 'Monthly fee added successfully');

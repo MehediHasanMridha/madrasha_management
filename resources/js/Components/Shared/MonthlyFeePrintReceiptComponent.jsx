@@ -4,7 +4,16 @@ import { forwardRef } from 'react';
 import { FaPhone } from 'react-icons/fa6';
 import ApplicationLogo from '../ApplicationLogo';
 const MonthlyFeePrintReceiptComponent = forwardRef((props, ref) => {
-    const { data, month = '', year, academicFee, boardingFee, comments = '', receiver } = props;
+    const { data, month = '', year } = props;
+    const monthDetails = JSON.parse(month && month?.details);
+    console.log('🚀 ~ MonthlyFeePrintReceiptComponent ~ monthDetails:', month);
+    const totalFee = monthDetails?.reduce((acc, month) => {
+        return acc + (Number(month?.boarding_fee) || 0) + (Number(month?.academic_fee) || 0);
+    }, 0);
+    const discount = (monthDetails && monthDetails[0]?.discount) || 0;
+    const totalDue = monthDetails?.reduce((acc, month) => {
+        return acc + (Number(month?.due_academic_fee) || 0) + (Number(month?.due_boarding_fee) || 0);
+    }, 0);
     const formattedDate = new Date()
         .toLocaleString('en-US', {
             hour: '2-digit',
@@ -18,7 +27,7 @@ const MonthlyFeePrintReceiptComponent = forwardRef((props, ref) => {
     const { user } = usePage().props.auth;
     const { institute } = usePage().props;
     return (
-        <div className="space-y-4" ref={ref}>
+        <div className="space-y-2" ref={ref}>
             {/* স্কুল হেডার */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
@@ -62,7 +71,6 @@ const MonthlyFeePrintReceiptComponent = forwardRef((props, ref) => {
                     </div>
                 </div>
             )}
-
             {/* মাসিক ফি টেবিল */}
             <div className="h-fit overflow-x-auto print:h-fit print:overflow-y-auto">
                 <table className="w-full min-w-full table-auto border-collapse">
@@ -76,49 +84,57 @@ const MonthlyFeePrintReceiptComponent = forwardRef((props, ref) => {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td className="border-[0.5px] border-black px-4 py-2">{Number(1).toLocaleString('bn')}</td>
-                            {/* how to convert month name to bangla */}
-                            <td className="border-[0.5px] border-black px-4 py-2">{month}</td>
-                            <td className="border-[0.5px] border-black px-4 py-2">{Number(boardingFee || 0).toLocaleString('bn')}</td>
-                            <td className="border-[0.5px] border-black px-4 py-2">{Number(academicFee || 0).toLocaleString('bn')}</td>
-                            <td className="border-[0.5px] border-black px-4 py-2 text-right">
-                                {(Number(boardingFee) + Number(academicFee) || 0).toLocaleString('bn')}
-                            </td>
-                        </tr>
+                        {monthDetails?.map((item, index) => (
+                            <tr>
+                                <td className="border-[0.5px] border-black px-4 py-2">{Number(1).toLocaleString('bn')}</td>
+                                {/* how to convert month name to bangla */}
+                                <td className="border-[0.5px] border-black px-4 py-2">{item?.month}</td>
+                                <td className="border-[0.5px] border-black px-4 py-2">{Number(item?.boarding_fee || 0).toLocaleString('bn')}</td>
+                                <td className="border-[0.5px] border-black px-4 py-2">{Number(item?.academic_fee || 0).toLocaleString('bn')}</td>
+                                <td className="border-[0.5px] border-black px-4 py-2 text-right">
+                                    {(Number(item?.boarding_fee) + Number(item?.academic_fee) || 0).toLocaleString('bn')}
+                                </td>
+                            </tr>
+                        ))}
                     </tbody>
                 </table>
             </div>
-
-            {/* পেমেন্ট সারাংশ */}
-            <div className="mt-6 flex justify-between rounded-[4px] border-[0.5px] border-[#131313] p-4">
+            পেমেন্ট সারাংশ
+            <div className="mt-2 flex justify-between rounded-[4px] border-[0.5px] border-[#131313] p-4">
                 <div className="w-full space-y-2">
                     <div className="flex justify-between">
                         <span>মোট:</span>
-                        <span>{(Number(boardingFee) + Number(academicFee) || 0).toLocaleString('bn')} টাকা</span>
+                        <span>{(totalFee || 0).toLocaleString('bn')} টাকা</span>
+                    </div>
+                    <div className="flex justify-between">
+                        <span>ছাড়:</span>
+                        <span>{(discount || 0).toLocaleString('bn')} টাকা</span>
+                    </div>
+                    <div className="flex justify-between">
+                        <span>বাকি:</span>
+                        <span>{(totalDue || 0).toLocaleString('bn')} টাকা</span>
                     </div>
                     <div className="flex justify-between border-t border-dashed pt-2">
                         <span>পরিশোধিত:</span>
-                        <span>{(Number(boardingFee) + Number(academicFee) || 0).toLocaleString('bn')} টাকা</span>
+                        <span>{(totalFee - discount || 0).toLocaleString('bn')} টাকা</span>
                     </div>
                 </div>
             </div>
-
             {/* মন্তব্য বিভাগ */}
-            {comments && (
-                <div className="mt-6">
+            {month?.note && (
+                <div className="mt-2">
                     <h3 className="mb-2 font-medium">মন্তব্য</h3>
-                    <p className="h-fit w-full rounded-[4px] border-[0.5px] border-[#131313] p-3 print:h-[50px]">{comments} </p>
+                    <p className="h-fit w-full rounded-[4px] border-[0.5px] border-[#131313] p-3 print:h-[50px]">{month?.note} </p>
                 </div>
             )}
             <div className="flex items-center justify-center gap-2">
                 যোগ করেছেন :
                 <img
-                    src={getAvatarImage(receiver?.img, 'staff_images', receiver?.name)}
+                    src={getAvatarImage(month?.receiver?.img, 'staff_images', month?.receiver?.name)}
                     alt=""
                     className="h-[20px] w-[20px] rounded-sm print:h-[10px] print:w-[10px]"
                 />
-                {user?.name} আইডি: {receiver?.unique_id}
+                {month?.receiver?.name} আইডি: {month?.receiver?.unique_id || 'N/A'}
             </div>
         </div>
     );
