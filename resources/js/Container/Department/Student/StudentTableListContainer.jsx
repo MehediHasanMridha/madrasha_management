@@ -105,15 +105,13 @@ const StudentTableListContainer = ({ department, data, setIsLoading, isLoading }
                     <Link as="button" href={route('department.student_details', { department_slug: department.slug, student_id: record.unique_id })}>
                         <Icons name="eye" className="text-fuchsia-600 hover:text-fuchsia-900" />
                     </Link>
-                    {auth.permissions.viewAny && (
-                        <Icons
-                            name="edit"
-                            onClick={() => {
-                                setModal({ edit: true });
-                                setPassData(record);
-                            }}
-                        />
-                    )}
+                    <Icons
+                        name="edit"
+                        onClick={() => {
+                            setModal({ edit: true });
+                            setPassData(record);
+                        }}
+                    />
                     {auth.permissions.viewAny && (
                         <Confirmpop
                             key={record.id}
