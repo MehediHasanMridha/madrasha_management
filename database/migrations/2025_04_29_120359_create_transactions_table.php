@@ -16,8 +16,10 @@ return new class extends Migration
             $table->string('transaction_id')->unique(); // Unique transaction ID
             $table->foreignId('user_id')->constrained()->cascadeOnDelete()->nullable();
             $table->enum('transaction_type', ['income', 'expense'])->default('income'); // income or expense
+            $table->json('details')->nullable();                                        // JSON field for additional transaction details
             $table->text('note')->nullable();                                           // note of the transaction
             $table->decimal('amount', 10, 2);                                           // Amount of the transaction
+            $table->foreignId('receiver_id')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
         });
     }
