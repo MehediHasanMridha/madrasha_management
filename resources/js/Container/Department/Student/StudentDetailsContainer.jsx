@@ -24,6 +24,8 @@ const StudentDetailsContainer = ({ student, department }) => {
     const [year, setYear] = useState(new Date().getFullYear().toString());
     const [copied, setCopied] = useState(false);
 
+    const student_discounts = student?.discounts || [];
+
     const copyToClipboard = async (text) => {
         try {
             await navigator.clipboard.writeText(text);
