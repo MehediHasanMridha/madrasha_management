@@ -111,6 +111,11 @@ class User extends Authenticatable
         return $this->hasMany(BlogPost::class);
     }
 
+    public function studentTransactions()
+    {
+        return $this->hasMany(Transaction::class, 'user_id');
+    }
+
     public function publishedBlogPosts()
     {
         return $this->hasMany(BlogPost::class)->where('status', 'published');

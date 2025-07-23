@@ -1,14 +1,7 @@
-import MonthlyFeePrintReceiptComponent from '@/Components/Shared/MonthlyFeePrintReceiptComponent';
 import TableUI from '@/Components/UI/TableUI';
 import { cn } from '@/lib/utils';
-import { ScrollText } from 'lucide-react';
-import { useCallback, useRef, useState } from 'react';
-import { useReactToPrint } from 'react-to-print';
 
 const StudentMonthlyFeeTableListContainer = ({ data, academicFee, boardingFee, student, year }) => {
-    const [loading, setLoading] = useState(false);
-    const printComponentRef = useRef(null);
-
     const columns = [
         {
             title: 'Month',
@@ -96,7 +89,6 @@ const StudentMonthlyFeeTableListContainer = ({ data, academicFee, boardingFee, s
                             <span className="w-[56px] rounded-full border-[0.5px] border-[#00A606] bg-[#E4FFE5] text-[14px] font-semibold text-[#00A606]">
                                 Paid
                             </span>
-                            <ScrollText onClick={printFn} className="cursor-pointer hover:text-blue-500" />
                         </div>
                     );
                 }
@@ -130,54 +122,7 @@ const StudentMonthlyFeeTableListContainer = ({ data, academicFee, boardingFee, s
         },
     );
 
-    const handleBeforePrint = useCallback(() => {
-        setLoading(true);
-        return Promise.resolve();
-    }, []);
-
-    const handleAfterPrint = () => {
-        setLoading(false);
-    };
-
-    const printFn = useReactToPrint({
-        contentRef: printComponentRef,
-        documentTitle: `Monthly_Fee_Receipt_${student?.unique_id}_${new Date().toISOString().split('T')[0]}`,
-        onAfterPrint: handleAfterPrint,
-        onBeforePrint: handleBeforePrint,
-        // Receipt page size is small & font size is small & print to printable area
-        pageStyle: `
-                    @media print {
-                        @page {
-                            size: A5;
-                            margin: 32px;
-                        }
-                        body {
-                            font-size: 12px;
-                            margin: 0;
-                            padding: 0;
-                            line-height: 1.2;
-                        }
-                    }
-                `,
-    });
-
-    return (
-        <>
-            <TableUI columns={columns} dataSource={dataSource} pagination={false} />
-            <div className="hidden print:block">
-                <MonthlyFeePrintReceiptComponent
-                    ref={printComponentRef}
-                    data={student}
-                    month={data[0]?.month}
-                    year={year}
-                    academicFee={academicFee}
-                    boardingFee={boardingFee}
-                    comments={data[0]?.fees[0]?.source_details}
-                    receiver={data[0]?.fees[0]?.receiver || null}
-                />
-            </div>
-        </>
-    );
+    return <TableUI columns={columns} dataSource={dataSource} pagination={false} />;
 };
 
 export default StudentMonthlyFeeTableListContainer;
