@@ -96,6 +96,11 @@ class User extends Authenticatable
         return $this->hasMany(StudentDue::class);
     }
 
+    public function studentDiscounts()
+    {
+        return $this->hasMany(StudentDiscount::class);
+    }
+
     public function classAssign()
     {
         return $this->hasMany(ClassAssign::class);

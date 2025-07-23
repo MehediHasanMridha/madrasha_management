@@ -171,7 +171,7 @@ const FinalModalStepComponent = ({ data, fee, selectedRows, handleClose, loading
                         </div>
                         <div className="flex justify-between border-t border-dashed pt-2">
                             <span>পরিশোধিত:</span>
-                            <span>{formattedAmount(Number(fee?.academic_fee) + Number(fee?.boarding_fee) || 0)} টাকা</span>
+                            <span>{formattedAmount(Number(fee?.academic_fee) + Number(fee?.boarding_fee) - Number(fee?.discount) || 0)} টাকা</span>
                         </div>
                     </div>
                 </div>

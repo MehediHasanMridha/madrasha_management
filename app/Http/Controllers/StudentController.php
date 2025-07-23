@@ -245,7 +245,7 @@ class StudentController extends Controller
         $year       = request()->input('year') ?? date('Y');
         $department = Department::where('slug', $department_slug)->firstOrFail();
         // set format for student details
-        $student = User::with(['academics', 'address', 'guardians'])->where('unique_id', $student_id)->firstOrFail();
+        $student = User::with(['academics', 'address', 'guardians', 'studentDiscounts'])->where('unique_id', $student_id)->firstOrFail();
         $student = [
             'id'                  => $student->id,
             'name'                => $student->name,
@@ -272,6 +272,13 @@ class StudentController extends Controller
                 'reference'        => $student->academics->reference ?? null,
                 'reference_number' => $student->academics->reference_number ?? null,
             ],
+            'discounts'           => $student->studentDiscounts->map(function ($discount) {
+                return [
+                    'id'              => $discount->id,
+                    'discount_amount' => intval($discount->amount),
+                    'month'           => date('F', strtotime($discount->date)), // 2025-04-30 convert to just April
+                ];
+            }),
             'monthly_fee_history' => $student->incomeLogs()->where('payment_period', 'like', $year . '%')->whereHas('feeType', function ($query) {
                 $query->whereIn('name', ['Academic Fee', 'Boarding Fee', 'Admission Fee']);
             })->with('receiver')->get()->map(function ($log) {
