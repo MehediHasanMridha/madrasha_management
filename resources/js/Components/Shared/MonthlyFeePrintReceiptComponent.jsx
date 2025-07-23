@@ -6,6 +6,7 @@ import ApplicationLogo from '../ApplicationLogo';
 const MonthlyFeePrintReceiptComponent = forwardRef((props, ref) => {
     const { data, month = '', year } = props;
     const monthDetails = JSON.parse(month && month?.details);
+    console.log('🚀 ~ MonthlyFeePrintReceiptComponent ~ monthDetails:', month);
     const totalFee = monthDetails?.reduce((acc, month) => {
         return acc + (Number(month?.boarding_fee) || 0) + (Number(month?.academic_fee) || 0);
     }, 0);
@@ -133,7 +134,7 @@ const MonthlyFeePrintReceiptComponent = forwardRef((props, ref) => {
                     alt=""
                     className="h-[20px] w-[20px] rounded-sm print:h-[10px] print:w-[10px]"
                 />
-                {user?.name} আইডি: {month?.receiver?.unique_id || 'N/A'}
+                {month?.receiver?.name} আইডি: {month?.receiver?.unique_id || 'N/A'}
             </div>
         </div>
     );
