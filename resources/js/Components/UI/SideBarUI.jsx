@@ -13,6 +13,7 @@ const SideBarUI = ({
     drawerOpen,
     onDrawerClose,
     isMobile = false,
+    theme = 'light',
     ...props
 }) => {
     const { Sider } = Layout;
@@ -61,6 +62,7 @@ const SideBarUI = ({
             className={cn('transition-all duration-300', className)}
             collapsedWidth={collapsedWidth}
             trigger={null}
+            theme={theme}
             {...props}
         >
             {children}
@@ -70,7 +72,14 @@ const SideBarUI = ({
 
 const SideBarItemIcon = ({ children, collapsed, className = '', ...props }) => {
     return (
-        <div className={cn('flex flex-shrink-0 items-center justify-center', className)} {...props}>
+        <div
+            className={cn(
+                'flex flex-shrink-0 items-center justify-center transition-all duration-700 ease-in-out',
+                className,
+                collapsed ? 'mx-auto w-full' : '',
+            )}
+            {...props}
+        >
             {children}
         </div>
     );
