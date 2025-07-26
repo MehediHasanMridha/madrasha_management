@@ -247,7 +247,7 @@ class StudentController extends Controller
         $per_page   = request()->input('per_page', 10);
         $department = Department::where('slug', $department_slug)->firstOrFail();
         // set format for student details
-        $student = User::with(['academics', 'address', 'guardians', 'studentTransactions'])->where('unique_id', $student_id)->firstOrFail();
+        $student = User::with(['academics', 'address', 'guardians', 'transactions'])->where('unique_id', $student_id)->firstOrFail();
         $student = [
             'id'                           => $student->id,
             'name'                         => $student->name,
@@ -274,7 +274,7 @@ class StudentController extends Controller
                 'reference'        => $student->academics->reference ?? null,
                 'reference_number' => $student->academics->reference_number ?? null,
             ],
-            'student_transactions_history' => $student->studentTransactions()->with('receiver')->whereYear('created_at', $year)->orderBy('created_at', 'desc')->paginate($per_page, ['*'], 'page', $page),
+            'student_transactions_history' => $student->transactions()->with('receiver')->whereYear('created_at', $year)->orderBy('created_at', 'desc')->paginate($per_page, ['*'], 'page', $page),
             'monthly_fee_history'          => $student->incomeLogs()->where('payment_period', 'like', $year . '%')->whereHas('feeType', function ($query) {
                 $query->whereIn('name', ['Academic Fee', 'Boarding Fee', 'Admission Fee']);
             })->with(['receiver', 'feeType'])->get()->map(function ($log) {
