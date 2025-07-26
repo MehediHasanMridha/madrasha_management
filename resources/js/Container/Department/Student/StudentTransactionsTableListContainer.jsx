@@ -5,7 +5,7 @@ import { ScrollText } from 'lucide-react';
 import { useCallback, useRef, useState } from 'react';
 import { useReactToPrint } from 'react-to-print';
 
-const StudentTransactionsTableListContainer = ({ data, department, student, academicFee, boardingFee, year }) => {
+const StudentTransactionsTableListContainer = ({ data, department, student, academicFee, boardingFee }) => {
     const [loading, setLoading] = useState(false);
     const printComponentRef = useRef(null);
     const [selectedData, setSelectedData] = useState(null);
@@ -119,7 +119,7 @@ const StudentTransactionsTableListContainer = ({ data, department, student, acad
                 onChange={handleTableChange}
             />
             <div className="hidden print:block">
-                <MonthlyFeePrintReceiptComponent ref={printComponentRef} data={student} month={selectedData} year={year} />
+                <MonthlyFeePrintReceiptComponent ref={printComponentRef} data={student} month={selectedData} />
             </div>
         </>
     );

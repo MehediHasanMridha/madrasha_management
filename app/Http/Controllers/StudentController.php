@@ -274,7 +274,7 @@ class StudentController extends Controller
                 'reference'        => $student->academics->reference ?? null,
                 'reference_number' => $student->academics->reference_number ?? null,
             ],
-            'student_transactions_history' => $student->transactions()->with('receiver')->whereYear('created_at', $year)->orderBy('created_at', 'desc')->paginate($per_page, ['*'], 'page', $page),
+            'student_transactions_history' => $student->transactions()->with('receiver')->orderBy('created_at', 'desc')->paginate($per_page, ['*'], 'page', $page),
             'monthly_fee_history'          => $student->incomeLogs()->where('payment_period', 'like', $year . '%')->whereHas('feeType', function ($query) {
                 $query->whereIn('name', ['Academic Fee', 'Boarding Fee', 'Admission Fee']);
             })->with(['receiver', 'feeType'])->get()->map(function ($log) {

@@ -4,7 +4,7 @@ import { forwardRef } from 'react';
 import { FaPhone } from 'react-icons/fa6';
 import ApplicationLogo from '../ApplicationLogo';
 const MonthlyFeePrintReceiptComponent = forwardRef((props, ref) => {
-    const { data, month = '', year } = props;
+    const { data, month = '' } = props;
     const monthDetails = JSON.parse(month && month?.details);
     const totalFee = monthDetails?.reduce((acc, month) => {
         return acc + (Number(month?.boarding_fee) || 0) + (Number(month?.academic_fee) || 0);
@@ -76,7 +76,9 @@ const MonthlyFeePrintReceiptComponent = forwardRef((props, ref) => {
                     <thead>
                         <tr>
                             <th className="border-[0.5px] border-black px-4 py-2 text-left">ক্রমিক</th>
-                            <th className="border-[0.5px] border-black px-4 py-2 text-left">মাস ({year})</th>
+                            <th className="border-[0.5px] border-black px-4 py-2 text-left">
+                                মাস ({(monthDetails?.length > 0 && monthDetails[0]?.year) || new Date().getFullYear()})
+                            </th>
                             <th className="border-[0.5px] border-black px-4 py-2 text-right">বোর্ডিং ফি</th>
                             <th className="border-[0.5px] border-black px-4 py-2 text-right">একাডেমিক ফি</th>
                             <th className="border-[0.5px] border-black px-4 py-2 text-right">মোট</th>
