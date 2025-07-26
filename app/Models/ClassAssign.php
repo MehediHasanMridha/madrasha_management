@@ -26,6 +26,6 @@ class ClassAssign extends Model
 
     public function department()
     {
-        return $this->hasOne(Department::class);
+        return $this->belongsTo(Department::class, 'dept_id');
     }
 }
