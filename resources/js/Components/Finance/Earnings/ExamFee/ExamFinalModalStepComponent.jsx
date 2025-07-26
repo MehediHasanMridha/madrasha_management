@@ -69,7 +69,7 @@ const ExamFinalModalStepComponent = ({ data, fee, selectedRows, handleClose, loa
                         <ApplicationLogo className="h-[50px] w-[50px] print:h-[28px] print:w-[28px]" />
                         <div>
                             <h1 className="text-lg font-bold print:text-[20px]">{institute?.name_bangla || 'এখানে মাদরাসার নাম'}</h1>
-                            <p className="text-sm text-black print:text-[12px]">{institute?.address || 'এখানে মাদরাসার ঠিকানা'}</p>
+                            <p className="text-sm text-black print:text-[12px]">{institute?.address || 'এখানে মাদরাসার ঠিকানা হবে'}</p>
                         </div>
                     </div>
                     <div className="text-right text-sm print:text-[10px]">
