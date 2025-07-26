@@ -9,7 +9,7 @@ const StaffSalaryTransactionsTableContainer = ({ data, staff, year }) => {
     const columns = [
         {
             title: 'Date',
-            dataIndex: 'date',
+            dataIndex: 'created_at',
             key: 'date',
             render: (record) => (
                 <span className="text-[14px] font-semibold text-black">
