@@ -249,6 +249,8 @@ class NotificationController extends Controller
             return validateAndFormatPhoneNumber($number);
         })->filter();
 
+        // all valid phone numbers separated by comma as array
+        $validPhoneNumbersAsArray = $validPhoneNumbers->implode(',');
         // calculate message character wise cost and total number of messages cost so 140 characters sms .50 tk
         $messageLength = strlen($smsMessage);
         if ($messageLength < 140) {
@@ -259,9 +261,9 @@ class NotificationController extends Controller
 
         $smsBalance = SMSBalance::first();
         if (! $smsBalance || $smsBalance->balance < $totalCost) {
-            return redirect()->back()->with('error', 'Insufficient SMS balance. Please recharge your balance.');
+            return redirect()->back()->with('error', 'Insufficient SMS balance. Please recharge your balance. Current balance: ' . $smsBalance->balance . ' tk' . ' Required balance: ' . $totalCost . ' tk');
         } else {
-            $res = $this->sms_send($validPhoneNumbers, $smsMessage);
+            $res = $this->sms_send($validPhoneNumbersAsArray, $smsMessage);
             $res = json_decode($res, true);
             if ($res['success_message']) {
                 $smsBalance->balanceDecrement($totalCost);

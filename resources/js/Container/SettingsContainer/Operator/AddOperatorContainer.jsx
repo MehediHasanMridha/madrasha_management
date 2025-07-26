@@ -1,6 +1,7 @@
 import Field from '@/Components/UI/Field';
 import ModalUI from '@/Components/UI/ModalUI';
 import StaticBtn from '@/Components/UI/StaticBtn';
+import { cn } from '@/lib/utils';
 import { router } from '@inertiajs/react';
 import { notification } from 'antd';
 import { useState } from 'react';
@@ -131,9 +132,8 @@ const AddOperatorContainer = () => {
                 </Field>
                 <StaticBtn
                     disabled={submitting}
-                    className={submitting ? 'cursor-not-allowed opacity-50' : ''}
                     onClick={handleSubmit(onSubmit)}
-                    className="ml-auto w-fit"
+                    className={cn('ml-auto w-fit', submitting && 'cursor-not-allowed opacity-50')}
                 >
                     Add Operator
                 </StaticBtn>
