@@ -3,7 +3,7 @@ import TableUI from '@/Components/UI/TableUI';
 import Icons from '@/icons';
 import { getAvatarImage } from '@/lib/avatarImageUrlUtils';
 import { useBoundStore } from '@/stores';
-import { router, usePage } from '@inertiajs/react';
+import { Link, router, usePage } from '@inertiajs/react';
 import { Avatar } from 'antd';
 import { useState } from 'react';
 
@@ -84,6 +84,9 @@ const StaffTableListContainer = ({ data, setIsLoading, isLoading }) => {
             align: 'center',
             render: (text, record) => (
                 <div className="flex justify-center gap-2">
+                    <Link as="button" href={route('staff.details', { staff_id: record.unique_id })}>
+                        <Icons name="eye" className="text-fuchsia-600 hover:text-fuchsia-900" />
+                    </Link>
                     <Icons
                         name="edit"
                         onClick={() => {

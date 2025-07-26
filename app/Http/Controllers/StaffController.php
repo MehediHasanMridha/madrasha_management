@@ -224,4 +224,99 @@ class StaffController extends Controller
         }
     }
 
+    public function staff_details($staff_id)
+    {
+        $year     = request()->input('year') ?? date('Y');
+        $page     = request()->input('page', 1);
+        $per_page = request()->input('per_page', 10);
+
+        // Get staff details with relationships
+        $staff = User::with(['academics', 'address', 'guardians', 'classAssign.department', 'expenseLogs.voucherType'])
+            ->where('unique_id', $staff_id)
+            ->whereHas('roles', fn($q) => $q->where('name', 'staff'))
+            ->firstOrFail();
+
+        $staff = [
+            'id'                          => $staff->id,
+            'name'                        => $staff->name,
+            'unique_id'                   => $staff->unique_id,
+            'phone'                       => $staff->phone,
+            'gender'                      => $staff->gender,
+            'image'                       => $staff->img,
+            'status'                      => $staff->status ? 'active' : 'inactive',
+            'blood_group'                 => $staff->academics->blood ?? null,
+            'designation'                 => $staff->academics->designation ?? null,
+            'salary'                      => $staff->academics->salary ?? 0,
+            'address'                     => [
+                'district' => $staff->address->district ?? null,
+                'upazilla' => $staff->address->upazilla ?? null,
+                'location' => $staff->address->location ?? null,
+            ],
+            'guardian'                    => [
+                'father_name'    => $staff->guardians->father_name ?? null,
+                'mother_name'    => $staff->guardians->mother_name ?? null,
+                'contact_number' => json_decode($staff->guardians->numbers, true)[0] ?? null,
+            ],
+            'reference'                   => $staff->academics->reference ?? null,
+            'reference_mobile_number'     => $staff->academics->reference_number ?? null,
+            'departments'                 => $staff->classAssign && $staff->classAssign->count() > 0
+            ? $staff->classAssign->map(function ($assign) {
+                return [
+                    'id'   => $assign->department->id ?? null,
+                    'name' => $assign->department->name ?? null,
+                    'slug' => $assign->department->slug ?? null,
+                ];
+            })->filter(function ($dept) {
+                return $dept['id'] !== null;
+            })->unique('id')->values()->toArray()
+            : [],
+            'salary_transactions_history' => $staff->expenseLogs()
+                ->whereYear('date', $year)
+                ->whereHas('voucherType', function ($query) {
+                    $query->where('name', 'like', '%salary%')
+                        ->orWhere('name', 'like', '%বেতন%')
+                        ->orWhere('name', 'like', '%Teacher%')
+                        ->orWhere('name', 'like', '%Staff%');
+                })
+                ->with(['voucherType'])
+                ->orderBy('date', 'desc')
+                ->paginate($per_page, ['*'], 'page', $page),
+            'monthly_salary_history'      => $staff->expenseLogs()
+                ->where('date', 'like', $year . '%')
+                ->whereHas('voucherType', function ($query) {
+                    $query->where('name', 'like', '%salary%')
+                        ->orWhere('name', 'like', '%বেতন%')
+                        ->orWhere('name', 'like', '%Teacher%')
+                        ->orWhere('name', 'like', '%Staff%');
+                })
+                ->with(['voucherType'])
+                ->get()
+                ->map(function ($log) {
+                    return [
+                        'id'           => $log->id,
+                        'amount'       => intval($log->amount),
+                        'voucher_type' => $log->voucherType ? $log->voucherType->name : 'Salary',
+                        'month'        => date('F', strtotime($log->date)),
+                        'details'      => $log->details ?? null,
+                        'date'         => $log->date,
+                        'created_at'   => $log->created_at->format('Y-m-d'),
+                    ];
+                })
+                ->groupBy('month')
+                ->map(function ($group, $month) {
+                    return [
+                        'month'    => $month,
+                        'salaries' => $group,
+                    ];
+                })
+                ->values(),
+        ];
+
+        return Inertia::render('admin::staff/staff_details',
+            [
+                'staff' => $staff,
+            ]
+        );
+    }
+
 }
