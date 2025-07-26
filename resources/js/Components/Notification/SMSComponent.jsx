@@ -1,12 +1,15 @@
 import { router } from '@inertiajs/react';
 import { notification } from 'antd';
+import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { IoAdd, IoClose } from 'react-icons/io5';
 import Field from '../UI/Field';
+import LoadingUI from '../UI/LoadingUI';
 import StaticBtn from '../UI/StaticBtn';
 import ToggleUI from '../UI/ToggleUI';
 
 const SMSComponent = ({ departments, sms_balance }) => {
+    const [loading, setLoading] = useState(false);
     const {
         register,
         control,
@@ -77,8 +80,16 @@ const SMSComponent = ({ departments, sms_balance }) => {
         setValue('selected_student_ids', updatedIds);
     };
 
+    let loadingComponent = null;
+    if (loading) {
+        loadingComponent = <LoadingUI fullScreen={true} />;
+    }
+
     const onSubmit = (data) => {
         router.post(route('notifications.send-sms'), data, {
+            onStart: () => {
+                setLoading(true);
+            },
             onSuccess: (response) => {
                 if (response.props.flash.success) {
                     notification.success({
@@ -97,6 +108,9 @@ const SMSComponent = ({ departments, sms_balance }) => {
             },
             onError: (error) => {
                 console.error('Error sending SMS:', error);
+            },
+            onFinish: () => {
+                setLoading(false);
             },
             preserveScroll: true,
         });
@@ -277,6 +291,7 @@ const SMSComponent = ({ departments, sms_balance }) => {
                     </div>
                 </div>
             </Field>
+            {loadingComponent}
         </div>
     );
 };
