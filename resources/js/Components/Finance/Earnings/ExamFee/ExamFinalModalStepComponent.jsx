@@ -1,4 +1,4 @@
-import Logo from '@/assets/images/logo.png';
+import ApplicationLogo from '@/Components/ApplicationLogo';
 import StaticBtn from '@/Components/UI/StaticBtn';
 import { getAvatarImage } from '@/lib/avatarImageUrlUtils';
 import { formattedAmount } from '@/lib/utils';
@@ -11,6 +11,7 @@ const ExamFinalModalStepComponent = ({ data, fee, selectedRows, handleClose, loa
     const printComponentRef = useRef(null);
     const currentDate = new Date();
     const { user } = usePage().props.auth;
+    const { institute } = usePage().props;
 
     // Format date to Bengali
     const formattedDate = currentDate
@@ -65,10 +66,10 @@ const ExamFinalModalStepComponent = ({ data, fee, selectedRows, handleClose, loa
                 {/* স্কুল হেডার */}
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <img src={Logo} alt="School Logo" className="h-12 print:h-[37px]" />
+                        <ApplicationLogo className="h-[50px] w-[50px] print:h-[28px] print:w-[28px]" />
                         <div>
-                            <h1 className="text-lg font-bold print:text-[20px]">মাদরাসাতুল হেরা টাঙ্গাইল</h1>
-                            <p className="text-sm text-black print:text-[12px]">মনোয়ারা রশিদ ভিলা, রহমান ভবন, কোদালিয়া, টাঙ্গাইল</p>
+                            <h1 className="text-lg font-bold print:text-[20px]">{institute?.name_bangla || 'এখানে মাদরাসার নাম'}</h1>
+                            <p className="text-sm text-black print:text-[12px]">{institute?.address || 'এখানে মাদরাসার ঠিকানা'}</p>
                         </div>
                     </div>
                     <div className="text-right text-sm print:text-[10px]">
