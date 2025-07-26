@@ -30,6 +30,7 @@ class MonthlyTransaction
                 'due_academic_fee' => $monthData['academic_fee'] - $academic_fee,
                 'due_boarding_fee' => $monthData['boarding_fee'] - $boarding_fee,
                 'discount'         => $request->discount ?? 0,
+                'year'             => $year,
             ];
         });
         $amount = $monthlyInfo->sum(function ($month) {
