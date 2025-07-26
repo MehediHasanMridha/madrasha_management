@@ -250,7 +250,6 @@ class NotificationController extends Controller
         })->filter();
 
         // calculate message character wise cost and total number of messages cost so 140 characters sms .50 tk
-
         $messageLength = strlen($smsMessage);
         if ($messageLength < 140) {
             $messageLength = 140; // Adjust length to 160 for cost calculation
