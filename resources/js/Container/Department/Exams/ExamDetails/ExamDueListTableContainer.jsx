@@ -43,7 +43,23 @@ const ExamDueListTableContainer = ({ classItem }) => {
             dataIndex: 'status',
             key: 'status',
             align: 'center',
-            render: (status) => <span className={`text-sm ${status === 'due' ? 'text-red-500' : 'text-green-500'}`}>{status}</span>,
+            render: (status) => {
+                if (status === 'due') {
+                    return <span className="font-semibold text-black">Unpaid</span>;
+                }
+                if (status === 'paid') {
+                    return (
+                        <div className="flex w-full items-center justify-center gap-x-2">
+                            <span className="w-[56px] rounded-full border-[0.5px] border-[#00A606] bg-[#E4FFE5] text-[14px] font-semibold text-[#00A606]">
+                                Paid
+                            </span>
+                        </div>
+                    );
+                }
+                if (status === 'Unpaid') {
+                    return <span className="font-semibold text-black">Unpaid</span>;
+                }
+            },
         },
     ];
     const classWiseData = examFeeStudentsStatus?.filter((student) => student.class_id === classItem?.class?.id) || [];
