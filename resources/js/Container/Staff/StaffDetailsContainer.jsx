@@ -160,33 +160,8 @@ const StaffDetailsContainer = ({ staff }) => {
                     <CardContent className="p-6">
                         <div className="space-y-4">
                             <h3 className="text-base font-medium text-gray-900">Salary Transaction History</h3>
-                            <hr className="border-gray-200" />
-
-                            {/* Summary and Year Selector */}
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                    <span className="text-sm text-gray-500">Transaction Year</span>
-                                </div>
-
-                                <select
-                                    className="w-[78px] cursor-pointer rounded-[4px] border-[1px] border-[#AFAFAF] px-[8px] py-[4px] text-black focus:outline-0"
-                                    value={year}
-                                    onChange={(e) => {
-                                        setYear(e.target.value);
-                                        getData(e.target.value);
-                                    }}
-                                >
-                                    <option disabled>Year</option>
-                                    {['2025', '2026', '2027', '2028', '2029', '2030'].map((item) => (
-                                        <option key={item} value={item}>
-                                            {item}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-
                             {/* Salary Transactions Table */}
-                            <StaffSalaryTransactionsTableContainer data={staff?.salary_transactions_history || []} staff={staff} year={year} />
+                            <StaffSalaryTransactionsTableContainer data={staff?.salary_transactions_history || []} staff={staff} />
                         </div>
                     </CardContent>
 

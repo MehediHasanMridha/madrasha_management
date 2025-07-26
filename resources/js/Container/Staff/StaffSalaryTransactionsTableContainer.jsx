@@ -1,10 +1,14 @@
+import MonthlySalaryPrintReceiptComponent from '@/Components/Shared/MonthlySalaryPrintReceiptComponent';
 import TableUI from '@/Components/UI/TableUI';
 import { router } from '@inertiajs/react';
 import { ScrollText } from 'lucide-react';
-import { useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
+import { useReactToPrint } from 'react-to-print';
 
 const StaffSalaryTransactionsTableContainer = ({ data, staff, year }) => {
     const [loading, setLoading] = useState(false);
+    const [selectedData, setSelectedData] = useState(null);
+    const ref = useRef();
 
     const columns = [
         {
@@ -22,22 +26,16 @@ const StaffSalaryTransactionsTableContainer = ({ data, staff, year }) => {
             ),
         },
         {
-            title: 'Amount',
-            dataIndex: 'amount',
-            key: 'amount',
-            render: (text) => <span className="text-[14px] font-semibold text-black">{text.toLocaleString('en-US')} BDT</span>,
-        },
-        {
             title: 'Type',
             dataIndex: 'voucher_type.name',
             key: 'voucher_type',
             render: (text) => <span className="text-[14px] text-gray-600">{text || 'Salary'}</span>,
         },
         {
-            title: 'Details',
-            dataIndex: 'details',
-            key: 'details',
-            render: (text) => <span className="text-[14px] text-gray-600">{text || 'Monthly Salary'}</span>,
+            title: 'Amount',
+            dataIndex: 'amount',
+            key: 'amount',
+            render: (text) => <span className="text-[14px] font-semibold text-black">{text.toLocaleString('en-US')} BDT</span>,
         },
         {
             title: 'Action',
@@ -48,8 +46,8 @@ const StaffSalaryTransactionsTableContainer = ({ data, staff, year }) => {
                 <span className="cursor-pointer text-[14px] font-semibold">
                     <ScrollText
                         onClick={() => {
-                            // You can implement a print receipt functionality here
-                            console.log('Print salary receipt for:', record);
+                            setSelectedData(record);
+                            printFn();
                         }}
                         className="mx-auto cursor-pointer hover:text-blue-500"
                     />
@@ -64,7 +62,6 @@ const StaffSalaryTransactionsTableContainer = ({ data, staff, year }) => {
                 staff_id: staff?.unique_id,
                 page: pagination.current,
                 per_page: pagination.pageSize,
-                year: year,
             }),
             {},
             {
@@ -84,20 +81,54 @@ const StaffSalaryTransactionsTableContainer = ({ data, staff, year }) => {
         );
     };
 
+    const handleBeforePrint = useCallback(() => {
+        setLoading(true);
+        return Promise.resolve();
+    }, []);
+
+    const handleAfterPrint = () => {
+        setLoading(false);
+    };
+
+    const printFn = useReactToPrint({
+        contentRef: ref,
+        documentTitle: `Monthly_Salary_Receipt_${staff?.unique_id}_${new Date().toISOString().split('T')[0]}`,
+        onAfterPrint: handleAfterPrint,
+        onBeforePrint: handleBeforePrint,
+        // Receipt page size is small & font size is small & print to printable area
+        pageStyle: `
+                        @media print {
+                            @page {
+                                size: A5;
+                                margin: 32px;
+                            }
+                            body {
+                                font-size: 12px;
+                                margin: 0;
+                                padding: 0;
+                                line-height: 1.2;
+                            }
+                        }
+                    `,
+    });
+
     return (
-        <TableUI
-            columns={columns}
-            data={data}
-            pagination={{
-                current: data?.current_page,
-                pageSize: data?.per_page,
-                total: data?.total,
-                showSizeChanger: true,
-            }}
-            loading={loading}
-            rowKey={(record) => record.id}
-            onChange={handleTableChange}
-        />
+        <>
+            <TableUI
+                columns={columns}
+                data={data}
+                pagination={{
+                    current: data?.current_page,
+                    pageSize: data?.per_page,
+                    total: data?.total,
+                    showSizeChanger: true,
+                }}
+                loading={loading}
+                rowKey={(record) => record.id}
+                onChange={handleTableChange}
+            />
+            <MonthlySalaryPrintReceiptComponent data={selectedData || {}} staff={staff} ref={ref} />
+        </>
     );
 };
 

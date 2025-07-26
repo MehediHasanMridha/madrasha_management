@@ -231,7 +231,7 @@ class StaffController extends Controller
         $per_page = request()->input('per_page', 10);
 
         // Get staff details with relationships
-        $staff = User::with(['academics', 'address', 'guardians', 'classAssign.department', 'expenseLogs.voucherType'])
+        $staff = User::with(['academics', 'address', 'guardians', 'classAssign.department', 'expenseLogs', 'transactions'])
             ->where('unique_id', $staff_id)
             ->whereHas('roles', fn($q) => $q->where('name', 'staff'))
             ->firstOrFail();
@@ -270,16 +270,8 @@ class StaffController extends Controller
                 return $dept['id'] !== null;
             })->unique('id')->values()->toArray()
             : [],
-            'salary_transactions_history' => $staff->expenseLogs()
-                ->whereYear('date', $year)
-                ->whereHas('voucherType', function ($query) {
-                    $query->where('name', 'like', '%salary%')
-                        ->orWhere('name', 'like', '%বেতন%')
-                        ->orWhere('name', 'like', '%Teacher%')
-                        ->orWhere('name', 'like', '%Staff%');
-                })
-                ->with(['voucherType'])
-                ->orderBy('date', 'desc')
+            'salary_transactions_history' => $staff->transactions()->with(['receiver'])
+                ->orderBy('created_at', 'desc')
                 ->paginate($per_page, ['*'], 'page', $page),
             'monthly_salary_history'      => $staff->expenseLogs()
                 ->where('date', 'like', $year . '%')

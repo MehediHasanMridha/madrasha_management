@@ -88,7 +88,7 @@ const LeftSide = ({ drawerOpen, onDrawerClose, isMobile }) => {
                 </SideBarUI.Item>
             </Link>
             <Link as="button" className="w-full cursor-pointer" href={route('staff.index')} onClick={handleLinkClick}>
-                <SideBarUI.Item collapsed={collapsed} className={cn('h-[64px] hover:bg-[#F2F2F2]', route().current('staff.index') && 'bg-[#F2F2F2]')}>
+                <SideBarUI.Item collapsed={collapsed} className={cn('h-[64px] hover:bg-[#F2F2F2]', route().current('staff.*') && 'bg-[#F2F2F2]')}>
                     <SideBarUI.Icon className="h-[32px] w-[32px] rounded-[8px] bg-[#F2F2F2]">
                         <Users strokeWidth={1.5} size={20} className="text-[#4A4A4A]" />
                     </SideBarUI.Icon>
