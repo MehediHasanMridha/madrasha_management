@@ -314,14 +314,25 @@ class FinanceController extends Controller
             'note' => 'nullable|string|max:255',
         ]);
 
-        if ($request->type == 'salary' && $request->monthlyInfo) {
+        try {
+            DB::beginTransaction();
+            if ($request->type == 'salary' && $request->monthlyInfo) {
+                AddSalaryVoucher::run($request);
+            } else {
+                AddOthersVoucher::run($request);
+            }
+            DB::commit();
+            return redirect()->back()->with('success', 'Voucher added successfully');
 
-            AddSalaryVoucher::run($request);
-            return to_route('finance.outgoings')->with('success', 'Voucher added successfully');
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            // Handle duplicate entry for expense_logs
+            if (str_contains($th->getMessage(), 'Duplicate entry') && str_contains($th->getMessage(), 'unique_expense_log')) {
+                return redirect()->back()->with('error', 'This voucher already exists. Please check the voucher history.');
+            }
+
+            return redirect()->back()->with('error', $th->getMessage());
         }
-
-        AddOthersVoucher::run($request);
-        return to_route('finance.outgoings')->with('success', 'Voucher added successfully');
 
     }
 

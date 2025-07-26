@@ -1,21 +1,21 @@
-import MonthlyFeePrintReceiptComponent from '@/Components/Shared/MonthlyFeePrintReceiptComponent';
+import MonthlySalaryPrintReceiptComponent from '@/Components/Shared/MonthlySalaryPrintReceiptComponent';
 import TableUI from '@/Components/UI/TableUI';
 import { router } from '@inertiajs/react';
 import { ScrollText } from 'lucide-react';
 import { useCallback, useRef, useState } from 'react';
 import { useReactToPrint } from 'react-to-print';
 
-const StudentTransactionsTableListContainer = ({ data, department, student, academicFee, boardingFee, year }) => {
+const StaffSalaryTransactionsTableContainer = ({ data, staff, year }) => {
     const [loading, setLoading] = useState(false);
-    const printComponentRef = useRef(null);
     const [selectedData, setSelectedData] = useState(null);
+    const ref = useRef();
 
     const columns = [
         {
             title: 'Date',
             dataIndex: 'created_at',
             key: 'date',
-            render: (record, text) => (
+            render: (record) => (
                 <span className="text-[14px] font-semibold text-black">
                     {new Date(record).toLocaleDateString('en-US', {
                         year: 'numeric',
@@ -26,10 +26,16 @@ const StudentTransactionsTableListContainer = ({ data, department, student, acad
             ),
         },
         {
+            title: 'Type',
+            dataIndex: 'voucher_type.name',
+            key: 'voucher_type',
+            render: (text) => <span className="text-[14px] text-gray-600">{text || 'Salary'}</span>,
+        },
+        {
             title: 'Amount',
             dataIndex: 'amount',
             key: 'amount',
-            render: (text) => <span className="text-[14px] font-semibold text-black">{text}</span>,
+            render: (text) => <span className="text-[14px] font-semibold text-black">{text.toLocaleString('en-US')} BDT</span>,
         },
         {
             title: 'Action',
@@ -52,22 +58,25 @@ const StudentTransactionsTableListContainer = ({ data, department, student, acad
 
     const handleTableChange = (pagination, filters, sorter) => {
         router.get(
-            route('department.student_details', {
-                department_slug: department?.slug,
-                student_id: student?.unique_id,
+            route('staff.details', {
+                staff_id: staff?.unique_id,
                 page: pagination.current,
                 per_page: pagination.pageSize,
             }),
             {},
             {
+                preserveState: true,
+                preserveScroll: true,
                 onStart: () => {
                     setLoading(true);
                 },
                 onFinish: () => {
                     setLoading(false);
                 },
-                preserveState: true,
-                preserveScroll: true,
+                onError: (errors) => {
+                    console.log('Error in salary transactions:', errors);
+                    setLoading(false);
+                },
             },
         );
     };
@@ -82,32 +91,32 @@ const StudentTransactionsTableListContainer = ({ data, department, student, acad
     };
 
     const printFn = useReactToPrint({
-        contentRef: printComponentRef,
-        documentTitle: `Monthly_Fee_Receipt_${student?.unique_id}_${new Date().toISOString().split('T')[0]}`,
+        contentRef: ref,
+        documentTitle: `Monthly_Salary_Receipt_${staff?.unique_id}_${new Date().toISOString().split('T')[0]}`,
         onAfterPrint: handleAfterPrint,
         onBeforePrint: handleBeforePrint,
         // Receipt page size is small & font size is small & print to printable area
         pageStyle: `
-                    @media print {
-                        @page {
-                            size: A5;
-                            margin: 32px;
+                        @media print {
+                            @page {
+                                size: A5;
+                                margin: 32px;
+                            }
+                            body {
+                                font-size: 12px;
+                                margin: 0;
+                                padding: 0;
+                                line-height: 1.2;
+                            }
                         }
-                        body {
-                            font-size: 12px;
-                            margin: 0;
-                            padding: 0;
-                            line-height: 1.2;
-                        }
-                    }
-                `,
+                    `,
     });
 
     return (
         <>
             <TableUI
                 columns={columns}
-                dataSource={data?.data}
+                data={data}
                 pagination={{
                     current: data?.current_page,
                     pageSize: data?.per_page,
@@ -118,11 +127,9 @@ const StudentTransactionsTableListContainer = ({ data, department, student, acad
                 rowKey={(record) => record.id}
                 onChange={handleTableChange}
             />
-            <div className="hidden print:block">
-                <MonthlyFeePrintReceiptComponent ref={printComponentRef} data={student} month={selectedData} year={year} />
-            </div>
+            <MonthlySalaryPrintReceiptComponent data={selectedData || {}} staff={staff} ref={ref} />
         </>
     );
 };
 
-export default StudentTransactionsTableListContainer;
+export default StaffSalaryTransactionsTableContainer;
