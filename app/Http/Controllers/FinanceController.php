@@ -8,6 +8,7 @@ use App\Actions\Finance\Earning\AddAdmissionFee;
 use App\Actions\Finance\Earning\AddDueFee;
 use App\Actions\Finance\Earning\AddExamFee;
 use App\Actions\Finance\Earning\AddMonthlyFee;
+use App\Actions\Finance\Earning\AdmissionTransaction;
 use App\Actions\Finance\Earning\ExamTransaction;
 use App\Actions\Finance\Earning\MonthlyDiscount;
 use App\Actions\Finance\Earning\MonthlyTransaction;
@@ -283,6 +284,7 @@ class FinanceController extends Controller
             }
             if ($request->type == 'admission_fee') {
                 AddAdmissionFee::run($request, $student);
+                AdmissionTransaction::run($request, $student);
                 DB::commit();
                 return redirect()->back()->with('success', 'Admission fee added successfully');
             }

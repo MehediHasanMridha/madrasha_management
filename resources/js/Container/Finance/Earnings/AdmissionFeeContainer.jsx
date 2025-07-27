@@ -13,11 +13,14 @@ const AdmissionFeeContainer = ({ setStep, data, type, loading, setModal, setType
     const [selectedClassAdmissionFee, setSelectedClassAdmissionFee] = useState(0);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [admissionStep, setAdmissionStep] = useState(1);
+    const [selectedClassName, setSelectedClassName] = useState(null);
+    const [selectedDepartmentName, setSelectedDepartmentName] = useState(null);
 
     useEffect(() => {
         if (!isLoading && allDepartments?.data?.length > 0 && data?.department_id) {
             const foundDept = allDepartments.data.find((dept) => dept.id === data.department_id);
             setClasses(foundDept?.classes || []);
+            setSelectedDepartmentName(foundDept?.name);
         }
     }, [allDepartments, isLoading, data?.department_id]);
 
@@ -55,6 +58,8 @@ const AdmissionFeeContainer = ({ setStep, data, type, loading, setModal, setType
                 student_id: data?.unique_id,
                 type: type,
                 note: values.comments,
+                department_name: selectedDepartmentName,
+                class_name: selectedClassName,
             },
             {
                 onStart: () => {
@@ -109,6 +114,7 @@ const AdmissionFeeContainer = ({ setStep, data, type, loading, setModal, setType
                     comments={comments}
                     submit={submit}
                     isSubmitting={isSubmitting}
+                    setSelectedClassName={setSelectedClassName}
                 />
             );
             break;
