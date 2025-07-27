@@ -17,9 +17,8 @@ const AddMoneyContainer = ({ modal, setModal }) => {
     const [type, setType] = useState();
     let content = null;
 
-    const [api, contextHolder] = notification.useNotification();
-
     const getData = async (data) => {
+        setData(null);
         try {
             setLoading(true);
             const { data: info } = await axios.get(
@@ -30,7 +29,12 @@ const AddMoneyContainer = ({ modal, setModal }) => {
             }
         } catch (error) {
             setLoading(false);
-            console.error('Error fetching data:', error);
+            setStep((prev) => prev - 1);
+            notification.error({
+                message: 'Error',
+                description: 'This student ID does not exist',
+                placement: 'bottomRight',
+            });
         } finally {
             setLoading(false);
         }
@@ -92,12 +96,7 @@ const AddMoneyContainer = ({ modal, setModal }) => {
             break;
     }
 
-    return (
-        <>
-            {contextHolder}
-            <ModalComponent modal={modal} setModal={setModal} content={content} />
-        </>
-    );
+    return <ModalComponent modal={modal} setModal={setModal} content={content} />;
 };
 
 export default AddMoneyContainer;

@@ -156,7 +156,7 @@ const StudentDetailsContainer = ({ student, department }) => {
                     </CardContent>
                     <CardContent className="p-6">
                         <div className="space-y-4">
-                            <h3 className="text-base font-medium text-gray-900">Academic Monthly transactions</h3>
+                            <h3 className="text-base font-medium text-gray-900">Academic transactions</h3>
                             {/* Transactions Table */}
                             <StudentTransactionsTableListContainer
                                 data={student?.student_transactions_history || []}
