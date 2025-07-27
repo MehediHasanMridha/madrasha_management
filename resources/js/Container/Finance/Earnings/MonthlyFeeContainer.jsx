@@ -3,6 +3,8 @@ import ModalStepFiveComponent from '@/Components/Finance/Earnings/MonthlyFee/Mod
 import ModalStepFourComponent from '@/Components/Finance/Earnings/MonthlyFee/ModalStepFourComponent';
 import ModalStepOneComponent from '@/Components/Finance/Earnings/MonthlyFee/ModalStepOneComponent';
 import LoadingUI from '@/Components/UI/LoadingUI';
+import StaticBtn from '@/Components/UI/StaticBtn';
+import { cn } from '@/lib/utils';
 import { router } from '@inertiajs/react';
 import { notification } from 'antd';
 import { useEffect, useState } from 'react';
@@ -91,7 +93,7 @@ const MonthlyFeeContainer = ({ data, year, setYear, getData, loading, setStep, s
         );
     };
 
-    if (loading || !data) {
+    if (loading && !data) {
         return (
             <div className="flex h-[400px] items-center justify-center">
                 <LoadingUI />
@@ -100,7 +102,32 @@ const MonthlyFeeContainer = ({ data, year, setYear, getData, loading, setStep, s
     }
 
     if (!data) {
-        return <div className="flex h-[400px] items-center justify-center">No data found</div>;
+        return (
+            <>
+                <div className="flex h-[400px] items-center justify-center">No data found</div>;
+                <div className="mt-5 flex w-full gap-[18px]">
+                    <StaticBtn
+                        onClick={() => setStep((prev) => prev - 1)}
+                        className="flex h-14 flex-1 cursor-pointer items-center justify-center rounded-lg bg-[#F2F2F2] text-[#4A4A4A] hover:bg-[#0267FF] hover:text-white"
+                        disabled={loading}
+                    >
+                        Back
+                    </StaticBtn>
+                    <StaticBtn
+                        onClick={() => {
+                            if (selectedRows.length === 0) return;
+                            setMonthlyFeeStep(2);
+                        }}
+                        className={cn(
+                            'flex h-14 flex-1 cursor-pointer items-center justify-center rounded-lg bg-[#0267FF] text-white',
+                            selectedRows.length === 0 && 'cursor-not-allowed opacity-50',
+                        )}
+                    >
+                        {loading ? 'Processing...' : 'Next'}
+                    </StaticBtn>
+                </div>
+            </>
+        );
     }
 
     let content = null;

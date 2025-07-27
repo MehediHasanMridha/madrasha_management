@@ -8,6 +8,7 @@ use App\Actions\Finance\Earning\AddAdmissionFee;
 use App\Actions\Finance\Earning\AddDueFee;
 use App\Actions\Finance\Earning\AddExamFee;
 use App\Actions\Finance\Earning\AddMonthlyFee;
+use App\Actions\Finance\Earning\ExamTransaction;
 use App\Actions\Finance\Earning\MonthlyDiscount;
 use App\Actions\Finance\Earning\MonthlyTransaction;
 use App\Actions\Finance\Expense\AddOthersVoucher;
@@ -162,6 +163,9 @@ class FinanceController extends Controller
         ])->whereHas('roles', fn($q) => $q->where('name', 'student'))
             ->where('unique_id', $user_id)
             ->firstOrFail();
+        if (! $user) {
+            return response()->json(['error' => 'User not found']);
+        }
 
         $responseData = [
             'id'            => $user->id,
@@ -273,6 +277,7 @@ class FinanceController extends Controller
             }
             if ($request->type == 'exam_fee') {
                 AddExamFee::run($request, $student);
+                ExamTransaction::run($request, $student);
                 DB::commit();
                 return redirect()->back()->with('success', 'Exam fee added successfully');
             }
