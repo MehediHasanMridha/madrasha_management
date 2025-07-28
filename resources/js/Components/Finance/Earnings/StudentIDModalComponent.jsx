@@ -2,7 +2,7 @@ import Field from '@/Components/UI/Field';
 import StaticBtn from '@/Components/UI/StaticBtn';
 import { cn } from '@/lib/utils';
 
-const ModalStepTwoComponent = ({ studentId, setStudentId, setStep, getData, loading }) => {
+const StudentIDModalComponent = ({ studentId, setStudentId, setStep, getData, loading }) => {
     return (
         <div className="h-[500px] space-y-4">
             <div className="flex h-[400px] flex-col items-center justify-center">
@@ -19,7 +19,10 @@ const ModalStepTwoComponent = ({ studentId, setStudentId, setStep, getData, load
             </div>
             <div className="mt-5 flex w-full gap-[18px]">
                 <StaticBtn
-                    onClick={() => setStep((prev) => prev - 1)}
+                    onClick={() => {
+                        setStep((prev) => prev - 1);
+                        setStudentId('');
+                    }}
                     className="flex h-14 flex-1 cursor-pointer items-center justify-center rounded-lg bg-[#F2F2F2] text-[#4A4A4A] hover:bg-[#0267FF] hover:text-white"
                     disabled={loading}
                 >
@@ -43,4 +46,4 @@ const ModalStepTwoComponent = ({ studentId, setStudentId, setStep, getData, load
     );
 };
 
-export default ModalStepTwoComponent;
+export default StudentIDModalComponent;
