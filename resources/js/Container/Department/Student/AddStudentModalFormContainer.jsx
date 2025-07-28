@@ -184,7 +184,6 @@ const AddStudentModalFormContainer = () => {
                     setIsLoading(false);
                 },
                 onError: (errors) => {
-                    console.log('🚀 ~ onSubmit ~ errors:', errors);
                     // Set form errors for each field
                     Object.keys(errors).forEach((field) => {
                         if (field !== 'message') {
