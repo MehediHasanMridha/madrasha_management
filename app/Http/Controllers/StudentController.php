@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Actions\Finance\Earning\AdmissionTransaction;
 use App\Models\Academic;
 use App\Models\Address;
 use App\Models\Department;
@@ -124,6 +125,7 @@ class StudentController extends Controller
                     ]);
                 }
             }
+            AdmissionTransaction::run($request, $student);
             DB::commit();
             return back()->with([
                 'success' => 'Student added successfully',
@@ -276,7 +278,7 @@ class StudentController extends Controller
             ],
             'student_transactions_history' => $student->transactions()->with('receiver')->orderBy('created_at', 'desc')->paginate($per_page, ['*'], 'page', $page),
             'monthly_fee_history'          => $student->incomeLogs()->where('payment_period', 'like', $year . '%')->whereHas('feeType', function ($query) {
-                $query->whereIn('name', ['Academic Fee', 'Boarding Fee', 'Admission Fee']);
+                $query->whereIn('name', ['Academic Fee', 'Boarding Fee']);
             })->with(['receiver', 'feeType'])->get()->map(function ($log) {
                 return [
                     'id'             => $log->id,

@@ -4,7 +4,8 @@ import { forwardRef } from 'react';
 import { FaPhone } from 'react-icons/fa6';
 import ApplicationLogo from '../ApplicationLogo';
 const AdmissionFeePrintReceiptComponent = forwardRef((props, ref) => {
-    const { data, month = '', admissionFee, comments, receiver } = props;
+    const { data, student, month = '', admissionFee, comments, receiver, collectedMonthlyFeeForPrint } = props;
+    const details = data?.details && (typeof data.details === 'string' ? JSON.parse(data.details) : data.details);
     const formattedDate = new Date()
         .toLocaleString('en-US', {
             hour: '2-digit',
@@ -17,6 +18,9 @@ const AdmissionFeePrintReceiptComponent = forwardRef((props, ref) => {
         .replace('at', ' সময়:');
     const { user } = usePage().props.auth;
     const { institute } = usePage().props;
+
+    const selectedMonth = month || details?.data?.month;
+
     return (
         <div className="space-y-4" ref={ref}>
             {/* স্কুল হেডার */}
@@ -41,18 +45,18 @@ const AdmissionFeePrintReceiptComponent = forwardRef((props, ref) => {
             </div>
             <hr className="print:border-[0.5px] print:border-black" />
             {/* শিক্ষার্থী তথ্য */}
-            {data && (
+            {student && (
                 <div className="flex items-center justify-between rounded-[8px]">
                     <div className="flex items-center space-x-4">
                         <img
-                            src={getAvatarImage(data?.image, 'student_images', data?.name)}
+                            src={getAvatarImage(student?.image, 'student_images', student?.name)}
                             alt="Student"
                             className="h-[50px] w-[50px] rounded-full border print:h-[28px] print:w-[28px]"
                         />
                         <div>
-                            <p className="text-lg font-semibold print:text-[12px]">{data.name || 'N/A'}</p>
+                            <p className="text-lg font-semibold print:text-[12px]">{student.name || 'N/A'}</p>
                             <p className="text-sm text-black print:text-[10px]">
-                                {data?.unique_id} • {data?.department}
+                                {student?.unique_id} • {student?.department}
                             </p>
                         </div>
                     </div>
@@ -77,29 +81,31 @@ const AdmissionFeePrintReceiptComponent = forwardRef((props, ref) => {
                         <tr>
                             <td className="border-[0.5px] border-black px-4 py-2">{Number(1).toLocaleString('bn')}</td>
                             <td className="border-[0.5px] border-black px-4 py-2">আডমিশন ফি</td>
-                            <td className="border-[0.5px] border-black px-4 py-2 text-right">{Number(admissionFee).toLocaleString('bn')}</td>
+                            <td className="border-[0.5px] border-black px-4 py-2 text-right">
+                                {Number(admissionFee || details?.data?.admissionFee || 0).toLocaleString('bn')}
+                            </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-            {month && (
+            {selectedMonth && (
                 <div className="h-[200px] overflow-x-auto print:h-fit print:overflow-y-auto">
                     <table className="w-full min-w-full table-auto border-collapse">
                         <thead>
                             <tr>
                                 <th className="w-[20px] border-[0.5px] border-black px-4 py-2 text-left">ক্রমিক</th>
-                                <th className="border-[0.5px] border-black px-4 py-2 text-left">
-                                    মাস({new Date().toLocaleString('en-US', { year: 'numeric' })})
-                                </th>
+                                <th className="border-[0.5px] border-black px-4 py-2 text-left">মাস({new Date().getFullYear()})</th>
                                 <th className="w-[150px] border-[0.5px] border-black px-4 py-2 text-right">টাকা</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td className="border-[0.5px] border-black px-4 py-2">{Number(1).toLocaleString('bn')}</td>
-                                <td className="border-[0.5px] border-black px-4 py-2">{new Date(month).toLocaleString('bn', { month: 'long' })}</td>
+                                <td className="border-[0.5px] border-black px-4 py-2">
+                                    {month ? new Date(selectedMonth).toLocaleString('bn', { month: 'long' }) : selectedMonth}
+                                </td>
                                 <td className="border-[0.5px] border-black px-4 py-2 text-right">
-                                    {(Number(data?.academics?.academic_fee) + Number(data?.academics?.boarding_fee)).toLocaleString('bn')}
+                                    {Number(collectedMonthlyFeeForPrint || details?.data?.monthly_fee).toLocaleString('bn')}
                                 </td>
                             </tr>
                         </tbody>
@@ -114,9 +120,8 @@ const AdmissionFeePrintReceiptComponent = forwardRef((props, ref) => {
                         <span>মোট:</span>
                         <span>
                             {(
-                                Number(admissionFee) +
-                                Number(data?.academics?.academic_fee || 0) +
-                                Number(data?.academics?.boarding_fee || 0)
+                                Number(admissionFee || details?.data?.admissionFee) +
+                                Number(collectedMonthlyFeeForPrint || details?.data?.monthly_fee)
                             ).toLocaleString('bn')}{' '}
                             টাকা
                         </span>
@@ -125,9 +130,8 @@ const AdmissionFeePrintReceiptComponent = forwardRef((props, ref) => {
                         <span>পরিশোধিত:</span>
                         <span>
                             {(
-                                Number(admissionFee) +
-                                Number(data?.academics?.academic_fee || 0) +
-                                Number(data?.academics?.boarding_fee || 0)
+                                Number(admissionFee || details?.data?.admissionFee) +
+                                Number(collectedMonthlyFeeForPrint || details?.data?.monthly_fee)
                             ).toLocaleString('bn')}{' '}
                             টাকা
                         </span>
@@ -136,20 +140,24 @@ const AdmissionFeePrintReceiptComponent = forwardRef((props, ref) => {
             </div>
 
             {/* মন্তব্য বিভাগ */}
-            {comments && (
-                <div className="mt-6">
-                    <h3 className="mb-2 font-medium">মন্তব্য</h3>
-                    <p className="h-fit w-full rounded-[4px] border-[0.5px] border-[#131313] p-3 print:h-[50px]">{comments} </p>
-                </div>
-            )}
+            {comments ||
+                (data?.note && (
+                    <div className="mt-6">
+                        <h3 className="mb-2 font-medium">মন্তব্য</h3>
+                        <p className="h-fit w-full rounded-[4px] border-[0.5px] border-[#131313] p-3 print:h-[50px]">{comments || data?.note} </p>
+                    </div>
+                ))}
             <div className="flex items-center justify-center gap-2">
                 যোগ করেছেন :
                 <img
-                    src={getAvatarImage(receiver?.img, 'staff_images', receiver?.name) || getAvatarImage(user?.img, 'staff_images', user?.name)}
+                    src={
+                        getAvatarImage(receiver?.img || data?.receiver?.img, 'staff_images', receiver?.name || data?.receiver?.name) ||
+                        getAvatarImage(user?.img, 'staff_images', user?.name)
+                    }
                     alt=""
                     className="h-[20px] w-[20px] rounded-sm print:h-[10px] print:w-[10px]"
                 />
-                {receiver?.name || user?.name} আইডি: {receiver?.unique_id || user?.unique_id}
+                {receiver?.name || data?.receiver?.name || user?.name} আইডি: {receiver?.unique_id || data?.receiver?.unique_id || user?.unique_id}
             </div>
         </div>
     );

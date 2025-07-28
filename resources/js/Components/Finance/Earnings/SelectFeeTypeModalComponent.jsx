@@ -1,6 +1,6 @@
 import StaticBtn from '@/Components/UI/StaticBtn';
 
-const ModalStepOneComponent = ({ setStep, setType }) => {
+const SelectFeeTypeModalComponent = ({ setStep, setType }) => {
     return (
         <div className="flex h-[500px] flex-col items-center justify-center space-y-4">
             <StaticBtn
@@ -34,4 +34,4 @@ const ModalStepOneComponent = ({ setStep, setType }) => {
     );
 };
 
-export default ModalStepOneComponent;
+export default SelectFeeTypeModalComponent;

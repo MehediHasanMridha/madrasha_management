@@ -20,6 +20,7 @@ const AdmissionFeeModalStepOneComponent = ({
     comments,
     submit,
     isSubmitting,
+    setSelectedClassName,
 }) => {
     const ref = useRef(null);
 
@@ -84,6 +85,7 @@ const AdmissionFeeModalStepOneComponent = ({
                                 const admissionFee = selectedClass?.fee_types?.find((fee) => fee.name === 'Admission Fee')?.amount || 0;
                                 setValue('admissionFee', admissionFee);
                                 setSelectedClassAdmissionFee(admissionFee);
+                                setSelectedClassName(selectedClass?.name || '');
                             }}
                             ref={(el) => {
                                 ref.current = el;

@@ -10,7 +10,11 @@ import { Link, usePage } from '@inertiajs/react';
 import Marquee from 'react-fast-marquee';
 
 const Welcome = () => {
-    const { institute, welcomeContent } = usePage().props;
+    const {
+        institute,
+        welcomeContent,
+        auth: { user },
+    } = usePage().props;
 
     // Icon mapping for curriculum pillars
     const iconMap = {
@@ -345,8 +349,11 @@ const Welcome = () => {
                             <a href="/#" className="text-sm text-gray-700 transition-colors hover:text-blue-600 md:text-base">
                                 About Us
                             </a>
-                            <Link href={route('login')} className="text-sm text-gray-700 transition-colors hover:text-blue-600 md:text-base">
-                                Login
+                            <Link
+                                href={route(user ? 'dashboard' : 'login')}
+                                className="text-sm text-gray-700 transition-colors hover:text-blue-600 md:text-base"
+                            >
+                                {user ? 'Dashboard' : 'Login'}
                             </Link>
                         </nav>
                         {/* Mobile Menu Button */}
