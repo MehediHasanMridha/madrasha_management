@@ -1,5 +1,5 @@
-import ModalStepOneComponent from '@/Components/Finance/Earnings/ModalStepOneComponent';
-import ModalStepTwoComponent from '@/Components/Finance/Earnings/ModalStepTwoComponent';
+import SelectFeeTypeModalComponent from '@/Components/Finance/Earnings/SelectFeeTypeModalComponent';
+import StudentIDModalComponent from '@/Components/Finance/Earnings/StudentIDModalComponent';
 import ModalComponent from '@/Components/Finance/ModalComponent';
 import { notification } from 'antd';
 import axios from 'axios';
@@ -42,11 +42,11 @@ const AddMoneyContainer = ({ modal, setModal }) => {
 
     switch (step) {
         case 1:
-            content = <ModalStepOneComponent setStep={setStep} setType={setType} />;
+            content = <SelectFeeTypeModalComponent setStep={setStep} setType={setType} />;
             break;
         case 2:
             content = (
-                <ModalStepTwoComponent loading={loading} studentId={studentId} setStudentId={setStudentId} setStep={setStep} getData={getData} />
+                <StudentIDModalComponent loading={loading} studentId={studentId} setStudentId={setStudentId} setStep={setStep} getData={getData} />
             );
             break;
         case 3:

@@ -23,7 +23,7 @@ class ExamTransaction
             return $examData['exam_fee'];
         }) ?? 0;
         $examInfo = [
-            'type' => 'exam',
+            'type' => 'exam_fee',
             'data' => $examInfo,
         ];
         $transaction                 = new Transaction();

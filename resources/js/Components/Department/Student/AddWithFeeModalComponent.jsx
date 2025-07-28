@@ -1,10 +1,32 @@
 import Field from '@/Components/UI/Field';
 import FieldSet from '@/Components/UI/FieldSet';
 import { cn } from '@/lib/utils';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-const AddWithFeeModalComponent = ({ fees, academicFee, boardingFee, register, setWithFee, withFee, errors, step }) => {
+const AddWithFeeModalComponent = ({
+    fees,
+    academicFee,
+    boardingFee,
+    register,
+    setWithFee,
+    withFee,
+    errors,
+    step,
+    setCollectedMonthlyFeeForPrint,
+}) => {
     const [admissionFee, setAdmissionFee] = useState(fees?.find((item) => item.name === 'Admission Fee')?.amount || '');
+
+    useEffect(() => {
+        if (withFee) {
+            const monthlyFee =
+                (Number(academicFee) || Number(fees?.find((item) => item.name === 'Academic Fee')?.amount)) +
+                (Number(boardingFee) || Number(fees?.find((item) => item.name === 'Boarding Fee')?.amount));
+            setCollectedMonthlyFeeForPrint(monthlyFee);
+        } else {
+            setCollectedMonthlyFeeForPrint(null);
+        }
+    }, [withFee, fees, setCollectedMonthlyFeeForPrint, academicFee, boardingFee]);
+
     return (
         <FieldSet>
             <div>

@@ -2,7 +2,15 @@ import AddStudentWithFeePrintableComponent from '@/Components/Department/Student
 import { useCallback, useRef, useState } from 'react';
 import { useReactToPrint } from 'react-to-print';
 
-const AddStudentWithFeePrintableContainer = ({ data, handleClose, month, admission_fee }) => {
+const AddStudentWithFeePrintableContainer = ({
+    studentData,
+    handleClose,
+    month,
+    admission_fee,
+    academicFee,
+    boardingFee,
+    collectedMonthlyFeeForPrint,
+}) => {
     const [loading, setLoading] = useState(false);
     const printComponentRef = useRef(null);
     const handleBeforePrint = useCallback(() => {
@@ -17,7 +25,7 @@ const AddStudentWithFeePrintableContainer = ({ data, handleClose, month, admissi
 
     const printFn = useReactToPrint({
         contentRef: printComponentRef,
-        documentTitle: `Admission_Fee_Receipt_${data?.unique_id}_${new Date().toISOString().split('T')[0]}`,
+        documentTitle: `Admission_Fee_Receipt_${studentData?.unique_id}_${new Date().toISOString().split('T')[0]}`,
         onAfterPrint: handleAfterPrint,
         onBeforePrint: handleBeforePrint,
         // Receipt page size is small & font size is small & print to printable area
@@ -40,11 +48,12 @@ const AddStudentWithFeePrintableContainer = ({ data, handleClose, month, admissi
         <AddStudentWithFeePrintableComponent
             printFn={printFn}
             printComponentRef={printComponentRef}
-            data={data}
+            studentData={studentData}
             month={month}
             loading={loading}
             handleClose={handleClose}
             admission_fee={admission_fee}
+            collectedMonthlyFeeForPrint={collectedMonthlyFeeForPrint}
         />
     );
 };

@@ -1,3 +1,4 @@
+import AdmissionFeePrintReceiptComponent from '@/Components/Shared/AdmissionFeePrintReceiptComponent';
 import ExamFeePrintReceiptComponent from '@/Components/Shared/ExamFeePrintReceiptComponent';
 import MonthlyFeePrintReceiptComponent from '@/Components/Shared/MonthlyFeePrintReceiptComponent';
 import TableUI from '@/Components/UI/TableUI';
@@ -33,8 +34,11 @@ const StudentTransactionsTableListContainer = ({ data, department, student, acad
             key: 'type',
             render: (record, text) => {
                 const type = JSON.parse(record)?.type || null;
-                if (type === 'exam') {
+                if (type === 'exam' || type === 'exam_fee') {
                     return <span className="text-[14px] font-semibold text-black">Exam Fee</span>;
+                }
+                if (type === 'admission_fee') {
+                    return <span className="text-[14px] font-semibold text-black">Admission Fee</span>;
                 }
                 return <span className="text-[14px] font-semibold text-black">Monthly Fee</span>;
             },
@@ -121,9 +125,11 @@ const StudentTransactionsTableListContainer = ({ data, department, student, acad
     let printableComponent = null;
     if (type === 'monthly_fee') {
         printableComponent = <MonthlyFeePrintReceiptComponent ref={printComponentRef} data={student} month={selectedData} />;
-    } else if (type === 'exam') {
+    } else if (type === 'exam' || type === 'exam_fee') {
         // Assuming you have a similar component for exam fee receipts
         printableComponent = <ExamFeePrintReceiptComponent ref={printComponentRef} data={selectedData} student={student} />;
+    } else if (type === 'admission_fee') {
+        printableComponent = <AdmissionFeePrintReceiptComponent ref={printComponentRef} data={selectedData} student={student} />;
     }
 
     return (
