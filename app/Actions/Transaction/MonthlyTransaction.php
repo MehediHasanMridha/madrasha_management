@@ -33,9 +33,13 @@ class MonthlyTransaction
                 'year'             => $year,
             ];
         });
-        $amount = $monthlyInfo->sum(function ($month) {
+        $monthlyInfo = [
+            'type' => 'monthly_fee',
+            'data' => $monthlyInfo,
+        ];
+        $amount = $monthlyInfo['data']->sum(function ($month) {
             return $month['academic_fee'] + $month['boarding_fee'];
-        }) - $monthlyInfo[0]['discount'] ?? 0;
+        }) - $monthlyInfo['data'][0]['discount'] ?? 0;
         $transaction                 = new Transaction();
         $transaction->transaction_id = 'TRN-' . str_pad(mt_rand(1, 999999999), 9, '0', STR_PAD_LEFT);
         $transaction->user_id        = $student->id;

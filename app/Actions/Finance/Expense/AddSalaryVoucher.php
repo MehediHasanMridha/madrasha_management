@@ -1,6 +1,7 @@
 <?php
 namespace App\Actions\Finance\Expense;
 
+use App\Actions\Transaction\SalaryTransaction;
 use App\Models\ExpenseLog;
 use App\Models\User;
 use App\Models\VoucherType;
@@ -23,7 +24,7 @@ class AddSalaryVoucher
                 'slug' => 'salary',
             ]);
         }
-        SalaryTransaction::run($request, $request->year, $staff);
+        SalaryTransaction::run($request, $staff);
         $year        = $request->year;
         $monthlyInfo = collect($request->monthlyInfo);
         $monthlyInfo->map(function ($item, $key) use ($staff, $year, $voucherType) {
