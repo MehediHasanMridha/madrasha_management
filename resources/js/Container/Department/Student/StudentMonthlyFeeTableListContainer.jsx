@@ -105,10 +105,10 @@ const StudentMonthlyFeeTableListContainer = ({ data, academicFee, boardingFee, s
             const boardingFeeLog = monthLog?.fees?.find((item) => item?.fee_type.includes('Boarding Fee'));
             const academicFeeLog = monthLog?.fees?.find((item) => item?.fee_type.includes('Academic Fee'));
 
-            const boardingFeeDue = Number(boardingFee) - monthLog?.fees?.find((item) => item?.fee_type.includes('Boarding Fee'))?.amount || 0;
-            const academicFeeDue = Number(academicFee) - monthLog?.fees?.find((item) => item?.fee_type.includes('Academic Fee'))?.amount || 0;
-            const boarding_fee = monthLog?.fees?.find((item) => item?.fee_type.includes('Boarding Fee'))?.amount || boardingFee;
-            const academic_fee = monthLog?.fees?.find((item) => item?.fee_type.includes('Academic Fee'))?.amount || academicFee;
+            const boardingFeeDue = Number(monthLog?.fees?.find((item) => item?.fee_type.includes('Boarding Fee'))?.due) || 0;
+            const academicFeeDue = Number(monthLog?.fees?.find((item) => item?.fee_type.includes('Academic Fee'))?.due) || 0;
+            const boarding_fee = Number(boardingFee) - Number(boardingFeeDue);
+            const academic_fee = Number(academicFee) - Number(academicFeeDue);
             const isPaid = !!(boardingFeeLog || academicFeeLog);
 
             return {

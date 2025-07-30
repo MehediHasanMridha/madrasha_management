@@ -52,7 +52,7 @@ const SMSComponent = ({
                                 />
                                 <div className="mt-2 flex justify-between text-sm text-gray-600">
                                     <span>
-                                        {characterCount} characters | {smsCount} SMS {smsCount > 1 ? 'messages' : 'message'}
+                                        {characterCount} Characters | {smsCount} {smsCount > 1 ? 'Pages' : 'Page'}
                                     </span>
                                     <span className="text-blue-600">Cost: {(smsCount * 0.45).toFixed(2)} BDT</span>
                                 </div>

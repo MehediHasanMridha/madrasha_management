@@ -2,7 +2,7 @@ import { waveform } from 'ldrs';
 import { useEffect } from 'react';
 import { FaArrowCircleRight } from 'react-icons/fa';
 import { cn } from '../../lib/utils';
-const SubmitBtn = ({ loadingIndicator = false, className = '', btnText, ...props }) => {
+const SubmitBtn = ({ loadingIndicator = false, className = '', btnText, showIcon = true, ...props }) => {
     useEffect(() => {
         waveform.register();
     }, []);
@@ -14,9 +14,9 @@ const SubmitBtn = ({ loadingIndicator = false, className = '', btnText, ...props
                     <l-waveform size="25" stroke="3.5" speed="1" color="white"></l-waveform>
                 </div>
             ) : (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center justify-center gap-2">
                     {btnText}
-                    <FaArrowCircleRight className="text-2xl text-white" />
+                    {showIcon && <FaArrowCircleRight className="text-2xl text-white" />}
                 </div>
             )}
         </button>

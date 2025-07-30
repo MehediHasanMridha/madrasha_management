@@ -1,26 +1,22 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Actions\Finance\Earning\AdmissionTransaction;
+use App\Actions\Department\Student\AddStudent;
+use App\Actions\Finance\Earning\AddAdmissionFeeWithAddStudent;
+use App\Actions\Transaction\AdmissionTransaction;
 use App\Models\Academic;
 use App\Models\Address;
 use App\Models\Department;
 use App\Models\Guardian;
-use App\Models\IncomeLog;
-use App\Models\PaymentMethod;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
-use Spatie\Permission\Models\Role;
 
 class StudentController extends Controller
 {
     public function add_student($department_slug, Request $request)
     {
-        // dd($request->all());
         $request->validate([
             'name'                    => 'required|string|max:120',
             'blood_group'             => 'nullable|in:O+,O-,A+,A-,B+,B-,AB+,AB-,null',
@@ -43,89 +39,12 @@ class StudentController extends Controller
 
         try {
             DB::beginTransaction();
-            $student            = new User();
-            $student->name      = $request->name;
-            $student->unique_id = generateUniqueId('S');
-            $student->phone     = $request->contact_number;
-            $student->gender    = $request->gender;
-            if ($request->hasFile('student_image')) {
-                $img          = uploadImage($student->img, $request->file('student_image'), 'uploads/student_images/');
-                $student->img = $img;
-            }
-            $student->password = Hash::make('12345678');
-            $student->save();
-
-            $role = Role::where('name', 'student')->first();
-            if ($role) {
-                $student->assignRole($role);
-            } else {
-                $role = Role::create(['name' => 'student']);
-                $student->assignRole($role);
-            }
-
-            $address           = new Address();
-            $address->user_id  = $student->id;
-            $address->district = $request->district;
-            $address->upazilla = $request->upazilla;
-            $address->location = $request->location ?? null;
-            $address->save();
-
-            $guardian              = new Guardian();
-            $guardian->user_id     = $student->id;
-            $guardian->father_name = $request->father_name ?? null;
-            $guardian->mother_name = $request->mother_name ?? null;
-            $guardian->numbers     = json_encode([
-                $request->guardian_contact_number,
-            ]);
-            $guardian->save();
-
-            $academic                   = new Academic();
-            $academic->user_id          = $student->id;
-            $academic->boarding_fee     = $request->boarding_fee ?? null;
-            $academic->academic_fee     = $request->academic_fee ?? null;
-            $academic->blood            = $request->blood_group === 'null' ? null : $request->blood_group;
-            $academic->reference        = $request->reference ?? null;
-            $academic->reference_number = $request->reference_number ?? null;
-            $academic->class_id         = $request->joining_class;
-            $academic->department_id    = $request->department_id;
-            $academic->save();
-
+            $student = AddStudent::run($request);
             // with Admission Fee & Monthly Fee
             if ($request->withFee) {
-                $month = date('Y-m');
-                IncomeLog::create([
-                    'user_id'           => $student->id,
-                    'amount'            => $request->admission_fee,
-                    'fee_type_id'       => $student->academics->class->feeTypes->where('name', 'Admission Fee')->first()->id,             // get from fee_types table
-                    'payment_method_id' => PaymentMethod::where('slug', 'cash')->firstOrCreate(['name' => 'Cash', 'slug' => 'cash'])->id, // get from payment_methods table
-                    'status'            => 'paid',
-                    'payment_period'    => $month,
-                    'receiver_id'       => Auth::user()->id,
-                ]);
-                if ($request->month) {
-                    $month = date('Y') . '-' . str_pad($request->month, 2, '0', STR_PAD_LEFT);
-                    IncomeLog::create([
-                        'user_id'           => $student->id,
-                        'amount'            => getStudentFee($student->academics, 'academic'),
-                        'fee_type_id'       => $student->academics->class->feeTypes->where('name', 'Academic Fee')->first()->id,              // get from fee_types table
-                        'payment_method_id' => PaymentMethod::where('slug', 'cash')->firstOrCreate(['name' => 'Cash', 'slug' => 'cash'])->id, // get from payment_methods table
-                        'status'            => 'paid',
-                        'payment_period'    => $month,
-                        'receiver_id'       => Auth::user()->id,
-                    ]);
-
-                    IncomeLog::create([
-                        'user_id'           => $student->id,
-                        'amount'            => getStudentFee($student->academics, 'boarding'),
-                        'fee_type_id'       => $student->academics->class->feeTypes->where('name', 'Boarding Fee')->first()->id,              // get from fee_types table
-                        'payment_method_id' => PaymentMethod::where('slug', 'cash')->firstOrCreate(['name' => 'Cash', 'slug' => 'cash'])->id, // get from payment_methods table
-                        'status'            => 'paid',
-                        'payment_period'    => $month,
-                        'receiver_id'       => Auth::user()->id,
-                    ]);
-                }
+                AddAdmissionFeeWithAddStudent::run($request, $student);
+                AdmissionTransaction::run($request, $student);
             }
-            AdmissionTransaction::run($request, $student);
             DB::commit();
             return back()->with([
                 'success' => 'Student added successfully',
@@ -250,6 +169,7 @@ class StudentController extends Controller
         $department = Department::where('slug', $department_slug)->firstOrFail();
         // set format for student details
         $student = User::with(['academics', 'address', 'guardians', 'transactions'])->where('unique_id', $student_id)->firstOrFail();
+
         $student = [
             'id'                           => $student->id,
             'name'                         => $student->name,
@@ -279,7 +199,7 @@ class StudentController extends Controller
             'student_transactions_history' => $student->transactions()->with('receiver')->orderBy('created_at', 'desc')->paginate($per_page, ['*'], 'page', $page),
             'monthly_fee_history'          => $student->incomeLogs()->where('payment_period', 'like', $year . '%')->whereHas('feeType', function ($query) {
                 $query->whereIn('name', ['Academic Fee', 'Boarding Fee']);
-            })->with(['receiver', 'feeType'])->get()->map(function ($log) {
+            })->with(['receiver', 'feeType', 'studentDue'])->get()->map(function ($log) {
                 return [
                     'id'             => $log->id,
                     'source_details' => $log->source_details,
@@ -287,6 +207,7 @@ class StudentController extends Controller
                     'fee_type'       => $log->feeType ? $log->feeType->name : null,
                     'month'          => date('F', strtotime($log->payment_period)),
                     'receiver'       => $log->receiver ? $log->receiver : null,
+                    'due'            => $log->studentDue->due_amount ?? 0,
                     'created_at'     => $log->created_at->format('Y-m-d'),
                 ];
             })->groupBy('month')->map(function ($group, $month) {

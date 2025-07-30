@@ -1,5 +1,5 @@
 <?php
-namespace App\Actions\Finance\Earning;
+namespace App\Actions\Transaction;
 
 use App\Models\Transaction;
 use Illuminate\Support\Facades\Auth;
@@ -29,7 +29,11 @@ class AdmissionTransaction
         } else {
             $admissionInfo = [
                 'type' => 'admission_fee',
-                'data' => $request->all(),
+                'data' => [
+                    'admissionFee' => $request->admissionFee,
+                    'class'        => $student->class_name,
+                    'department'   => $student->department_name,
+                ],
             ];
         }
         $transaction                 = new Transaction();
@@ -40,7 +44,7 @@ class AdmissionTransaction
         if ($request->month) {
             $transaction->amount = $admissionInfo['data']['monthly_fee'] + $admissionInfo['data']['admissionFee'] ?? 0; // Use monthly fee if month is provided
         } else {
-            $transaction->amount = $request->admissionFee; // Assuming admission fee is passed in the request
+            $transaction->amount = $admissionInfo['data']['admissionFee'] ?? 0; // Assuming admission fee is passed in the request
         }
         $transaction->receiver_id = Auth::user()->id; // Assuming the receiver is the authenticated user
         $transaction->save();
