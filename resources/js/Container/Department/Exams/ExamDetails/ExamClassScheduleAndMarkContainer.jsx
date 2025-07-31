@@ -32,9 +32,11 @@ const ExamClassScheduleAndMarkContainer = ({ exam, department, classes }) => {
                         <ExamMarkContainer classItem={classItem} exam={exam} />
                     </WhenVisible>
                     {/* Exam Due Students Section */}
-                    <WhenVisible data={'examFeeStudentsStatus'} fallback={<PlaceholderList items={5} showAvatar={true} className="mt-4" />}>
-                        <ExamDueListTableContainer classItem={classItem} exam={exam} />
-                    </WhenVisible>
+                    {exam?.is_fee_required && (
+                        <WhenVisible data={'examFeeStudentsStatus'} fallback={<PlaceholderList items={5} showAvatar={true} className="mt-4" />}>
+                            <ExamDueListTableContainer classItem={classItem} exam={exam} />
+                        </WhenVisible>
+                    )}
                 </div>
             ),
         })) || [];

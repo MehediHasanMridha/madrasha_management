@@ -7,6 +7,7 @@ import StudentMonthlyFeeTableListContainer from './StudentMonthlyFeeTableListCon
 import StudentTransactionsTableListContainer from './StudentTransactionsTableListContainer';
 
 const StudentDetailsContainer = ({ student, department }) => {
+    console.log('🚀 ~ StudentDetailsContainer ~ student:', student);
     // Sample student data
     const personalInfo = [
         { label: 'Phone number', value: student?.phone || 'N/A' },

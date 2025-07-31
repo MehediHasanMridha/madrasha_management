@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Actions\Finance\Reports\MonthlyReport;
 use App\Models\Department;
 use App\Models\Exam;
 use App\Models\User;
@@ -85,5 +86,52 @@ class PartialController extends Controller
             'message' => 'Staff retrieved successfully',
             'data'    => $staff,
         ], 200);
+    }
+
+    public function downloadMonthlyReport($month)
+    {
+        try {
+            // Get the monthly report data
+            $dailyReports = MonthlyReport::run($month);
+
+            // Calculate summary statistics
+            $totalIncome  = $dailyReports->sum('incoming');
+            $totalExpense = $dailyReports->sum('outgoing');
+            $netBalance   = $totalIncome - $totalExpense;
+            $totalReports = $dailyReports->count();
+
+            // Format the data for PDF
+            $formattedReports = $dailyReports->map(function ($report) use ($month) {
+                return [
+                    'date'    => sprintf('%02d-%s-%d', $report['day'], $month, date('Y')),
+                    'income'  => number_format($report['incoming'], 2),
+                    'expense' => number_format($report['outgoing'], 2),
+                    'balance' => number_format($report['net_amount'], 2),
+                ];
+            });
+
+            $data = [
+                'month'        => $month,
+                'year'         => date('Y'),
+                'dailyReports' => $formattedReports,
+                'totalIncome'  => number_format($totalIncome, 2),
+                'totalExpense' => number_format($totalExpense, 2),
+                'netBalance'   => number_format($netBalance, 2),
+                'totalReports' => $totalReports,
+                'generatedAt'  => now()->format('Y-m-d H:i:s'),
+            ];
+
+            return response()->json([
+                'message' => 'Monthly report data retrieved successfully',
+                'month'   => $month,
+                'data'    => $data,
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'error'   => 'Failed to generate monthly report',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
     }
 }

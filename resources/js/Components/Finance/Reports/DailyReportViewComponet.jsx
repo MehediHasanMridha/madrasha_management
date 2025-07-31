@@ -22,6 +22,7 @@ const DailyReportViewComponent = forwardRef(
         setConfirm,
         confirm,
     }) => {
+        console.log('🚀 ~ reportViewData:', reportViewData);
         const { institute, auth } = usePage().props;
         return (
             <ModalUI
@@ -124,7 +125,7 @@ const DailyReportViewComponent = forwardRef(
                                         {reportViewData?.outgoings?.map((item, index) => (
                                             <tr key={index} className="border">
                                                 <td className="border p-2">{(index + 1).toLocaleString('bn')}</td>
-                                                <td className="border p-2">{item.name}</td>
+                                                <td className="border p-2">{item.name || 'স্টাফ বেতন'}</td>
                                                 <td className="border p-2">{item.voucher_no ? item.voucher_no.toLocaleString('bn') : ''}</td>
                                                 <td className="border p-2 text-right">
                                                     {Number(item.amount).toLocaleString('bn', {
