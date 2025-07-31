@@ -9,4 +9,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/get-all-staff', [PartialController::class, 'getAllStaff'])
         ->name('get.all.staff');
     Route::get('get-exam-subjects/{exam_id}/subjects', [PartialController::class, 'getExamSubjects'])->name('department.get_exams_subjects');
+    Route::get('download-monthly-report/{month}', [PartialController::class, 'downloadMonthlyReport'])
+        ->name('download_monthly_report');
 });
