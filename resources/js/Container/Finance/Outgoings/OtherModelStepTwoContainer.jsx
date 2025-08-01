@@ -9,6 +9,7 @@ const OtherModelStepTwoContainer = ({ type, setStep, setType, api }) => {
     const { voucherTypes } = usePage().props;
     const [itemsData, setItemsData] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [voucherName, setVoucherName] = useState(null);
 
     const {
         register,
@@ -37,6 +38,7 @@ const OtherModelStepTwoContainer = ({ type, setStep, setType, api }) => {
             {
                 type: type,
                 ...value,
+                voucherName: voucherName,
             },
             {
                 onStart: () => {
@@ -88,6 +90,7 @@ const OtherModelStepTwoContainer = ({ type, setStep, setType, api }) => {
             append={append}
             remove={remove}
             setStep={setStep}
+            setVoucherName={setVoucherName}
         />
     );
 };
