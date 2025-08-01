@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
             $table->string('transaction_id')->unique(); // Unique transaction ID
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete()->nullable();
+            $table->foreignId('user_id')->nullable()->constrained()->cascadeOnDelete();
             $table->enum('transaction_type', ['income', 'expense'])->default('income'); // income or expense
             $table->json('details')->nullable();                                        // JSON field for additional transaction details
             $table->text('note')->nullable();                                           // note of the transaction
