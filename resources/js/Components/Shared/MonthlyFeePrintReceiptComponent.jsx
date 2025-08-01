@@ -5,6 +5,7 @@ import { FaPhone } from 'react-icons/fa6';
 import ApplicationLogo from '../ApplicationLogo';
 const MonthlyFeePrintReceiptComponent = forwardRef((props, ref) => {
     const { data, student } = props;
+    console.log('🚀 ~ student:', student);
     const details = JSON.parse(data && data?.details)?.data;
     const totalFee = details?.reduce((acc, month) => {
         return acc + (Number(month?.boarding_fee) || 0) + (Number(month?.academic_fee) || 0);
@@ -49,18 +50,18 @@ const MonthlyFeePrintReceiptComponent = forwardRef((props, ref) => {
             </div>
             <hr className="print:border-[0.5px] print:border-black" />
             {/* শিক্ষার্থী তথ্য */}
-            {data && (
+            {student && (
                 <div className="flex items-center justify-between rounded-[8px]">
                     <div className="flex items-center space-x-4">
                         <img
-                            src={getAvatarImage(data?.image, 'student_images', data?.name)}
+                            src={getAvatarImage(student?.image, 'student_images', student?.name)}
                             alt="Student"
                             className="h-[50px] w-[50px] rounded-full border print:h-[28px] print:w-[28px]"
                         />
                         <div>
-                            <p className="text-lg font-semibold print:text-[12px]">{data.name || 'N/A'}</p>
+                            <p className="text-lg font-semibold print:text-[12px]">{student.name || 'N/A'}</p>
                             <p className="text-sm text-black print:text-[10px]">
-                                {data?.unique_id} • {data?.department}
+                                {student?.unique_id} • {student?.academic?.class || 'N/A'}
                             </p>
                         </div>
                     </div>
