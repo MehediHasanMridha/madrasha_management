@@ -24,6 +24,9 @@ const StudentTransactionsTableListContainer = ({ data, department, student, acad
                         year: 'numeric',
                         month: 'long',
                         day: 'numeric',
+                        hour: '2-digit',
+                        hour12: true,
+                        minute: '2-digit',
                     })}
                 </span>
             ),
