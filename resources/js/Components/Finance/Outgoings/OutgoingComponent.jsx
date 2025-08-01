@@ -2,9 +2,20 @@ import VoucherBorder from '@/assets/images/VoucherBorder.webp';
 import StaticBtn from '@/Components/UI/StaticBtn';
 import AddVoucherContainer from '@/Container/Finance/Outgoings/AddVoucherContainer';
 import VoucherModalContainer from '@/Container/Finance/Outgoings/VoucherModalContainer';
+import MonthYearContainer from '@/Container/Shared/MonthYearContainer';
 import FinanceTabBarComponent from '../FinanceTabBarComponent';
 
-const OutgoingComponent = ({ activeTab, setActiveTab, modal, setModal, outgoings, voucherList, voucherModal, setVoucherModal }) => {
+const OutgoingComponent = ({
+    activeTab,
+    setActiveTab,
+    modal,
+    setModal,
+    outgoings,
+    voucherList,
+    voucherModal,
+    setVoucherModal,
+    handleYearMonthChange,
+}) => {
     return (
         <div className="py-6">
             <FinanceTabBarComponent tab="outgoings" />
@@ -31,7 +42,10 @@ const OutgoingComponent = ({ activeTab, setActiveTab, modal, setModal, outgoings
 
             {/* Vouchers Section */}
             <div className="space-y-5 rounded-[8px] border-[1px] border-[#AFAFAF] p-6">
-                <h2 className="mb-4 text-base font-medium text-gray-900">Vouchers</h2>
+                <span className="flex items-center justify-between">
+                    <h2 className="mb-4 text-base font-medium text-gray-900">Vouchers</h2>
+                    <MonthYearContainer getData={handleYearMonthChange} />
+                </span>
                 <hr className="h-[2px] bg-[#AFAFAF]" />
                 <div className="grid grid-cols-3 gap-4">
                     {voucherList.map((voucher) => (

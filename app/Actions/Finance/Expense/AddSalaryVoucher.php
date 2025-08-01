@@ -1,8 +1,8 @@
 <?php
 namespace App\Actions\Finance\Expense;
 
+use App\Actions\Transaction\SalaryTransaction;
 use App\Models\ExpenseLog;
-use App\Models\Transaction;
 use App\Models\User;
 use App\Models\VoucherType;
 use Illuminate\Support\Facades\Auth;
@@ -24,14 +24,7 @@ class AddSalaryVoucher
                 'slug' => 'salary',
             ]);
         }
-        // add new Transaction
-        Transaction::create([
-            'transaction_id'   => 'TRN-' . str_pad(mt_rand(1, 999999999), 9, '0', STR_PAD_LEFT),
-            'user_id'          => Auth::user()->id,
-            'transaction_type' => 'expense',
-            'amount'           => $request->expense['amount'],
-            'note'             => $request->expense['note'] ?? null,
-        ]);
+        SalaryTransaction::run($request, $staff);
         $year        = $request->year;
         $monthlyInfo = collect($request->monthlyInfo);
         $monthlyInfo->map(function ($item, $key) use ($staff, $year, $voucherType) {

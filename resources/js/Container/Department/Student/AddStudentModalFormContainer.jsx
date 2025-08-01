@@ -23,6 +23,7 @@ const AddStudentModalFormContainer = () => {
     const [fees, setFees] = useState(null);
     const [withFee, setWithFee] = useState(false);
     const [studentData, setStudentData] = useState(null);
+    const [collectedMonthlyFeeForPrint, setCollectedMonthlyFeeForPrint] = useState(null);
 
     const {
         register,
@@ -183,7 +184,6 @@ const AddStudentModalFormContainer = () => {
                     setIsLoading(false);
                 },
                 onError: (errors) => {
-                    console.log('🚀 ~ onSubmit ~ errors:', errors);
                     // Set form errors for each field
                     Object.keys(errors).forEach((field) => {
                         if (field !== 'message') {
@@ -256,16 +256,18 @@ const AddStudentModalFormContainer = () => {
                     withFee={withFee}
                     step={step}
                     setWithFee={setWithFee}
+                    setCollectedMonthlyFeeForPrint={setCollectedMonthlyFeeForPrint}
                 />
             );
             break;
         case 3:
             content = (
                 <AddStudentWithFeePrintableContainer
-                    data={studentData}
+                    studentData={studentData}
                     handleClose={handleCancel}
                     month={getValues('month') || ''}
                     admission_fee={getValues('admission_fee')}
+                    collectedMonthlyFeeForPrint={collectedMonthlyFeeForPrint}
                 />
             );
             break;

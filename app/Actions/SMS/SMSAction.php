@@ -1,7 +1,6 @@
 <?php
 namespace App\Actions\SMS;
 
-use App\Models\SMSBalance;
 use Lorisleiva\Actions\Concerns\AsAction;
 
 class SMSAction
@@ -12,35 +11,13 @@ class SMSAction
     // For example, you might want to implement methods for sending SMS messages,
     // handling SMS responses, etc.
 
-    public function handle($phoneNumber, $message)
+    public function handle($validPhoneNumbers, $message)
     {
-        $sms = SMSBalance::first();
-        if ($sms->balance > 0) {
-            $validPhoneNumbers = validateAndFormatPhoneNumber($phoneNumber);
-            if (! empty($validPhoneNumbers)) {
-                $response = $this->sms_send($validPhoneNumbers, $message);
-                $response = json_decode($response, true);
-                if ($response['success_message']) {
-                    // Decrease the balance after sending SMS
-                    $sms->decrement('balance');
-                    return true;
-                } else {
-                    return false; // Handle failure to send SMS
-                }
-            } else {
-                return false; // Handle invalid phone numbers
-            }
-        } else {
-            return false; // Handle insufficient balance
-        }
-    }
-
-    public function sms_send($validPhoneNumbers, $message)
-    {
-        $url      = "http://bulksmsbd.net/api/smsapi";
-        $api_key  = "WqEMXtKIyUzdOiLrQyGm";
-        $senderid = "8809617622335";
-        $number   = $validPhoneNumbers;
+        $validPhoneNumbers = $validPhoneNumbers->implode(',');
+        $url               = "http://bulksmsbd.net/api/smsapi";
+        $api_key           = "WqEMXtKIyUzdOiLrQyGm";
+        $senderid          = "8809617622335";
+        $number            = $validPhoneNumbers;
 
         $data = [
             "api_key"  => $api_key,

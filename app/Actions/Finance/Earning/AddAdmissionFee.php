@@ -1,6 +1,7 @@
 <?php
 namespace App\Actions\Finance\Earning;
 
+use App\Models\Classes;
 use App\Models\IncomeLog;
 use App\Models\PaymentMethod;
 use Illuminate\Support\Facades\Auth;
@@ -23,12 +24,16 @@ class AddAdmissionFee
             // Optionally, handle the case where academics is null
             throw new \Exception('Student academics record not found.');
         }
+        $feeType = Classes::find($request->class)->feeTypes->where('name', 'Admission Fee')->first();
+        if (! $feeType) {
+            throw new \Exception('Admission Fee type not found for the selected class.');
+        }
 
         $month = date('Y-m');
         IncomeLog::create([
             'user_id'           => $student->id,
             'amount'            => $request->admissionFee,
-            'fee_type_id'       => $student->academics->class->feeTypes->where('name', 'Admission Fee')->first()->id,             // get from fee_types table
+            'fee_type_id'       => $feeType->id,                                                                                  // get from fee_types table
             'payment_method_id' => PaymentMethod::where('slug', 'cash')->firstOrCreate(['name' => 'Cash', 'slug' => 'cash'])->id, // get from payment_methods table
             'status'            => 'paid',
             'source_details'    => $request->note,

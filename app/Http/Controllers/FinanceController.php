@@ -9,7 +9,6 @@ use App\Actions\Finance\Earning\AddDueFee;
 use App\Actions\Finance\Earning\AddExamFee;
 use App\Actions\Finance\Earning\AddMonthlyFee;
 use App\Actions\Finance\Earning\MonthlyDiscount;
-use App\Actions\Finance\Earning\MonthlyTransaction;
 use App\Actions\Finance\Expense\AddOthersVoucher;
 use App\Actions\Finance\Expense\AddSalaryVoucher;
 use App\Actions\Finance\Expense\Expense;
@@ -18,6 +17,9 @@ use App\Actions\Finance\Paid\PaidList;
 use App\Actions\Finance\Reports\MonthlyDailyReport;
 use App\Actions\Finance\Reports\MonthlyGroupReport;
 use App\Actions\Finance\Summary;
+use App\Actions\Transaction\AdmissionTransaction;
+use App\Actions\Transaction\ExamTransaction;
+use App\Actions\Transaction\MonthlyTransaction;
 use App\Models\DailyReportApproval;
 use App\Models\Exam;
 use App\Models\ExpenseLog;
@@ -162,6 +164,9 @@ class FinanceController extends Controller
         ])->whereHas('roles', fn($q) => $q->where('name', 'student'))
             ->where('unique_id', $user_id)
             ->firstOrFail();
+        if (! $user) {
+            return response()->json(['error' => 'User not found']);
+        }
 
         $responseData = [
             'id'            => $user->id,
@@ -273,11 +278,13 @@ class FinanceController extends Controller
             }
             if ($request->type == 'exam_fee') {
                 AddExamFee::run($request, $student);
+                ExamTransaction::run($request, $student);
                 DB::commit();
                 return redirect()->back()->with('success', 'Exam fee added successfully');
             }
             if ($request->type == 'admission_fee') {
                 AddAdmissionFee::run($request, $student);
+                AdmissionTransaction::run($request, $student);
                 DB::commit();
                 return redirect()->back()->with('success', 'Admission fee added successfully');
             }
@@ -314,14 +321,25 @@ class FinanceController extends Controller
             'note' => 'nullable|string|max:255',
         ]);
 
-        if ($request->type == 'salary' && $request->monthlyInfo) {
+        try {
+            DB::beginTransaction();
+            if ($request->type == 'salary' && $request->monthlyInfo) {
+                AddSalaryVoucher::run($request);
+            } else {
+                AddOthersVoucher::run($request);
+            }
+            DB::commit();
+            return redirect()->back()->with('success', 'Voucher added successfully');
 
-            AddSalaryVoucher::run($request);
-            return to_route('finance.outgoings')->with('success', 'Voucher added successfully');
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            // Handle duplicate entry for expense_logs
+            if (str_contains($th->getMessage(), 'Duplicate entry') && str_contains($th->getMessage(), 'unique_expense_log')) {
+                return redirect()->back()->with('error', 'This voucher already exists. Please check the voucher history.');
+            }
+
+            return redirect()->back()->with('error', $th->getMessage());
         }
-
-        AddOthersVoucher::run($request);
-        return to_route('finance.outgoings')->with('success', 'Voucher added successfully');
 
     }
 

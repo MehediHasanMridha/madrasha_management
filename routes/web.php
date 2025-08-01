@@ -92,6 +92,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('add', [StaffController::class, 'store'])->name('staff.store');
         Route::post('{id}/update', [StaffController::class, 'update'])->name('staff.update');
         Route::delete('{id}', [StaffController::class, 'destroy'])->name('staff.delete');
+        // staff details
+        Route::get('{staff_id}/details', [StaffController::class, 'staff_details'])->name('staff.details');
     });
 
     // Settings

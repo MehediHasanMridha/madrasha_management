@@ -12,10 +12,14 @@ class MonthlyDailyReport
     public function handle($period)
     {
         $outgoing = ExpenseLog::query()
-            ->whereHas('voucherType', function ($query) {
-                $query->where('slug', '!=', 'salary');
+            ->where(function ($query) use ($period) {
+                $query->whereHas('voucherType', function ($subQuery) use ($period) {
+                    $subQuery->where('slug', 'salary');
+                })->where('created_at', 'like', '%' . $period . '%')
+                    ->orWhereHas('voucherType', function ($subQuery) use ($period) {
+                        $subQuery->where('slug', '!=', 'salary');
+                    })->where('date', [$period]);
             })
-            ->where('date', [$period])
             ->get()
             ->map(function ($item) {
                 return [
@@ -23,7 +27,13 @@ class MonthlyDailyReport
                     'amount' => intval($item->amount),
                     'name'   => $item->holder_name,
                 ];
-            });
+            })->groupBy('type')->map(function ($group, $type) {
+            return [
+                'type'   => $type,
+                'name'   => $group->first()['name'],
+                'amount' => $group->sum('amount'),
+            ];
+        })->values();
 
         $incoming = IncomeLog::with('feeType')
             ->where('status', 'paid')

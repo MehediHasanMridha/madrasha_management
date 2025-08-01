@@ -4,14 +4,13 @@ import { forwardRef } from 'react';
 import { FaPhone } from 'react-icons/fa6';
 import ApplicationLogo from '../ApplicationLogo';
 const MonthlyFeePrintReceiptComponent = forwardRef((props, ref) => {
-    const { data, month = '', year } = props;
-    const monthDetails = JSON.parse(month && month?.details);
-    console.log('🚀 ~ MonthlyFeePrintReceiptComponent ~ monthDetails:', month);
-    const totalFee = monthDetails?.reduce((acc, month) => {
+    const { data, student } = props;
+    const details = JSON.parse(data && data?.details)?.data;
+    const totalFee = details?.reduce((acc, month) => {
         return acc + (Number(month?.boarding_fee) || 0) + (Number(month?.academic_fee) || 0);
     }, 0);
-    const discount = (monthDetails && monthDetails[0]?.discount) || 0;
-    const totalDue = monthDetails?.reduce((acc, month) => {
+    const discount = (details && details[0]?.discount) || 0;
+    const totalDue = details?.reduce((acc, month) => {
         return acc + (Number(month?.due_academic_fee) || 0) + (Number(month?.due_boarding_fee) || 0);
     }, 0);
     const formattedDate = new Date()
@@ -77,14 +76,16 @@ const MonthlyFeePrintReceiptComponent = forwardRef((props, ref) => {
                     <thead>
                         <tr>
                             <th className="border-[0.5px] border-black px-4 py-2 text-left">ক্রমিক</th>
-                            <th className="border-[0.5px] border-black px-4 py-2 text-left">মাস ({year})</th>
+                            <th className="border-[0.5px] border-black px-4 py-2 text-left">
+                                মাস ({(details?.length > 0 && details[0]?.year) || new Date().getFullYear()})
+                            </th>
                             <th className="border-[0.5px] border-black px-4 py-2 text-right">বোর্ডিং ফি</th>
                             <th className="border-[0.5px] border-black px-4 py-2 text-right">একাডেমিক ফি</th>
                             <th className="border-[0.5px] border-black px-4 py-2 text-right">মোট</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {monthDetails?.map((item, index) => (
+                        {details?.map((item, index) => (
                             <tr>
                                 <td className="border-[0.5px] border-black px-4 py-2">{Number(1).toLocaleString('bn')}</td>
                                 {/* how to convert month name to bangla */}
@@ -121,20 +122,20 @@ const MonthlyFeePrintReceiptComponent = forwardRef((props, ref) => {
                 </div>
             </div>
             {/* মন্তব্য বিভাগ */}
-            {month?.note && (
+            {data?.note && (
                 <div className="mt-2">
                     <h3 className="mb-2 font-medium">মন্তব্য</h3>
-                    <p className="h-fit w-full rounded-[4px] border-[0.5px] border-[#131313] p-3 print:h-[50px]">{month?.note} </p>
+                    <p className="h-fit w-full rounded-[4px] border-[0.5px] border-[#131313] p-3 print:h-[50px]">{data?.note} </p>
                 </div>
             )}
             <div className="flex items-center justify-center gap-2">
                 যোগ করেছেন :
                 <img
-                    src={getAvatarImage(month?.receiver?.img, 'staff_images', month?.receiver?.name)}
+                    src={getAvatarImage(data?.receiver?.img, 'staff_images', data?.receiver?.name)}
                     alt=""
                     className="h-[20px] w-[20px] rounded-sm print:h-[10px] print:w-[10px]"
                 />
-                {month?.receiver?.name} আইডি: {month?.receiver?.unique_id || 'N/A'}
+                {data?.receiver?.name} আইডি: {data?.receiver?.unique_id || 'N/A'}
             </div>
         </div>
     );

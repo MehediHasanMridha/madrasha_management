@@ -1,3 +1,5 @@
+import AdmissionFeePrintReceiptComponent from '@/Components/Shared/AdmissionFeePrintReceiptComponent';
+import ExamFeePrintReceiptComponent from '@/Components/Shared/ExamFeePrintReceiptComponent';
 import MonthlyFeePrintReceiptComponent from '@/Components/Shared/MonthlyFeePrintReceiptComponent';
 import TableUI from '@/Components/UI/TableUI';
 import { router } from '@inertiajs/react';
@@ -5,11 +7,11 @@ import { ScrollText } from 'lucide-react';
 import { useCallback, useRef, useState } from 'react';
 import { useReactToPrint } from 'react-to-print';
 
-const StudentTransactionsTableListContainer = ({ data, department, student, academicFee, boardingFee, year }) => {
-    console.log('🚀 ~ StudentTransactionsTableListContainer ~ data:', data);
+const StudentTransactionsTableListContainer = ({ data, department, student, academicFee, boardingFee }) => {
     const [loading, setLoading] = useState(false);
     const printComponentRef = useRef(null);
     const [selectedData, setSelectedData] = useState(null);
+    const [type, setType] = useState(null);
 
     const columns = [
         {
@@ -22,9 +24,27 @@ const StudentTransactionsTableListContainer = ({ data, department, student, acad
                         year: 'numeric',
                         month: 'long',
                         day: 'numeric',
+                        hour: '2-digit',
+                        hour12: true,
+                        minute: '2-digit',
                     })}
                 </span>
             ),
+        },
+        {
+            title: 'Type',
+            dataIndex: 'details',
+            key: 'type',
+            render: (record, text) => {
+                const type = JSON.parse(record)?.type || null;
+                if (type === 'exam' || type === 'exam_fee') {
+                    return <span className="text-[14px] font-semibold text-black">Exam Fee</span>;
+                }
+                if (type === 'admission_fee') {
+                    return <span className="text-[14px] font-semibold text-black">Admission Fee</span>;
+                }
+                return <span className="text-[14px] font-semibold text-black">Monthly Fee</span>;
+            },
         },
         {
             title: 'Amount',
@@ -41,6 +61,7 @@ const StudentTransactionsTableListContainer = ({ data, department, student, acad
                 <span className="cursor-pointer text-[14px] font-semibold">
                     <ScrollText
                         onClick={() => {
+                            setType(JSON.parse(record.details)?.type || 'monthly_fee');
                             setSelectedData(record);
                             printFn();
                         }}
@@ -104,6 +125,16 @@ const StudentTransactionsTableListContainer = ({ data, department, student, acad
                 `,
     });
 
+    let printableComponent = null;
+    if (type === 'monthly_fee') {
+        printableComponent = <MonthlyFeePrintReceiptComponent ref={printComponentRef} data={selectedData} student={student} />;
+    } else if (type === 'exam' || type === 'exam_fee') {
+        // Assuming you have a similar component for exam fee receipts
+        printableComponent = <ExamFeePrintReceiptComponent ref={printComponentRef} data={selectedData} student={student} />;
+    } else if (type === 'admission_fee') {
+        printableComponent = <AdmissionFeePrintReceiptComponent ref={printComponentRef} data={selectedData} student={student} />;
+    }
+
     return (
         <>
             <TableUI
@@ -119,9 +150,7 @@ const StudentTransactionsTableListContainer = ({ data, department, student, acad
                 rowKey={(record) => record.id}
                 onChange={handleTableChange}
             />
-            <div className="hidden print:block">
-                <MonthlyFeePrintReceiptComponent ref={printComponentRef} data={student} month={selectedData} year={year} />
-            </div>
+            <div className="hidden print:block">{printableComponent}</div>
         </>
     );
 };
