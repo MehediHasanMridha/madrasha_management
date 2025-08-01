@@ -143,7 +143,6 @@ const SMSContainer = ({ departments, sms_balance }) => {
                 handleDepartmentToggle={handleDepartmentToggle}
                 isDepartmentSelected={isDepartmentSelected}
                 handleSubmit={handleSubmit(onSubmit)}
-                register={register}
                 removeStudentId={removeStudentId}
                 selected_departments={selected_departments}
                 selected_student_ids={selected_student_ids}
