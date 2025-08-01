@@ -22,6 +22,7 @@ const OtherModelStepTwoComponent = ({
     setItemsData,
     loading,
     setStep,
+    setVoucherName,
 }) => {
     return (
         <>
@@ -57,6 +58,10 @@ const OtherModelStepTwoComponent = ({
                 <select
                     className="w-full rounded-[8px] border border-solid border-[#AFAFAF] px-[16px] py-[12px] text-black focus:outline-0"
                     {...register('voucherType', { required: 'Voucher Type is required' })}
+                    onChange={(e) => {
+                        setVoucherName(voucherTypes.find((type) => type.id === parseInt(e.target.value))?.name);
+                        register('voucherType').onChange(e);
+                    }}
                 >
                     <option value="">Select Option</option>
                     {voucherTypes?.map((type) => {
