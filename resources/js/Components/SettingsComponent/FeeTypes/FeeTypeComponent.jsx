@@ -1,8 +1,7 @@
-import StaticBtn from '@/Components/UI/StaticBtn';
 import MenuUI from '@/Components/UI/MenuUI';
+import StaticBtn from '@/Components/UI/StaticBtn';
 import { PlusOutlined } from '@ant-design/icons';
 import { router } from '@inertiajs/react';
-import { useState } from 'react';
 
 const FeeTypeComponent = ({ fee = [], setAddFeeModal }) => {
     const handleEdit = (feeId) => {
@@ -19,14 +18,14 @@ const FeeTypeComponent = ({ fee = [], setAddFeeModal }) => {
         {
             key: 'edit',
             label: 'Edit',
-            onClick: () => handleEdit(feeId)
+            onClick: () => handleEdit(feeId),
         },
         {
             key: 'delete',
             label: 'Delete',
             danger: true,
-            onClick: () => handleDelete(feeId)
-        }
+            onClick: () => handleDelete(feeId),
+        },
     ];
 
     // Sample data for demonstration (replace with actual data)
@@ -51,14 +50,11 @@ const FeeTypeComponent = ({ fee = [], setAddFeeModal }) => {
                 {sampleFees.map((fee) => (
                     <div key={fee.id} className="flex items-center justify-between rounded-lg bg-white p-4 shadow-sm">
                         <span>{fee.name}</span>
-                        <MenuUI
-                            items={getMenuItems(fee.id)}
-                            placement="bottomRight"
-                        >
+                        <MenuUI items={getMenuItems(fee.id)} placement="bottomRight">
                             <button className="p-1" onClick={(e) => e.preventDefault()}>
                                 <EllipsisOutlined className="text-lg" />
                             </button>
-                        </Dropdown>
+                        </MenuUI>
                     </div>
                 ))}
 
