@@ -1,5 +1,5 @@
 <?php
-namespace App\Actions\Finance\Earning;
+namespace App\Actions\Transaction;
 
 use App\Models\Transaction;
 use Illuminate\Support\Facades\Auth;

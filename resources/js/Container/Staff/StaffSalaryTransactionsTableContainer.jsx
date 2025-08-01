@@ -21,15 +21,23 @@ const StaffSalaryTransactionsTableContainer = ({ data, staff, year }) => {
                         year: 'numeric',
                         month: 'long',
                         day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: true,
                     })}
                 </span>
             ),
         },
         {
             title: 'Type',
-            dataIndex: 'voucher_type.name',
-            key: 'voucher_type',
-            render: (text) => <span className="text-[14px] text-gray-600">{text || 'Salary'}</span>,
+            dataIndex: 'details',
+            key: 'details',
+            render: (record, text) => {
+                const type = JSON.parse(record)?.type || null;
+                if (type === 'salary') {
+                    return <span className="text-[14px] font-semibold text-black">Salary</span>;
+                }
+            },
         },
         {
             title: 'Amount',

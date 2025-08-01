@@ -6,7 +6,7 @@ import ApplicationLogo from '../ApplicationLogo';
 
 const MonthlySalaryPrintReceiptComponent = forwardRef((props, ref) => {
     const { data, staff } = props;
-    const details = data?.details ? (typeof data.details === 'string' ? JSON.parse(data.details) : data.details) : [];
+    const details = data?.details ? (typeof data.details === 'string' ? JSON.parse(data.details)?.data : data.details?.data) : [];
     const { institute } = usePage().props;
     const formattedDate = new Date()
         .toLocaleString('en-US', {

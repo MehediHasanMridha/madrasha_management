@@ -51,9 +51,8 @@ class LoginRequest extends FormRequest
 
         if (! Auth::attempt($credentials, $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
-
             throw ValidationException::withMessages([
-                'email' => __('auth.failed'),
+                'email' => 'The provided credentials are incorrect.',
             ]);
         }
 
@@ -62,7 +61,6 @@ class LoginRequest extends FormRequest
         if (! $user->hasAnyRole(['super-admin', 'admin', 'editor'])) {
             Auth::logout();
             RateLimiter::hit($this->throttleKey());
-
             throw ValidationException::withMessages([
                 'email' => 'Only admin and editor users are allowed to login.',
             ]);

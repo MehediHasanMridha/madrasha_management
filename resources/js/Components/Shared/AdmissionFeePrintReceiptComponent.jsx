@@ -120,8 +120,8 @@ const AdmissionFeePrintReceiptComponent = forwardRef((props, ref) => {
                         <span>মোট:</span>
                         <span>
                             {(
-                                Number(admissionFee || details?.data?.admissionFee) +
-                                Number(collectedMonthlyFeeForPrint || details?.data?.monthly_fee)
+                                Number(admissionFee || details?.data?.admissionFee || 0) +
+                                Number(collectedMonthlyFeeForPrint || details?.data?.monthly_fee || 0)
                             ).toLocaleString('bn')}{' '}
                             টাকা
                         </span>
@@ -130,8 +130,8 @@ const AdmissionFeePrintReceiptComponent = forwardRef((props, ref) => {
                         <span>পরিশোধিত:</span>
                         <span>
                             {(
-                                Number(admissionFee || details?.data?.admissionFee) +
-                                Number(collectedMonthlyFeeForPrint || details?.data?.monthly_fee)
+                                Number(admissionFee || details?.data?.admissionFee || 0) +
+                                Number(collectedMonthlyFeeForPrint || details?.data?.monthly_fee || 0)
                             ).toLocaleString('bn')}{' '}
                             টাকা
                         </span>

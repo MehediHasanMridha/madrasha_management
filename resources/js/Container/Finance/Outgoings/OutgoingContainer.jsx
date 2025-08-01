@@ -1,4 +1,5 @@
 import OutgoingComponent from '@/Components/Finance/Outgoings/OutgoingComponent';
+import { router } from '@inertiajs/react';
 import { useState } from 'react';
 
 const OutgoingContainer = ({ outgoings, voucherList }) => {
@@ -8,6 +9,19 @@ const OutgoingContainer = ({ outgoings, voucherList }) => {
         isOpen: false,
         data: null,
     });
+    const handleYearMonthChange = (year, month) => {
+        router.get(
+            route('finance.outgoings'),
+            {
+                year: year,
+                month: month,
+            },
+            {
+                preserveState: true,
+                preserveScroll: true,
+            },
+        );
+    };
     return (
         <OutgoingComponent
             outgoings={outgoings}
@@ -18,6 +32,7 @@ const OutgoingContainer = ({ outgoings, voucherList }) => {
             setModal={setModal}
             voucherModal={voucherModal}
             setVoucherModal={setVoucherModal}
+            handleYearMonthChange={handleYearMonthChange}
         />
     );
 };

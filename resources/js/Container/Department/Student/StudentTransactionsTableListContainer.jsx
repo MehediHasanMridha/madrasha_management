@@ -24,6 +24,9 @@ const StudentTransactionsTableListContainer = ({ data, department, student, acad
                         year: 'numeric',
                         month: 'long',
                         day: 'numeric',
+                        hour: '2-digit',
+                        hour12: true,
+                        minute: '2-digit',
                     })}
                 </span>
             ),
@@ -124,7 +127,7 @@ const StudentTransactionsTableListContainer = ({ data, department, student, acad
 
     let printableComponent = null;
     if (type === 'monthly_fee') {
-        printableComponent = <MonthlyFeePrintReceiptComponent ref={printComponentRef} data={student} month={selectedData} />;
+        printableComponent = <MonthlyFeePrintReceiptComponent ref={printComponentRef} data={selectedData} student={student} />;
     } else if (type === 'exam' || type === 'exam_fee') {
         // Assuming you have a similar component for exam fee receipts
         printableComponent = <ExamFeePrintReceiptComponent ref={printComponentRef} data={selectedData} student={student} />;

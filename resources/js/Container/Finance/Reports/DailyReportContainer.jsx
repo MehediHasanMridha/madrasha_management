@@ -13,6 +13,8 @@ const DailyReportContainer = ({ approvedReports }) => {
     const daysArray = Array.from({ length: daysInMonth }, (_, i) => i + 1);
     const [day, setDay] = useState(null);
     const [is_approved, setIs_approved] = useState(false);
+    const [pdfData, setPdfData] = useState(null);
+    const [isLoadingPdf, setIsLoadingPdf] = useState(false);
 
     // Process approved reports to create a map for quick lookup
     const approvedReportsMap = approvedReports?.reduce((acc, report) => {
@@ -42,6 +44,23 @@ const DailyReportContainer = ({ approvedReports }) => {
         }
     };
 
+    // Download monthly report
+    const downloadMonthlyReport = async () => {
+        try {
+            setIsLoadingPdf(true);
+            setPdfData(null); // Reset previous data
+            const response = await axios.get(route('download_monthly_report', { month }));
+            if (response.status === 200) {
+                setPdfData(response.data.data); // Extract the data object from response
+            }
+        } catch (error) {
+            console.error('Error downloading monthly report:', error);
+            // You might want to show an error notification here
+        } finally {
+            setIsLoadingPdf(false);
+        }
+    };
+
     const breadcrumbItems = [
         {
             title: <Link href={route('finance.reports')}>Reports</Link>,
@@ -60,6 +79,9 @@ const DailyReportContainer = ({ approvedReports }) => {
                 approvedReports={approvedReports}
                 daysWithReportData={daysWithReportData}
                 setIs_approved={setIs_approved}
+                downloadMonthlyReport={downloadMonthlyReport}
+                pdfData={pdfData}
+                isLoadingPdf={isLoadingPdf}
             />
             <DailyReportViewContainer
                 reportViewModal={reportViewModal}

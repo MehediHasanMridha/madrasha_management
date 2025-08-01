@@ -1,5 +1,5 @@
 <?php
-namespace App\Actions\Finance\Expense;
+namespace App\Actions\Transaction;
 
 use App\Models\Transaction;
 use Illuminate\Support\Facades\Auth;
@@ -10,9 +10,9 @@ class SalaryTransaction
     use AsAction;
     public function handle(
         $request,
-        $year,
         $staff
     ) {
+        $year        = $request->year;
         $monthlyInfo = collect($request->monthlyInfo)->map(function ($monthData) use ($year) {
             $month_date = $year . '-' . $monthData['month'];
             $month_date = date('F', strtotime($month_date));
@@ -22,7 +22,11 @@ class SalaryTransaction
                 'year'   => $year,
             ];
         });
-        $amount = $monthlyInfo->sum(function ($month) {
+        $monthlyInfo = [
+            'type' => 'salary',
+            'data' => $monthlyInfo,
+        ];
+        $amount = $monthlyInfo['data']->sum(function ($month) {
             return $month['salary'];
         });
         $transaction                   = new Transaction();
